@@ -8,7 +8,7 @@ import { AuthSessionStorage } from '../infrastucture/auth-session.storage';
 import { UserApi } from '../infrastucture/user.api';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthStore {
   private readonly currentUserSignal = signal<userEntity | null>(null);
@@ -27,7 +27,7 @@ export class AuthStore {
 
   constructor(
     private readonly userApi: UserApi,
-    private readonly authSessionStorage: AuthSessionStorage
+    private readonly authSessionStorage: AuthSessionStorage,
   ) {
     const storedSession = this.authSessionStorage.load();
 
@@ -60,10 +60,9 @@ export class AuthStore {
         error: (error: unknown) => {
           this.errorSignal.set(this.formatError(error, 'Failed to sign in'));
           this.loadingSignal.set(false);
-        }
+        },
       });
   }
-
   signOut(): void {
     this.clearSession();
     this.errorSignal.set(null);
@@ -83,7 +82,7 @@ export class AuthStore {
   private createSession(user: userEntity): AuthSession {
     return {
       token: btoa(`${user.id}:${user.username}:${user.role}:${Date.now()}`),
-      user
+      user,
     };
   }
 
