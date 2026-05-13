@@ -1,0 +1,32 @@
+<section class="dashboard-test">
+  <h1>Dashboard Test</h1>
+
+  <div class="actions">
+    <label>
+      <span>Usuario o email</span>
+      <input [ngModel]="identifier()" (ngModelChange)="identifier.set($event)" />
+    </label>
+
+    <label>
+      <span>Password</span>
+      <input
+        type="password"
+        [ngModel]="password()"
+        (ngModelChange)="password.set($event)"
+      />
+    </label>
+
+    <div class="buttons">
+      <button type="button" (click)="signIn()">Sign in</button>
+      <button type="button" (click)="reload()">Reload</button>
+      <button type="button" (click)="signOut()">Sign out</button>
+    </div>
+  </div>
+
+  <p>Session: {{ session() ? 'active' : 'none' }}</p>
+  <p>Loading: {{ dashboardService.loading() ? 'true' : 'false' }}</p>
+  <p>Error: {{ dashboardService.error() ?? 'none' }}</p>
+
+  <h2>Summary</h2>
+  <pre>{{ dashboardService.summary() | json }}</pre>
+</section>

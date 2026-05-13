@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { retry } from 'rxjs';
 
@@ -11,6 +11,7 @@ import { UserApi } from '../infrastucture/user.api';
   providedIn: 'root',
 })
 export class AuthStore {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly currentUserSignal = signal<userEntity | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
 
@@ -41,7 +42,7 @@ export class AuthStore {
 
     this.userApi
       .signIn(identifier, password)
-      .pipe(retry(2), takeUntilDestroyed())
+      .pipe(retry(2), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (user) => {
           if (!user) {
