@@ -8,7 +8,7 @@ import { UserApiEndpoint } from './user.api.endpoint';
 import { UserResponse } from './user.response';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserApi extends BaseApi<userEntity, UserResponse> {
   constructor(private readonly userEndpoint: UserApiEndpoint) {
@@ -25,22 +25,7 @@ export class UserApi extends BaseApi<userEntity, UserResponse> {
 
   signIn(identifier: string, password: string): Observable<userEntity | null> {
     return this.http
-      .get<UserResponse[]>(this.userEndpoint.getByEmailAndPassword(identifier, password))
-      .pipe(
-        map((response) => response[0] ?? null),
-        switchMap((userByEmail) => {
-          if (userByEmail) {
-            return of(this.assembler.toEntityFrom(userByEmail));
-          }
-
-          return this.http
-            .get<UserResponse[]>(this.userEndpoint.getByUsernameAndPassword(identifier, password))
-            .pipe(
-              map((response) =>
-                response[0] ? this.assembler.toEntityFrom(response[0]) : null
-              )
-            );
-        })
-      );
+      .get<UserResponse[]>(this.userEndpoint.getByUsernameAndPassword(identifier, password))
+      .pipe(map((response) => (response[0] ? this.assembler.toEntityFrom(response[0]) : null)));
   }
 }
