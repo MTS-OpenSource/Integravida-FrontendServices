@@ -1,5 +1,5 @@
 import { AlertEntity } from './alert.entity';
-import { GlucoseRecordEntity } from './glucose-record.entity';
+import { GlucoseRecordEntity } from '../../../glucose-monitoring/domain/model/glucose-record.entity';
 import { MedicationEntity } from './medication.entity';
 
 export interface DashboardSummary {
