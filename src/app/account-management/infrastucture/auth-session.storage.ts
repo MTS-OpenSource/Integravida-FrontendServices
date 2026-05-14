@@ -4,7 +4,7 @@ import { AuthSession } from '../domain/model/auth-session.model';
 import { userEntity } from '../domain/model/user.entity';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthSessionStorage {
   private readonly tokenStorageKey = 'auth_token';
@@ -28,7 +28,7 @@ export class AuthSessionStorage {
 
       return {
         token,
-        user: new userEntity(user.id, user.email, user.username, user.password, user.role)
+        user: new userEntity(user.id, user.email, user.username, user.password, user.role),
       };
     } catch {
       this.clear();

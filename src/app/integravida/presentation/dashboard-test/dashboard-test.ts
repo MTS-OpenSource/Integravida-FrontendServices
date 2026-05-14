@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 
 import { DashboardService } from '../../application/dashboard.service';
-import { AuthStore } from '../../application/auth.store';
-import { GlucoseRecordApi } from '../../infrastucture/glucose-record.api';
-import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
+import { AuthStore } from '../../../account-management/application/auth.store';
+import { GlucoseRecordApi } from '../../../glucose-monitoring/infrastructure/glucose-record.api';
+import { GlucoseRecordEntity } from '../../../glucose-monitoring/domain/model/glucose-record.entity';
 
 @Component({
   selector: 'app-dashboard-test',

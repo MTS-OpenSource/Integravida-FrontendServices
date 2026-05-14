@@ -14,7 +14,7 @@ export class GlucoseRecordAssembler extends BaseAssembler<
         response.valueMgdl ?? response.glucoseLevel ?? response.glucoseValue ?? response.value,
       ),
       this.toNullableString(
-        response.recordedAt ?? response.createdAt ?? response.measurementDate ?? response.timestamp
+        response.recordedAt ?? response.createdAt ?? response.measurementDate ?? response.timestamp,
       ),
       response,
     );
