@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { BaseApi } from '../../shared/infrastucture/base.api';
 import { GlucoseRecordEntity } from '../domain/model/glucose-record.entity';
@@ -17,5 +17,11 @@ export class GlucoseRecordApi extends BaseApi<GlucoseRecordEntity, GlucoseRecord
 
   getAll(): Observable<GlucoseRecordEntity[]> {
     return this.getAllFrom(this.glucoseRecordEndpoint.getAll());
+  }
+
+  getByPatientId(patientId: number): Observable<GlucoseRecordEntity[]> {
+    return this.http
+      .get<GlucoseRecordResponse[]>(this.glucoseRecordEndpoint.getByPatientId(patientId))
+      .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 }
