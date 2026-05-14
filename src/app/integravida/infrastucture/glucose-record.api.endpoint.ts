@@ -17,4 +17,9 @@ export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
   getAll(): string {
     return this.collectionUrl();
   }
+
+  getByPatientId(patientId: number): string {
+    const params = new URLSearchParams({ patientID: String(patientId) });
+    return `${this.collectionUrl()}?${params.toString()}`;
+  }
 }

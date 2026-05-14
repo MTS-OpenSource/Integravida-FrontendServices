@@ -29,4 +29,24 @@
 
   <h2>Summary</h2>
   <pre>{{ dashboardService.summary() | json }}</pre>
+
+  <h2>Glucose By Patient</h2>
+  <div class="actions">
+    <label>
+      <span>Patient ID</span>
+      <input
+        type="number"
+        [ngModel]="patientId()"
+        (ngModelChange)="patientId.set(+$event)"
+      />
+    </label>
+
+    <div class="buttons">
+      <button type="button" (click)="loadPatientGlucoseRecords()">Load glucose records</button>
+    </div>
+  </div>
+
+  <p>Loading patient glucose: {{ patientGlucoseLoading() ? 'true' : 'false' }}</p>
+  <p>Patient glucose error: {{ patientGlucoseError() ?? 'none' }}</p>
+  <pre>{{ patientGlucoseRecords() | json }}</pre>
 </section>

@@ -107,15 +107,20 @@ export class DashboardService {
           const doctorIds = this.resolveDoctorIdsForSession(session, doctors);
           const scopedTreatments = this.filterTreatments(treatments, patientIds, doctorIds);
           const scopedMedications = this.filterMedications(medications, scopedTreatments);
-          const scopedGlucoseRecords = glucoseRecords.filter((record) =>
-            record.patientId !== null && patientIds.has(record.patientId),
+          const scopedGlucoseRecords = glucoseRecords.filter(
+            (record) => record.patientId !== null && patientIds.has(record.patientId),
           );
           const scopedAlerts = alerts.filter(
             (alert) => alert.patientId !== null && patientIds.has(alert.patientId),
           );
 
           this.summarySignal.set(
-            this.buildSummary(scopedGlucoseRecords, scopedMedications, scopedAlerts, scopedTreatments),
+            this.buildSummary(
+              scopedGlucoseRecords,
+              scopedMedications,
+              scopedAlerts,
+              scopedTreatments,
+            ),
           );
           this.loadingSignal.set(false);
         },
@@ -189,7 +194,9 @@ export class DashboardService {
     treatments: TreatmentEntity[],
   ): DashboardSummary {
     const activeTreatmentIds = new Set(
-      treatments.filter((treatment) => this.isTreatmentActive(treatment)).map((treatment) => treatment.id),
+      treatments
+        .filter((treatment) => this.isTreatmentActive(treatment))
+        .map((treatment) => treatment.id),
     );
     const activeMedications = medications
       .filter(
@@ -278,9 +285,7 @@ export class DashboardService {
       return 0;
     }
 
-    const match = value.match(
-      /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?$/,
-    );
+    const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?$/);
 
     if (match) {
       const [, day, month, year, hour = '0', minute = '0'] = match;
