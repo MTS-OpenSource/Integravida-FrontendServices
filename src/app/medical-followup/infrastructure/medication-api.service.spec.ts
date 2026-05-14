@@ -19,7 +19,7 @@ describe('MedicationApiService', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('debe obtener medicamentos desde la API externa (Tarea T32)', () => {
+  it('medicamentos API', () => {
     service.getMedications('Ibuprofen').subscribe((meds) => {
       expect(meds.length).toBeGreaterThan(0);
       expect(meds[0].name.toLowerCase()).toContain('ibuprofen');
