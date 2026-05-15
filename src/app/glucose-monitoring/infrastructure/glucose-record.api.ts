@@ -27,13 +27,13 @@ export class GlucoseRecordApi extends BaseApi<GlucoseRecordEntity, GlucoseRecord
 
   create(record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
     return this.http
-      .post<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getAll(), record)
+      .post<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getAll(), record.raw)
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
   }
 
   update(id: number, record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
     return this.http
-      .put<GlucoseRecordResponse>(`${this.glucoseRecordEndpoint.getAll()}/${id}`, record)
+      .put<GlucoseRecordResponse>(`${this.glucoseRecordEndpoint.getAll()}/${id}`, record.raw)
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
   }
 

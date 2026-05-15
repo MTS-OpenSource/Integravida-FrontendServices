@@ -33,4 +33,7 @@ export class AlertApi extends BaseApi<AlertEntity, AlertResponse> {
       })
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
   }
+  create(alert: Record<string, unknown>): void {
+    this.http.post(this.alertEndpoint.getAll(), alert).subscribe();
+  }
 }

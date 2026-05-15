@@ -9,15 +9,27 @@
     </a>
 
     <nav aria-label="Primary navigation">
+      @if (authStore.isAuthenticated()) {
+      <p class="nav-label">General</p>
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+
+      <p class="nav-label">Glucose Monitoring</p>
+      <a routerLink="/glucose-log" routerLinkActive="active">Registrar glucosa</a>
+      <a routerLink="/health-history" routerLinkActive="active">Historial clínico</a>
+      <a routerLink="/alerts" routerLinkActive="active">Alertas</a>
+      <a routerLink="/glucose-monitoring" routerLinkActive="active">Glucose History</a>
+
+      <p class="nav-label">Patient</p>
       <a routerLink="/patient-profile" routerLinkActive="active">Patient Profile</a>
+      <a routerLink="/appointments" routerLinkActive="active">Appointments</a>
+      }
     </nav>
 
     <div class="sidebar-actions">
       @if (authStore.isAuthenticated()) {
-        <button type="button" (click)="signOut()">Sign out</button>
+      <button type="button" (click)="signOut()">Sign out</button>
       } @else {
-        <a routerLink="/login" routerLinkActive="active">Login</a>
+      <a routerLink="/login" routerLinkActive="active">Login</a>
       }
     </div>
   </aside>
