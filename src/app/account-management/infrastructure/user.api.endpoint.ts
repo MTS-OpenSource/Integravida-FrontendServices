@@ -4,13 +4,13 @@ import { environment } from '../../../environments/environment';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserApiEndpoint extends BaseApiEndpoint {
   constructor() {
     super(
       environment.integravidaProviderApiBaseUrl,
-      environment.integravidaProviderUsersEndpointPath
+      environment.integravidaProviderUsersEndpointPath,
     );
   }
 

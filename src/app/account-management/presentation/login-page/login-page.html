@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="brand">
+    <span class="brand-name">IntegraVida</span>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab() === 'login'" (click)="activeTab.set('login')">
+        Log in
+      </button>
+      <button
+        class="tab"
+        [class.active]="activeTab() === 'signup'"
+        (click)="activeTab.set('signup')"
+      >
+        Sign up
+      </button>
+    </div>
+
+    @if (activeTab() === 'login') {
+    <div class="form">
+      <div class="field">
+        <label>Email</label>
+        <input
+          type="email"
+          placeholder="you@example.com"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <div class="field-header">
+          <label>Password</label>
+          <a class="forgot" (click)="navigateToForgetPassword()" style="cursor: pointer"
+            >Forgot password?</a
+          >
+        </div>
+        <div class="input-wrapper">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+          />
+          <button class="eye" type="button" (click)="showPassword.set(!showPassword())">👁</button>
+        </div>
+      </div>
+
+      @if (authStore.error()) {
+      <span class="error-message">{{ authStore.error() }}</span>
+      }
+
+      <button class="btn-primary" type="button" (click)="signIn()" [disabled]="authStore.loading()">
+        {{ authStore.loading() ? 'Logging in...' : 'Log in →' }}
+      </button>
+
+      <div class="divider">
+        <span>Or continue with</span>
+      </div>
+
+      <button class="btn-social" type="button">
+        <img src="https://www.google.com/favicon.ico" width="18" /> Google
+      </button>
+
+      <button class="btn-social" type="button">
+        <span class="linkedin-icon">in</span> LinkedIn
+      </button>
+    </div>
+    } @if (activeTab() === 'signup') {
+    <div class="form">
+      <p style="text-align: center; color: #888">Contact with us to free trial!</p>
+    </div>
+    }
+  </div>
+
+  <div class="footer">
+    <a href="#">Help Center</a>
+    <span>·</span>
+    <a href="#">Privacy</a>
+    <span>·</span>
+    <a href="#">Terms</a>
+  </div>
+</div>

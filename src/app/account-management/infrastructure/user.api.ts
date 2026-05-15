@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, switchMap, throwError } from 'rxjs';
+import { Observable, map, of, switchMap, throwError } from 'rxjs';
 
 import { BaseApi } from '../../shared/infrastructure/base.api';
 import { userEntity } from '../domain/model/user.entity';
@@ -26,7 +26,17 @@ export class UserApi extends BaseApi<userEntity, UserResponse> {
   signIn(identifier: string, password: string): Observable<userEntity | null> {
     return this.http
       .get<UserResponse[]>(this.userEndpoint.getByUsernameAndPassword(identifier, password))
-      .pipe(map((response) => (response[0] ? this.assembler.toEntityFrom(response[0]) : null)));
+      .pipe(
+        switchMap((response) => {
+          if (response[0]) {
+            return of(this.assembler.toEntityFrom(response[0]));
+          }
+          // Si no encuentra por username, intenta por email (usando el campo 'emil' del backend)
+          return this.http
+            .get<UserResponse[]>(this.userEndpoint.getByEmailAndPassword(identifier, password))
+            .pipe(map((resp) => (resp[0] ? this.assembler.toEntityFrom(resp[0]) : null)));
+        }),
+      );
   }
 
   register(user: Omit<userEntity, 'id'>): Observable<userEntity> {

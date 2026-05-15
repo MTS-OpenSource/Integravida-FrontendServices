@@ -1,5 +1,11 @@
 import { Routes } from '@angular/router';
+import { ForgetPassword } from './account-management/presentation/forget-password/forget-password';
 
+/**
+ * Main application routes.
+ *
+ * Each route loads the presentation routes of a bounded context.
+ */
 export const routes: Routes = [
   {
     path: '',
@@ -19,6 +25,10 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'forget',
+    component: ForgetPassword,
+  },
+  {
     path: 'dashboard',
     loadChildren: () =>
       import('./integravida/presentation/dashboard/dashboard.routes').then(
@@ -30,6 +40,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./patient-profile-management/presentation/patient-profile-management.routes').then(
         (module) => module.PATIENT_PROFILE_MANAGEMENT_ROUTES,
+      ),
+  },
+  {
+    path: 'appointments',
+    loadChildren: () =>
+      import('./appointment-management/presentation/appointment/appointment.routes').then(
+        (module) => module.APPOINTMENT_ROUTES,
       ),
   },
   {
