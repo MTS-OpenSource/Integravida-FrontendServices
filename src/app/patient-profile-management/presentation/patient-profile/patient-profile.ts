@@ -64,6 +64,10 @@ export class PatientProfile implements OnInit {
       next: () => {
         this.editing.set(false);
         this.saveMessage.set('Perfil actualizado correctamente');
+
+        setTimeout(() => {
+          this.saveMessage.set(null);
+        }, 2500);
       },
     });
   }
