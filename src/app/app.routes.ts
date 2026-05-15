@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { LoginPage } from './account-management/presentation/login-page/login-page';
 import { ForgetPassword } from './account-management/presentation/forget-password/forget-password';
+import { authGuard } from './account-management/auth.guard';
 
 /**
  * Main application routes.
@@ -14,22 +14,29 @@ export const routes: Routes = [
     redirectTo: 'login',
   },
   {
+    path: 'login',
+    loadComponent: () =>
+      import('./account-management/presentation/login-page/login-page').then(
+        (module) => module.LoginPage,
+      ),
+  },
+  {
+    path: 'forget',
+    component: ForgetPassword,
+  },
+  {
     path: 'dashboard',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./integravida/presentation/dashboard/dashboard.routes').then(
         (module) => module.DASHBOARD_ROUTES,
       ),
   },
   {
-    path: 'login',
-    component: LoginPage,
-  },
-  { path: 'forget', component: ForgetPassword },
-  {
-    path: 'glucose-monitoring',
+    path: 'patient-profile',
     loadChildren: () =>
-      import('./glucose-monitoring/presentation/glucose-monitoring.routes').then(
-        (module) => module.GLUCOSE_MONITORING_ROUTES,
+      import('./patient-profile-management/presentation/patient-profile-management.routes').then(
+        (module) => module.PATIENT_PROFILE_MANAGEMENT_ROUTES,
       ),
   },
   {
@@ -38,5 +45,40 @@ export const routes: Routes = [
       import('./appointment-management/presentation/appointment/appointment.routes').then(
         (module) => module.APPOINTMENT_ROUTES,
       ),
+  },
+
+  {
+    path: 'glucose-log',
+    loadChildren: () =>
+      import('./glucose-monitoring/presentation/glucose-log/glucose-log.routes').then(
+        (module) => module.GLUCOSE_LOG_ROUTES,
+      ),
+  },
+  {
+    path: 'health-history',
+    loadChildren: () =>
+      import('./glucose-monitoring/presentation/health-history/health-history.routes').then(
+        (module) => module.HEALTH_HISTORY_ROUTES,
+      ),
+  },
+  {
+    path: 'alerts',
+    loadChildren: () =>
+      import('./integravida/presentation/alerts/alerts.routes').then(
+        (module) => module.ALERTS_ROUTES,
+      ),
+  },
+
+  {
+    path: 'glucose-monitoring',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./glucose-monitoring/presentation/glucose-monitoring.routes').then(
+        (module) => module.GLUCOSE_MONITORING_ROUTES,
+      ),
+  },
+  {
+    path: '**',
+    redirectTo: 'login',
   },
 ];
