@@ -5,13 +5,16 @@ import { AlertResponse } from './alert.response';
 export class AlertAssembler extends BaseAssembler<AlertEntity, AlertResponse> {
   override toEntityFrom(response: AlertResponse): AlertEntity {
     return new AlertEntity(
-      response.id,
-      this.toNullableNumber(response.patient_id ?? response.patientID ?? response.patientId),
-      this.toNullableString(response.type),
-      this.toNullableNumber(response.glucose_value ?? response.glucoseValue),
-      this.toNullableString(response.severity ?? response.priority),
-      this.toNullableString(response.triggered_at ?? response.createdAt ?? response.sentAt),
-      this.toNullableBoolean(response.read),
+      response['id'],
+      this.toNullableNumber(response['patientId']),
+      this.toNullableString(response['type']),
+      this.toNullableString(response['title']),
+      this.toNullableString(response['desc']),
+      this.toNullableString(response['time']),
+      this.toNullableNumber(response['glucoseValue']),
+      this.toNullableString(response['severity']),
+      this.toNullableString(response['createdAt']),
+      response['read'] ?? false,
       response,
     );
   }

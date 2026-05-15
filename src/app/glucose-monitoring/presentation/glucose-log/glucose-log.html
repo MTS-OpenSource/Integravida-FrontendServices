@@ -1,0 +1,65 @@
+<section class="glucose-log">
+  <h1>Registrar glucosa</h1>
+
+  <div class="form">
+    <label>
+      <span>Patient ID</span>
+      <input
+        type="number"
+        [ngModel]="patientId()"
+        (ngModelChange)="patientId.set(+$event)"
+      />
+    </label>
+
+    <label>
+      <span>Nivel de glucosa mg/dL</span>
+      <input
+        type="number"
+        [ngModel]="glucoseLevel()"
+        (ngModelChange)="glucoseLevel.set(+$event)"
+        placeholder="Ej: 120"
+      />
+    </label>
+
+    @if (status()) {
+    <p
+      class="badge"
+      [class.low]="status() === 'Bajo'"
+      [class.normal]="status() === 'Normal'"
+      [class.high]="status() === 'Alto'"
+    >
+      Estado: {{ status() }}
+    </p>
+    }
+
+    <label>
+      <span>Fecha y hora</span>
+      <input
+        type="datetime-local"
+        [ngModel]="recordedAt()"
+        (ngModelChange)="recordedAt.set($event)"
+      />
+    </label>
+
+    <label>
+      <span>Notas</span>
+      <textarea
+        [ngModel]="notes()"
+        (ngModelChange)="notes.set($event)"
+        placeholder="Ej: Después del almuerzo"
+      ></textarea>
+    </label>
+
+    <button type="button" (click)="save()" [disabled]="glucoseService.loading()">
+      Guardar lectura
+    </button>
+  </div>
+
+  @if (glucoseService.loading()) {
+  <p>Guardando...</p>
+  }
+
+  @if (glucoseService.error()) {
+  <p class="error">{{ glucoseService.error() }}</p>
+  }
+</section>

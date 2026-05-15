@@ -17,4 +17,13 @@ export class AlertApiEndpoint extends BaseApiEndpoint {
   getAll(): string {
     return this.collectionUrl();
   }
+
+  getByPatientId(patientId: number): string {
+    const params = new URLSearchParams({ patientID: String(patientId) });
+    return `${this.collectionUrl()}?${params.toString()}`;
+  }
+
+  getById(id: number): string {
+    return `${this.collectionUrl()}/${id}`;
+  }
 }

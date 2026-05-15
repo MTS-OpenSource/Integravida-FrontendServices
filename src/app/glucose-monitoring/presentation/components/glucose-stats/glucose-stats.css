@@ -1,0 +1,36 @@
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.btn-report {
+  margin-top: 24px;
+  background: none;
+  border: 1px solid #333;
+  color: #333;
+  padding: 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
