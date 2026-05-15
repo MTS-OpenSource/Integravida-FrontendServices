@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, of, switchMap } from 'rxjs';
+import { Observable, map, of, switchMap, throwError } from 'rxjs';
 
 import { BaseApi } from '../../shared/infrastructure/base.api';
 import { userEntity } from '../domain/model/user.entity';
@@ -37,5 +37,25 @@ export class UserApi extends BaseApi<userEntity, UserResponse> {
             .pipe(map((resp) => (resp[0] ? this.assembler.toEntityFrom(resp[0]) : null)));
         }),
       );
+  }
+
+  register(user: Omit<userEntity, 'id'>): Observable<userEntity> {
+    return this.http.get<UserResponse[]>(this.userEndpoint.getByEmail(user.email)).pipe(
+      switchMap((users) => {
+        if (users.length > 0) {
+          return throwError(() => new Error('Email already registered'));
+        }
+
+        const resource = {
+          emil: user.email,
+          username: user.username,
+          password: user.password,
+          role: user.role,
+        };
+
+        return this.http.post<UserResponse>(this.userEndpoint.getAll(), resource);
+      }),
+      map((response) => this.assembler.toEntityFrom(response)),
+    );
   }
 }

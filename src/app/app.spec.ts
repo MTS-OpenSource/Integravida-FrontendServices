@@ -1,6 +1,7 @@
 import 'zone.js';
 import 'zone.js/testing';
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { DashboardComponent } from './dashboard/presentation/components/dashboard/dashboard.component';
@@ -9,7 +10,7 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      providers: [provideHttpClient(), provideRouter([])],
     }).compileComponents();
   });
 

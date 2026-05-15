@@ -1,0 +1,95 @@
+.auth-page {
+  display: grid;
+  min-height: 65dvh;
+  place-items: center;
+}
+
+.auth-card {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 420px);
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #dfe5ef;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.04);
+}
+
+.auth-card h1 {
+  margin: 0;
+}
+
+.auth-card p {
+  color: #667085;
+  margin: 0.35rem 0 0;
+}
+
+.eyebrow {
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+label span {
+  color: #667085;
+  font-size: 0.85rem;
+}
+
+input {
+  min-height: 42px;
+  border: 1px solid #cfd8e6;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+}
+
+button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  background: #0f766e;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0 1rem;
+}
+
+button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.error {
+  color: #b42318;
+}
+
+.auth-link {
+  text-align: center;
+}
+
+.auth-link a {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.tabs {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tabs button {
+  background: #e6f4f1;
+  color: #0f766e;
+}
+
+.tabs button.active {
+  background: #0f766e;
+  color: #ffffff;
+}

@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { LoginPage } from './account-management/presentation/login-page/login-page';
 import { ForgetPassword } from './account-management/presentation/forget-password/forget-password';
 
 /**
@@ -14,6 +13,22 @@ export const routes: Routes = [
     redirectTo: 'login',
   },
   {
+    path: 'login',
+    loadComponent: () =>
+      import('./account-management/presentation/login/login').then((module) => module.Login),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./account-management/presentation/register/register').then(
+        (module) => module.Register,
+      ),
+  },
+  {
+    path: 'forget',
+    component: ForgetPassword,
+  },
+  {
     path: 'dashboard',
     loadChildren: () =>
       import('./integravida/presentation/dashboard/dashboard.routes').then(
@@ -21,15 +36,10 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'login',
-    component: LoginPage,
-  },
-  { path: 'forget', component: ForgetPassword },
-  {
-    path: 'glucose-monitoring',
+    path: 'patient-profile',
     loadChildren: () =>
-      import('./glucose-monitoring/presentation/glucose-monitoring.routes').then(
-        (module) => module.GLUCOSE_MONITORING_ROUTES,
+      import('./patient-profile-management/presentation/patient-profile-management.routes').then(
+        (module) => module.PATIENT_PROFILE_MANAGEMENT_ROUTES,
       ),
   },
   {
@@ -38,5 +48,9 @@ export const routes: Routes = [
       import('./appointment-management/presentation/appointment/appointment.routes').then(
         (module) => module.APPOINTMENT_ROUTES,
       ),
+  },
+  {
+    path: '**',
+    redirectTo: 'login',
   },
 ];

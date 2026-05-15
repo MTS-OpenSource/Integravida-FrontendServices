@@ -1,5 +1,5 @@
 <main class="app-shell">
-  <header class="app-header">
+  <aside class="sidebar">
     <a routerLink="/dashboard" class="brand">
       <span class="brand-mark">IV</span>
       <span>
@@ -10,9 +10,18 @@
 
     <nav aria-label="Primary navigation">
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/glucose-monitoring" routerLinkActive="active">Glucose</a>
+      <a routerLink="/patient-profile" routerLinkActive="active">Patient Profile</a>
     </nav>
-  </header>
+
+    <div class="sidebar-actions">
+      @if (authStore.isAuthenticated()) {
+        <button type="button" (click)="signOut()">Sign out</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="active">Login</a>
+        <a routerLink="/register" routerLinkActive="active">Register</a>
+      }
+    </div>
+  </aside>
 
   <section class="app-content">
     <router-outlet />
