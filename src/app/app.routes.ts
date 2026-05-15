@@ -4,7 +4,19 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'dashboard',
+    redirectTo: 'login',
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./account-management/presentation/login/login').then((module) => module.Login),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./account-management/presentation/register/register').then(
+        (module) => module.Register,
+      ),
   },
   {
     path: 'dashboard',
@@ -21,7 +33,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'patient-profile',
+    loadChildren: () =>
+      import('./patient-profile-management/presentation/patient-profile-management.routes').then(
+        (module) => module.PATIENT_PROFILE_MANAGEMENT_ROUTES,
+      ),
+  },
+  {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: 'login',
   },
 ];

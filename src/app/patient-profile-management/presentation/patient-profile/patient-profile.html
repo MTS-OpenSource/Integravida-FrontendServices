@@ -1,0 +1,83 @@
+<section class="profile-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Patient Profile Management</span>
+      <h1>Perfil del paciente</h1>
+      <p>Información médica y de contacto registrada en IntegraVida.</p>
+    </div>
+
+    @if (patientProfileService.profile() && !editing()) {
+      <button type="button" (click)="startEditing()">Editar perfil</button>
+    }
+  </header>
+
+  @if (patientProfileService.loading()) {
+    <section class="card">
+      <p class="empty-state">Cargando perfil del paciente...</p>
+    </section>
+  } @else if (patientProfileService.error()) {
+    <section class="card">
+      <p class="error">{{ patientProfileService.error() }}</p>
+    </section>
+  } @else if (patientProfileService.profile(); as profile) {
+    <section class="card profile-card">
+      @if (!editing()) {
+        <div class="detail-grid">
+          <article>
+            <span>Nombre completo</span>
+            <strong>{{ profile.fullName }}</strong>
+          </article>
+          <article>
+            <span>Tipo de diabetes</span>
+            <strong>{{ profile.diabetesType ?? 'No registrado' }}</strong>
+          </article>
+          <article>
+            <span>Teléfono</span>
+            <strong>{{ profile.phone || 'No registrado' }}</strong>
+          </article>
+          <article>
+            <span>ID de usuario</span>
+            <strong>{{ profile.userId ?? 'No registrado' }}</strong>
+          </article>
+        </div>
+      } @else {
+        <form class="profile-form" (ngSubmit)="saveProfile()">
+          <label>
+            <span>Nombre completo</span>
+            <input name="fullName" required [ngModel]="fullName()" (ngModelChange)="fullName.set($event)" />
+          </label>
+
+          <label>
+            <span>Tipo de diabetes</span>
+            <input
+              name="diabetesType"
+              type="number"
+              min="1"
+              max="2"
+              [ngModel]="diabetesType()"
+              (ngModelChange)="diabetesType.set(+$event)"
+            />
+          </label>
+
+          <label>
+            <span>Teléfono</span>
+            <input name="phone" [ngModel]="phone()" (ngModelChange)="phone.set($event)" />
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" [disabled]="patientProfileService.loading()">Guardar</button>
+            <button type="button" class="secondary" (click)="cancelEditing()">Cancelar</button>
+          </div>
+        </form>
+      }
+
+      @if (saveMessage()) {
+        <p class="success">{{ saveMessage() }}</p>
+      }
+    </section>
+  } @else {
+    <section class="card">
+      <p class="empty-state">No se encontró información para este paciente.</p>
+    </section>
+  }
+</section>

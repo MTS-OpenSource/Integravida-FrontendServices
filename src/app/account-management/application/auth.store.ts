@@ -4,8 +4,8 @@ import { retry } from 'rxjs';
 
 import { AuthSession } from '../domain/model/auth-session.model';
 import { userEntity } from '../domain/model/user.entity';
+import { AuthService, RegisterRequest } from './auth.service';
 import { AuthSessionStorage } from '../infrastructure/auth-session.storage';
-import { UserApi } from '../infrastructure/user.api';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +27,7 @@ export class AuthStore {
   readonly isAuthenticated = computed(() => !!this.token());
 
   constructor(
-    private readonly userApi: UserApi,
+    private readonly authService: AuthService,
     private readonly authSessionStorage: AuthSessionStorage,
   ) {
     const storedSession = this.authSessionStorage.load();
@@ -40,7 +40,7 @@ export class AuthStore {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    this.userApi
+    this.authService
       .signIn(identifier, password)
       .pipe(retry(2), takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -64,6 +64,29 @@ export class AuthStore {
         },
       });
   }
+
+  register(request: RegisterRequest): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.authService
+      .register(request)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (user) => {
+          const session = this.createSession(user);
+          this.authSessionStorage.save(session);
+          this.currentUserSignal.set(session.user);
+          this.tokenSignal.set(session.token);
+          this.loadingSignal.set(false);
+        },
+        error: (error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to register user'));
+          this.loadingSignal.set(false);
+        },
+      });
+  }
+
   signOut(): void {
     this.clearSession();
     this.errorSignal.set(null);

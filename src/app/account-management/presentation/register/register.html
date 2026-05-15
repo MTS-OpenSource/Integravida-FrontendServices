@@ -1,0 +1,82 @@
+<section class="auth-page">
+  <form class="auth-card" (ngSubmit)="register()">
+    <div>
+      <span class="eyebrow">Account Management</span>
+      <h1>Crear cuenta</h1>
+      <p>Registra una cuenta como paciente o doctor.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Tipo de usuario">
+      <button
+        type="button"
+        [class.active]="role() === 'Patient'"
+        (click)="selectRole('Patient')"
+      >
+        Paciente
+      </button>
+      <button type="button" [class.active]="role() === 'Doctor'" (click)="selectRole('Doctor')">
+        Doctor
+      </button>
+    </div>
+
+    <label>
+      <span>Email</span>
+      <input
+        autocomplete="email"
+        name="email"
+        required
+        type="email"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+      />
+    </label>
+
+    <label>
+      <span>Usuario</span>
+      <input
+        autocomplete="username"
+        name="username"
+        required
+        [ngModel]="username()"
+        (ngModelChange)="username.set($event)"
+      />
+    </label>
+
+    <label>
+      <span>Contraseña</span>
+      <input
+        autocomplete="new-password"
+        name="password"
+        required
+        type="password"
+        [ngModel]="password()"
+        (ngModelChange)="password.set($event)"
+      />
+    </label>
+
+    <label>
+      <span>Confirmar contraseña</span>
+      <input
+        autocomplete="new-password"
+        name="confirmPassword"
+        required
+        type="password"
+        [ngModel]="confirmPassword()"
+        (ngModelChange)="confirmPassword.set($event)"
+      />
+    </label>
+
+    @if (formError() || authStore.error()) {
+      <p class="error">{{ formError() ?? authStore.error() }}</p>
+    }
+
+    <button type="submit" [disabled]="authStore.loading()">
+      {{ authStore.loading() ? 'Registrando...' : 'Crear cuenta' }}
+    </button>
+
+    <p class="auth-link">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login">Iniciar sesión</a>
+    </p>
+  </form>
+</section>

@@ -31,4 +31,9 @@ export class UserApiEndpoint extends BaseApiEndpoint {
     const params = new URLSearchParams({ username, password });
     return `${this.collectionUrl()}?${params.toString()}`;
   }
+
+  getByEmail(email: string): string {
+    const params = new URLSearchParams({ emil: email });
+    return `${this.collectionUrl()}?${params.toString()}`;
+  }
 }
