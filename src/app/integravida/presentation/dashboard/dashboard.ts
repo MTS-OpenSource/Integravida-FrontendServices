@@ -1,7 +1,6 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
 
 import { DashboardService } from '../../application/dashboard.service';
 import { AuthStore } from '../../../account-management/application/auth.store';
@@ -9,25 +8,28 @@ import { GlucoseRecordApi } from '../../../glucose-monitoring/infrastructure/glu
 import { GlucoseRecordEntity } from '../../../glucose-monitoring/domain/model/glucose-record.entity';
 
 @Component({
-  selector: 'app-dashboard-test',
-  imports: [FormsModule, JsonPipe],
-  templateUrl: './dashboard-test.html',
-  styleUrl: './dashboard-test.css',
+  selector: 'app-dashboard',
+  imports: [FormsModule],
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.css',
 })
-export class DashboardTest {
+export class Dashboard {
   private readonly destroyRef = inject(DestroyRef);
   private readonly authStore = inject(AuthStore);
   protected readonly dashboardService = inject(DashboardService);
   private readonly glucoseRecordApi = inject(GlucoseRecordApi);
 
-  protected readonly identifier = signal('jeansusername');
-  protected readonly password = signal('wO19351WD49DM');
+  protected readonly identifier = signal('');
+  protected readonly password = signal('');
   protected readonly patientId = signal(1);
   protected readonly patientGlucoseRecords = signal<GlucoseRecordEntity[]>([]);
   protected readonly patientGlucoseLoading = signal(false);
   protected readonly patientGlucoseError = signal<string | null>(null);
 
   protected readonly session = computed(() => this.authStore.getCurrentSession());
+  protected readonly isAuthenticated = computed(() => this.authStore.isAuthenticated());
+  protected readonly authLoading = computed(() => this.authStore.loading());
+  protected readonly authError = computed(() => this.authStore.error());
 
   protected signIn(): void {
     this.authStore.signIn(this.identifier(), this.password());
@@ -61,5 +63,21 @@ export class DashboardTest {
           this.patientGlucoseLoading.set(false);
         },
       });
+  }
+
+  protected glucoseStatus(record: GlucoseRecordEntity): string {
+    if (record.glucoseLevel === null) {
+      return 'Sin dato';
+    }
+
+    if (record.glucoseLevel < 70) {
+      return 'Bajo';
+    }
+
+    if (record.glucoseLevel > 180) {
+      return 'Alto';
+    }
+
+    return 'Normal';
   }
 }

@@ -2,10 +2,19 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: 'dashboard-test',
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'dashboard',
+  },
+  {
+    path: 'dashboard',
     loadChildren: () =>
-      import('./integravida/presentation/dashboard-test/dashboard-test.routes').then(
-        (module) => module.DASHBOARD_TEST_ROUTES,
+      import('./integravida/presentation/dashboard/dashboard.routes').then(
+        (module) => module.DASHBOARD_ROUTES,
       ),
+  },
+  {
+    path: '**',
+    redirectTo: 'dashboard',
   },
 ];
