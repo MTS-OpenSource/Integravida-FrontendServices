@@ -1,12 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { RouterLink } from '@angular/router';
 import { GlucoseService } from '../../application/glucose.service';
 import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
 
 @Component({
   selector: 'app-health-history',
-  imports: [FormsModule],
+  imports: [FormsModule,RouterLink],
   templateUrl: './health-history.html',
   styleUrl: './health-history.css',
 })

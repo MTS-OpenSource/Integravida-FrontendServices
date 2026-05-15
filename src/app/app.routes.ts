@@ -34,6 +34,7 @@ export const routes: Routes = [
   },
   {
     path: 'patient-profile',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./patient-profile-management/presentation/patient-profile-management.routes').then(
         (module) => module.PATIENT_PROFILE_MANAGEMENT_ROUTES,
@@ -41,6 +42,7 @@ export const routes: Routes = [
   },
   {
     path: 'appointments',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./appointment-management/presentation/appointment/appointment.routes').then(
         (module) => module.APPOINTMENT_ROUTES,
@@ -49,6 +51,7 @@ export const routes: Routes = [
 
   {
     path: 'glucose-log',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./glucose-monitoring/presentation/glucose-log/glucose-log.routes').then(
         (module) => module.GLUCOSE_LOG_ROUTES,
@@ -56,6 +59,7 @@ export const routes: Routes = [
   },
   {
     path: 'health-history',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./glucose-monitoring/presentation/health-history/health-history.routes').then(
         (module) => module.HEALTH_HISTORY_ROUTES,
@@ -63,6 +67,7 @@ export const routes: Routes = [
   },
   {
     path: 'alerts',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./integravida/presentation/alerts/alerts.routes').then(
         (module) => module.ALERTS_ROUTES,

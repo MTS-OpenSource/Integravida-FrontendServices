@@ -1,5 +1,6 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AlertApi } from '../../integravida/infrastructure/alert.api';
 
 import { GlucoseRecordApi } from '../infrastructure/glucose-record.api';
 import { GlucoseRecordEntity } from '../domain/model/glucose-record.entity';
@@ -28,7 +29,10 @@ export class GlucoseService {
   private readonly errorSignal = signal<string | null>(null);
   readonly error = this.errorSignal.asReadonly();
 
-  constructor(private readonly glucoseRecordApi: GlucoseRecordApi) {}
+  constructor(
+    private readonly glucoseRecordApi: GlucoseRecordApi,
+    private readonly alertApi: AlertApi,
+  ) {}
 
   getReadings(patientId: number): void {
     this.loadingSignal.set(true);
@@ -60,9 +64,11 @@ export class GlucoseService {
         next: (records) => {
           const filtered = records.filter((record) => {
             if (!record.recordedAt) return false;
+
             const date = new Date(record.recordedAt);
             return date >= from && date <= to;
           });
+
           this.recordsSignal.set(this.sortByDateDesc(filtered));
           this.loadingSignal.set(false);
         },
@@ -82,9 +88,16 @@ export class GlucoseService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (createdRecord) => {
-          this.recordsSignal.update((records) =>
-            this.sortByDateDesc([...records, createdRecord])
-          );
+          this.recordsSignal.update((records) => this.sortByDateDesc([...records, createdRecord]));
+
+          if (createdRecord.glucoseLevel !== null) {
+            const status = this.evaluateRange(createdRecord.glucoseLevel);
+
+            if (status !== 'Normal') {
+              this.createAlertFromReading(createdRecord, status);
+            }
+          }
+
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -106,10 +119,11 @@ export class GlucoseService {
           this.recordsSignal.update((records) =>
             this.sortByDateDesc(
               records.map((currentRecord) =>
-                currentRecord.id === id ? updatedRecord : currentRecord
-              )
-            )
+                currentRecord.id === id ? updatedRecord : currentRecord,
+              ),
+            ),
           );
+
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -128,9 +142,8 @@ export class GlucoseService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.recordsSignal.update((records) =>
-            records.filter((record) => record.id !== id)
-          );
+          this.recordsSignal.update((records) => records.filter((record) => record.id !== id));
+
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -144,6 +157,17 @@ export class GlucoseService {
     if (glucoseValue < range.min) return 'Bajo';
     if (glucoseValue > range.max) return 'Alto';
     return 'Normal';
+  }
+
+  private createAlertFromReading(record: GlucoseRecordEntity, status: GlucoseStatus): void {
+    this.alertApi.create({
+      patientID: record.patientId,
+      type: status === 'Alto' ? 'Glucosa alta' : 'Glucosa baja',
+      glucoseValue: record.glucoseLevel,
+      severity: status === 'Alto' ? 'High' : 'Low',
+      createdAt: record.recordedAt,
+      read: false,
+    });
   }
 
   private sortByDateDesc(records: GlucoseRecordEntity[]): GlucoseRecordEntity[] {

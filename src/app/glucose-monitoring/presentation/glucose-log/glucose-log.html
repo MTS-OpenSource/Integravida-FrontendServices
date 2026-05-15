@@ -1,65 +1,83 @@
 <section class="glucose-log">
-  <h1>Registrar glucosa</h1>
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Glucose Monitoring</p>
+      <h1>Registrar glucosa</h1>
+      <p class="subtitle">Ingresa una nueva lectura para mantener actualizado tu seguimiento.</p>
+    </div>
+  </header>
 
-  <div class="form">
-    <label>
-      <span>Patient ID</span>
-      <input
-        type="number"
-        [ngModel]="patientId()"
-        (ngModelChange)="patientId.set(+$event)"
-      />
-    </label>
+  <section class="card">
+    <div class="card-header">
+      <div class="icon-box">💧</div>
+      <div>
+        <h2>Nueva lectura</h2>
+        <p>Registra el nivel de glucosa del paciente.</p>
+      </div>
+    </div>
 
-    <label>
-      <span>Nivel de glucosa mg/dL</span>
-      <input
-        type="number"
-        [ngModel]="glucoseLevel()"
-        (ngModelChange)="glucoseLevel.set(+$event)"
-        placeholder="Ej: 120"
-      />
-    </label>
+    <div class="form">
+      <label>
+        <span>Patient ID</span>
+        <input
+          type="number"
+          [ngModel]="patientId()"
+          (ngModelChange)="patientId.set(+$event)"
+        />
+      </label>
 
-    @if (status()) {
-    <p
-      class="badge"
-      [class.low]="status() === 'Bajo'"
-      [class.normal]="status() === 'Normal'"
-      [class.high]="status() === 'Alto'"
-    >
-      Estado: {{ status() }}
-    </p>
+      <label>
+        <span>Nivel de glucosa mg/dL</span>
+        <input
+          class="glucose-input"
+          type="number"
+          [ngModel]="glucoseLevel()"
+          (ngModelChange)="glucoseLevel.set(+$event)"
+          placeholder="Ej: 120"
+        />
+      </label>
+
+      @if (status()) {
+      <div
+        class="status-card"
+        [class.low]="status() === 'Bajo'"
+        [class.normal]="status() === 'Normal'"
+        [class.high]="status() === 'Alto'"
+      >
+        <span>Estado actual</span>
+        <strong>{{ status() }}</strong>
+      </div>
+      }
+
+      <label>
+        <span>Fecha y hora</span>
+        <input
+          type="datetime-local"
+          [ngModel]="recordedAt()"
+          (ngModelChange)="recordedAt.set($event)"
+        />
+      </label>
+
+      <label class="full">
+        <span>Notas</span>
+        <textarea
+          [ngModel]="notes()"
+          (ngModelChange)="notes.set($event)"
+          placeholder="Ej: Después del almuerzo"
+        ></textarea>
+      </label>
+
+      <button type="button" class="primary" (click)="save()" [disabled]="glucoseService.loading()">
+        Guardar lectura
+      </button>
+    </div>
+
+    @if (glucoseService.loading()) {
+    <p class="info">Guardando lectura...</p>
     }
 
-    <label>
-      <span>Fecha y hora</span>
-      <input
-        type="datetime-local"
-        [ngModel]="recordedAt()"
-        (ngModelChange)="recordedAt.set($event)"
-      />
-    </label>
-
-    <label>
-      <span>Notas</span>
-      <textarea
-        [ngModel]="notes()"
-        (ngModelChange)="notes.set($event)"
-        placeholder="Ej: Después del almuerzo"
-      ></textarea>
-    </label>
-
-    <button type="button" (click)="save()" [disabled]="glucoseService.loading()">
-      Guardar lectura
-    </button>
-  </div>
-
-  @if (glucoseService.loading()) {
-  <p>Guardando...</p>
-  }
-
-  @if (glucoseService.error()) {
-  <p class="error">{{ glucoseService.error() }}</p>
-  }
+    @if (glucoseService.error()) {
+    <p class="error">{{ glucoseService.error() }}</p>
+    }
+  </section>
 </section>

@@ -1,85 +1,145 @@
 <section class="health-history">
-  <h1>Historial de glucosa</h1>
+  <header class="page-header">
+    <div>
+      <h1>Historial clínico</h1>
+      <p>
+        Consulta los eventos de salud registrados del paciente.
+        Actualmente se muestran lecturas de glucosa.
+      </p>
+    </div>
+  </header>
 
-  <div class="filters">
-    <label>
-      <span>Patient ID</span>
-      <input
-        type="number"
-        [ngModel]="patientId()"
-        (ngModelChange)="patientId.set(+$event)"
-      />
-    </label>
+  <section class="filters-card">
+    <div class="filters">
+      <label>
+        <span>Patient ID</span>
+        <input
+          type="number"
+          [ngModel]="patientId()"
+          (ngModelChange)="patientId.set(+$event)"
+        />
+      </label>
 
-    <label>
-      <span>Desde</span>
-      <input
-        type="date"
-        [ngModel]="fromDate()"
-        (ngModelChange)="fromDate.set($event)"
-      />
-    </label>
+      <label>
+        <span>Desde</span>
+        <input
+          type="date"
+          [ngModel]="fromDate()"
+          (ngModelChange)="fromDate.set($event)"
+        />
+      </label>
 
-    <label>
-      <span>Hasta</span>
-      <input
-        type="date"
-        [ngModel]="toDate()"
-        (ngModelChange)="toDate.set($event)"
-      />
-    </label>
+      <label>
+        <span>Hasta</span>
+        <input
+          type="date"
+          [ngModel]="toDate()"
+          (ngModelChange)="toDate.set($event)"
+        />
+      </label>
+    </div>
 
     <div class="buttons">
-      <button type="button" (click)="loadRecords()">Cargar</button>
-      <button type="button" (click)="filterByDateRange()">Filtrar</button>
-      <button type="button" (click)="filterToday()">Hoy</button>
-      <button type="button" (click)="filterLast7Days()">Últimos 7 días</button>
+      <button type="button" class="primary" (click)="loadRecords()">
+        Cargar
+      </button>
+
+      <button type="button" (click)="filterByDateRange()">
+        Filtrar
+      </button>
+
+      <button type="button" (click)="filterToday()">
+        Hoy
+      </button>
+
+      <button type="button" (click)="filterLast7Days()">
+        Últimos 7 días
+      </button>
     </div>
-  </div>
+  </section>
 
   @if (glucoseService.loading()) {
-  <p>Cargando...</p>
+  <p class="info">Cargando registros...</p>
   }
 
   @if (glucoseService.error()) {
   <p class="error">{{ glucoseService.error() }}</p>
   }
 
-  <table>
-    <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Glucosa</th>
-      <th>Estado</th>
-      <th>Notas</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
+  <section class="table-card">
+    <div class="table-header">
+      <div>
+        <h2>Lecturas de glucosa</h2>
+        <p>{{ records().length }} lectura(s) encontradas</p>
+      </div>
+    </div>
 
-    <tbody>
-    @for (record of records(); track record.id) {
-    <tr>
-      <td>{{ record.recordedAt }}</td>
-      <td>{{ record.glucoseLevel }} mg/dL</td>
-      <td>
-            <span
-              class="badge"
-              [class.low]="getStatus(record) === 'Bajo'"
-              [class.normal]="getStatus(record) === 'Normal'"
-              [class.high]="getStatus(record) === 'Alto'"
-            >
-              {{ getStatus(record) }}
-            </span>
-      </td>
-      <td>{{ record.raw['notes'] }}</td>
-      <td>
-        <button type="button" (click)="startEdit(record)">Editar</button>
-        <button type="button" (click)="deleteRecord(record)">Eliminar</button>
-      </td>
-    </tr>
-    }
-    </tbody>
-  </table>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Glucosa</th>
+          <th>Estado</th>
+          <th>Notas</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @for (record of records(); track record.id) {
+        <tr>
+          <td>{{ record.recordedAt }}</td>
+
+          <td>
+            <strong>{{ record.glucoseLevel }}</strong>
+            <span class="unit">mg/dL</span>
+          </td>
+
+          <td>
+                <span
+                  class="badge"
+                  [class.low]="getStatus(record) === 'Bajo'"
+                  [class.normal]="getStatus(record) === 'Normal'"
+                  [class.high]="getStatus(record) === 'Alto'"
+                >
+                  {{ getStatus(record) }}
+                </span>
+          </td>
+
+          <td>{{ record.raw['notes'] }}</td>
+
+          <td>
+            <div class="row-actions">
+              <button
+                type="button"
+                class="edit"
+                (click)="startEdit(record)"
+              >
+                Editar
+              </button>
+
+              <button
+                type="button"
+                class="delete"
+                (click)="deleteRecord(record)"
+              >
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="5" class="empty">
+            No hay lecturas de glucosa para mostrar.
+          </td>
+        </tr>
+        }
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   @if (editingRecord()) {
   <div class="modal-backdrop">
@@ -113,10 +173,44 @@
       </label>
 
       <div class="buttons">
-        <button type="button" (click)="saveEdit()">Guardar cambios</button>
-        <button type="button" (click)="cancelEdit()">Cancelar</button>
+        <button type="button" class="primary" (click)="saveEdit()">
+          Guardar cambios
+        </button>
+
+        <button type="button" (click)="cancelEdit()">
+          Cancelar
+        </button>
       </div>
     </div>
   </div>
   }
+</section>
+
+<section class="clinical-modules">
+  <article class="module-card">
+    <span class="module-icon">🚨</span>
+    <div>
+      <h3>Alertas clínicas</h3>
+      <p>Revisa las alertas generadas por lecturas fuera de rango.</p>
+      <a routerLink="/alerts">Ver alertas</a>
+    </div>
+  </article>
+
+  <article class="module-card muted">
+    <span class="module-icon">💊</span>
+    <div>
+      <h3>Medicación</h3>
+      <p>Registro de tomas y seguimiento de medicamentos.</p>
+      <small>Próximamente</small>
+    </div>
+  </article>
+
+  <article class="module-card muted">
+    <span class="module-icon">📅</span>
+    <div>
+      <h3>Citas médicas</h3>
+      <p>Historial y próximas consultas del paciente.</p>
+      <small>Próximamente</small>
+    </div>
+  </article>
 </section>

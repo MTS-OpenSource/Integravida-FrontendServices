@@ -1,50 +1,86 @@
 <section class="alerts">
-  <h1>Alertas</h1>
+  <header class="page-header">
+    <div>
+      <h1>Alertas</h1>
+      <p>Monitorea eventos críticos y administra el estado de las alertas.</p>
+    </div>
+  </header>
 
-  <label>
-    <span>Patient ID</span>
-    <input
-      type="number"
-      [ngModel]="patientId()"
-      (ngModelChange)="patientId.set(+$event)"
-    />
-  </label>
+  <section class="controls-card">
+    <label>
+      <span>Patient ID</span>
+      <input
+        type="number"
+        [ngModel]="patientId()"
+        (ngModelChange)="patientId.set(+$event)"
+      />
+    </label>
 
-  <div class="buttons">
-    <button type="button" (click)="loadAlerts()">Cargar alertas</button>
-    <button type="button" (click)="selectedTab.set('Todas')">Todas</button>
-    <button type="button" (click)="selectedTab.set('Activas')">Activas</button>
-    <button type="button" (click)="selectedTab.set('Resueltas')">Resueltas</button>
-    <button type="button" (click)="alertService.markAllAsRead()">Marcar todas como vistas</button>
-  </div>
+    <div class="buttons">
+      <button type="button" class="primary" (click)="loadAlerts()">
+        Cargar alertas
+      </button>
+
+      <button type="button" (click)="selectedTab.set('Todas')">
+        Todas
+      </button>
+
+      <button type="button" (click)="selectedTab.set('Activas')">
+        Activas
+      </button>
+
+      <button type="button" (click)="selectedTab.set('Resueltas')">
+        Resueltas
+      </button>
+
+      <button type="button" class="secondary" (click)="alertService.markAllAsRead()">
+        Marcar todas como vistas
+      </button>
+    </div>
+  </section>
 
   @if (alertService.loading()) {
-  <p>Cargando...</p>
+  <p class="info">Cargando alertas...</p>
   }
 
   @if (alertService.error()) {
   <p class="error">{{ alertService.error() }}</p>
   }
 
-  <div class="list">
+  <section class="list">
     @for (alert of visibleAlerts(); track alert.id) {
-    <article class="card">
-      <h3>{{ alert.type ?? 'Alerta' }}</h3>
-      <p>Paciente: {{ alert.patientId }}</p>
-      <p>Glucosa: {{ alert.glucoseValue }} mg/dL</p>
-      <p>Severidad: {{ alert.severity }}</p>
-      <p>Fecha: {{ alert.createdAt }}</p>
-      <p>Estado: {{ alert.read ? 'Vista' : 'Activa' }}</p>
+    <article class="card" [class.unread]="!alert.read">
+      <div class="card-header">
+        <div>
+          <h3>{{ alert.type ?? 'Alerta' }}</h3>
+          <p class="severity">{{ alert.severity }}</p>
+        </div>
+
+        <span
+          class="status"
+          [class.active]="!alert.read"
+          [class.resolved]="alert.read"
+        >
+            {{ alert.read ? 'Vista' : 'Activa' }}
+          </span>
+      </div>
+
+      <div class="details">
+        <p><strong>Paciente:</strong> {{ alert.patientId }}</p>
+        <p><strong>Glucosa:</strong> {{ alert.glucoseValue }} mg/dL</p>
+        <p><strong>Fecha:</strong> {{ alert.createdAt }}</p>
+      </div>
 
       @if (!alert.read) {
-      <button type="button" (click)="alertService.markAsRead(alert)">
+      <button type="button" class="mark-read" (click)="alertService.markAsRead(alert)">
         Marcar como vista
       </button>
       }
     </article>
+    } @empty {
+    <div class="empty-state">
+      No hay alertas para mostrar.
+    </div>
     }
-  </div>
-
-  <h2>Debug</h2>
-  <pre>{{ visibleAlerts() | json }}</pre>
+  </section>
 </section>
