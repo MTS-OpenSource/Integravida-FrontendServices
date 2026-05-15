@@ -1,7 +1,7 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { AlertApi } from '../infrastucture/alert.api';
+import { AlertApi } from '../infrastructure/alert.api';
 import { AlertEntity } from '../domain/model/alert.entity';
 
 export type AlertTab = 'Todas' | 'Activas' | 'Resueltas';
