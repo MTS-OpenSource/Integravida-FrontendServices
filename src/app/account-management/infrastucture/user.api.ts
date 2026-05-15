@@ -26,6 +26,16 @@ export class UserApi extends BaseApi<userEntity, UserResponse> {
   signIn(identifier: string, password: string): Observable<userEntity | null> {
     return this.http
       .get<UserResponse[]>(this.userEndpoint.getByUsernameAndPassword(identifier, password))
-      .pipe(map((response) => (response[0] ? this.assembler.toEntityFrom(response[0]) : null)));
+      .pipe(
+        switchMap((response) => {
+          if (response[0]) {
+            return of(this.assembler.toEntityFrom(response[0]));
+          }
+          // Si no encuentra por username, intenta por email (usando el campo 'emil' del backend)
+          return this.http
+            .get<UserResponse[]>(this.userEndpoint.getByEmailAndPassword(identifier, password))
+            .pipe(map((resp) => (resp[0] ? this.assembler.toEntityFrom(resp[0]) : null)));
+        }),
+      );
   }
 }
