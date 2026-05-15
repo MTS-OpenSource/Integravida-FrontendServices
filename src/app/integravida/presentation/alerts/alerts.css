@@ -1,0 +1,46 @@
+.alerts {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 24px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.list {
+  display: grid;
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.error {
+  color: red;
+}

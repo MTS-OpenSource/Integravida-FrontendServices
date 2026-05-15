@@ -1,0 +1,122 @@
+<section class="health-history">
+  <h1>Historial de glucosa</h1>
+
+  <div class="filters">
+    <label>
+      <span>Patient ID</span>
+      <input
+        type="number"
+        [ngModel]="patientId()"
+        (ngModelChange)="patientId.set(+$event)"
+      />
+    </label>
+
+    <label>
+      <span>Desde</span>
+      <input
+        type="date"
+        [ngModel]="fromDate()"
+        (ngModelChange)="fromDate.set($event)"
+      />
+    </label>
+
+    <label>
+      <span>Hasta</span>
+      <input
+        type="date"
+        [ngModel]="toDate()"
+        (ngModelChange)="toDate.set($event)"
+      />
+    </label>
+
+    <div class="buttons">
+      <button type="button" (click)="loadRecords()">Cargar</button>
+      <button type="button" (click)="filterByDateRange()">Filtrar</button>
+      <button type="button" (click)="filterToday()">Hoy</button>
+      <button type="button" (click)="filterLast7Days()">Últimos 7 días</button>
+    </div>
+  </div>
+
+  @if (glucoseService.loading()) {
+  <p>Cargando...</p>
+  }
+
+  @if (glucoseService.error()) {
+  <p class="error">{{ glucoseService.error() }}</p>
+  }
+
+  <table>
+    <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Glucosa</th>
+      <th>Estado</th>
+      <th>Notas</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @for (record of records(); track record.id) {
+    <tr>
+      <td>{{ record.recordedAt }}</td>
+      <td>{{ record.glucoseLevel }} mg/dL</td>
+      <td>
+            <span
+              class="badge"
+              [class.low]="getStatus(record) === 'Bajo'"
+              [class.normal]="getStatus(record) === 'Normal'"
+              [class.high]="getStatus(record) === 'Alto'"
+            >
+              {{ getStatus(record) }}
+            </span>
+      </td>
+      <td>{{ record.raw['notes'] }}</td>
+      <td>
+        <button type="button" (click)="startEdit(record)">Editar</button>
+        <button type="button" (click)="deleteRecord(record)">Eliminar</button>
+      </td>
+    </tr>
+    }
+    </tbody>
+  </table>
+
+  @if (editingRecord()) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <h2>Editar lectura</h2>
+
+      <label>
+        <span>Glucosa mg/dL</span>
+        <input
+          type="number"
+          [ngModel]="editGlucoseLevel()"
+          (ngModelChange)="editGlucoseLevel.set(+$event)"
+        />
+      </label>
+
+      <label>
+        <span>Fecha y hora</span>
+        <input
+          type="datetime-local"
+          [ngModel]="editRecordedAt()"
+          (ngModelChange)="editRecordedAt.set($event)"
+        />
+      </label>
+
+      <label>
+        <span>Notas</span>
+        <textarea
+          [ngModel]="editNotes()"
+          (ngModelChange)="editNotes.set($event)"
+        ></textarea>
+      </label>
+
+      <div class="buttons">
+        <button type="button" (click)="saveEdit()">Guardar cambios</button>
+        <button type="button" (click)="cancelEdit()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  }
+</section>

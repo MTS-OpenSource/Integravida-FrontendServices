@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { BaseApi } from '../../shared/infrastructure/base.api';
 import { AlertEntity } from '../domain/model/alert.entity';
@@ -17,5 +17,20 @@ export class AlertApi extends BaseApi<AlertEntity, AlertResponse> {
 
   getAll(): Observable<AlertEntity[]> {
     return this.getAllFrom(this.alertEndpoint.getAll());
+  }
+
+  getByPatientId(patientId: number): Observable<AlertEntity[]> {
+    return this.http
+      .get<AlertResponse[]>(this.alertEndpoint.getByPatientId(patientId))
+      .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
+  }
+
+  markAsRead(id: number, alert: AlertEntity): Observable<AlertEntity> {
+    return this.http
+      .patch<AlertResponse>(this.alertEndpoint.getById(id), {
+        ...alert.raw,
+        read: true,
+      })
+      .pipe(map((response) => this.assembler.toEntityFrom(response)));
   }
 }

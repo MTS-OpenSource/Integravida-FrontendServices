@@ -46,6 +46,29 @@ export const routes: Routes = [
         (module) => module.APPOINTMENT_ROUTES,
       ),
   },
+
+  {
+    path: 'glucose-log',
+    loadChildren: () =>
+      import('./glucose-monitoring/presentation/glucose-log/glucose-log.routes').then(
+        (module) => module.GLUCOSE_LOG_ROUTES,
+      ),
+  },
+  {
+    path: 'health-history',
+    loadChildren: () =>
+      import('./glucose-monitoring/presentation/health-history/health-history.routes').then(
+        (module) => module.HEALTH_HISTORY_ROUTES,
+      ),
+  },
+  {
+    path: 'alerts',
+    loadChildren: () =>
+      import('./integravida/presentation/alerts/alerts.routes').then(
+        (module) => module.ALERTS_ROUTES,
+      ),
+  },
+
   {
     path: 'glucose-monitoring',
     canActivate: [authGuard],
