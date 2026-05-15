@@ -1,0 +1,62 @@
+<section class="glucose-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Glucose Monitoring</span>
+      <h1>Registros de glucosa</h1>
+      <p>Consulta las mediciones del paciente y revisa su estado según el rango clínico.</p>
+    </div>
+  </header>
+
+  <section class="card filter-card">
+    <label>
+      <span>Patient ID</span>
+      <input
+        type="number"
+        min="1"
+        [ngModel]="patientId()"
+        (ngModelChange)="patientId.set(+$event)"
+        name="patientId"
+      />
+    </label>
+
+    <button type="button" (click)="loadRecords()">Buscar mediciones</button>
+  </section>
+
+  <section class="summary-grid">
+    <article class="metric-card">
+      <span>Total de mediciones</span>
+      <strong>{{ glucoseService.records().length }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>Promedio</span>
+      <strong>{{ averageLevel() ?? 'Sin datos' }}</strong>
+    </article>
+  </section>
+
+  <section class="card">
+    @if (glucoseService.loading()) {
+      <p class="empty-state">Cargando registros de glucosa...</p>
+    } @else if (glucoseService.error()) {
+      <p class="error">{{ glucoseService.error() }}</p>
+    } @else if (glucoseService.records().length) {
+      <div class="records-table">
+        <div class="table-row table-head">
+          <span>Fecha</span>
+          <span>Valor</span>
+          <span>Estado</span>
+        </div>
+
+        @for (record of glucoseService.records(); track record.id) {
+          <div class="table-row">
+            <span>{{ record.recordedAt ?? 'Sin fecha' }}</span>
+            <strong>{{ record.glucoseLevel ?? 'Sin dato' }}</strong>
+            <span>{{ statusFor(record) }}</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="empty-state">Ingresa un paciente y busca sus mediciones.</p>
+    }
+  </section>
+</section>
