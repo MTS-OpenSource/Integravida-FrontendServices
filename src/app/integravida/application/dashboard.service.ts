@@ -26,7 +26,18 @@ import { TreatmentApi } from '../infrastructure/treatment.api';
 export class DashboardService {
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly summarySignal = signal<DashboardSummary | null>(null);
+  private readonly summarySignal = signal<DashboardSummary | null>({
+    glucoseRecordsCount: 15,
+    latestGlucoseRecord: { glucoseLevel: 98 } as any,
+    medicationsCount: 6,
+    activeMedicationsCount: 4,
+    alertsCount: 3,
+    unresolvedAlertsCount: 3,
+    criticalAlertsCount: 1,
+    averageGlucoseLevel: 112,
+    recentAlerts: [],
+    activeMedications: [],
+  });
   readonly summary = this.summarySignal.asReadonly();
 
   private readonly loadingSignal = signal<boolean>(false);
