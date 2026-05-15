@@ -11,14 +11,14 @@ import { MedicationEntity } from '../domain/model/medication.entity';
 import { PatientEntity } from '../domain/model/patient.entity';
 import { TreatmentEntity } from '../domain/model/treatment.entity';
 import { AuthStore } from '../../account-management/application/auth.store';
-import { AlertApi } from '../infrastucture/alert.api';
-import { DoctorApi } from '../infrastucture/doctor.api';
+import { AlertApi } from '../infrastructure/alert.api';
+import { DoctorApi } from '../infrastructure/doctor.api';
 import { GlucoseRecordApi } from '../../glucose-monitoring/infrastructure/glucose-record.api';
-import { MedicationApi } from '../infrastucture/medication.api';
-import { PatientApi } from '../infrastucture/patient.api';
-import { PatientDoctorApi } from '../infrastucture/patient-doctor.api';
-import { PatientDoctorResponse } from '../infrastucture/patient-doctor.response';
-import { TreatmentApi } from '../infrastucture/treatment.api';
+import { MedicationApi } from '../infrastructure/medication.api';
+import { PatientApi } from '../infrastructure/patient.api';
+import { PatientDoctorApi } from '../infrastructure/patient-doctor.api';
+import { PatientDoctorResponse } from '../infrastructure/patient-doctor.response';
+import { TreatmentApi } from '../infrastructure/treatment.api';
 
 @Injectable({
   providedIn: 'root',

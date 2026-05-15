@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastucture/base.api';
+import { BaseApi } from '../../shared/infrastructure/base.api';
 import { GlucoseRecordEntity } from '../domain/model/glucose-record.entity';
 import { GlucoseRecordApiEndpoint } from './glucose-record.api.endpoint';
 import { GlucoseRecordAssembler } from './glucose-record.assembler';

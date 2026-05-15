@@ -1,16 +1,15 @@
 import 'zone.js';
 import 'zone.js/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { DashboardComponent } from './dashboard/presentation/components/dashboard/dashboard.component';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App, DashboardComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [App],
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 
@@ -20,12 +19,12 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render the application brand', async () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Resumen de Salud');
+    expect(compiled.querySelector('.brand')?.textContent).toContain('IntegraVida');
   });
 });
