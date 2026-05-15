@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
-import { BaseApiEndpoint } from '../../shared/infrastucture/base.api.endpoint';
-
+import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 /**
  * Defines the API endpoint URLs for the Appointment Management bounded context.
  *

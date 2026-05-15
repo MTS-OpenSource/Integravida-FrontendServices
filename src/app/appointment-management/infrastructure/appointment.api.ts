@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastucture/base.api';
+import { BaseApi } from '../../shared/infrastructure/base.api';
 import { AppointmentEntity } from '../domain/model/appointment.entity';
 import { AppointmentApiEndpoint } from './appointment.api.endpoint';
 import { AppointmentAssembler } from './appointment.assembler';

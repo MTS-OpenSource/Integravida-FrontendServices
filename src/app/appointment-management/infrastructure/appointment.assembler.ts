@@ -1,4 +1,4 @@
-import { BaseAssembler } from '../../shared/infrastucture/base.assembler';
+import { BaseAssembler } from '../../shared/infrastructure/base.assembler';
 import { AppointmentEntity } from '../domain/model/appointment.entity';
 import { AppointmentResponse } from './appointment.response';
 
@@ -8,10 +8,7 @@ import { AppointmentResponse } from './appointment.response';
  * This assembler isolates the transformation logic between the external API
  * structure and the internal model used by the Angular application.
  */
-export class AppointmentAssembler extends BaseAssembler<
-  AppointmentEntity,
-  AppointmentResponse
-> {
+export class AppointmentAssembler extends BaseAssembler<AppointmentEntity, AppointmentResponse> {
   /**
    * Converts one AppointmentResponse into one AppointmentEntity.
    *

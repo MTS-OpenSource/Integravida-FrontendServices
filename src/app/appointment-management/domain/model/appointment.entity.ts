@@ -1,5 +1,4 @@
-import { BaseEntity } from '../../../shared/infrastucture/base.entity';
-
+import { BaseEntity } from '../../../shared/infrastructure/base.entity';
 /**
  * Represents an appointment inside the Appointment Management bounded context.
  *

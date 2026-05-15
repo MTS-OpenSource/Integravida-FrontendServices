@@ -1,5 +1,4 @@
-import { BaseResponse } from '../../shared/infrastucture/base.response';
-
+import { BaseResponse } from '../../shared/infrastructure/base.response';
 /**
  * Represents the response received from the appointments API endpoint.
  *

@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../../shared/infrastucture/base.entity';
+import { BaseEntity } from '../../../shared/infrastructure/base.entity';
 
 export class AlertEntity extends BaseEntity {
   constructor(
