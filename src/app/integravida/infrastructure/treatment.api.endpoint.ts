@@ -6,20 +6,15 @@ import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 @Injectable({
   providedIn: 'root',
 })
-export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
+export class TreatmentApiEndpoint extends BaseApiEndpoint {
   constructor() {
     super(
       environment.integravidaProviderApiBaseUrl,
-      environment.integravidaProviderGlucoseRecordsEndpointPath,
+      environment.integravidaProviderTreatmentsEndpointPath,
     );
   }
 
   getAll(): string {
     return this.collectionUrl();
-  }
-
-  getByPatientId(patientId: number): string {
-    const params = new URLSearchParams({ patientID: String(patientId) });
-    return `${this.collectionUrl()}?${params.toString()}`;
   }
 }
