@@ -68,7 +68,78 @@
     </div>
     } @if (activeTab() === 'signup') {
     <div class="form">
-      <p style="text-align: center; color: #888">Contact with us to free trial!</p>
+      <div class="field">
+        <label>Role</label>
+        <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
+          <button 
+            type="button" 
+            class="tab" 
+            [class.active]="role() === 'Patient'" 
+            (click)="selectRole('Patient')"
+            style="border-radius: 10px 0 0 10px; border: 1px solid #e5e7eb;"
+          >
+            Patient
+          </button>
+          <button 
+            type="button" 
+            class="tab" 
+            [class.active]="role() === 'Doctor'" 
+            (click)="selectRole('Doctor')"
+            style="border-radius: 0 10px 10px 0; border: 1px solid #e5e7eb; border-left: none;"
+          >
+            Doctor
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input
+          type="email"
+          placeholder="you@example.com"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Username</label>
+        <input
+          type="text"
+          placeholder="username"
+          [ngModel]="username()"
+          (ngModelChange)="username.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrapper">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+          />
+          <button class="eye" type="button" (click)="showPassword.set(!showPassword())">👁</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Confirm Password</label>
+        <input
+          [type]="showPassword() ? 'text' : 'password'"
+          [ngModel]="confirmPassword()"
+          (ngModelChange)="confirmPassword.set($event)"
+        />
+      </div>
+
+      @if (formError() || authStore.error()) {
+        <span class="error-message">{{ formError() ?? authStore.error() }}</span>
+      }
+
+      <button class="btn-primary" type="button" (click)="register()" [disabled]="authStore.loading()">
+        {{ authStore.loading() ? 'Registering...' : 'Sign up →' }}
+      </button>
     </div>
     }
   </div>

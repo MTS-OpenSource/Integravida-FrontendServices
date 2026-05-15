@@ -7,147 +7,113 @@
     </div>
 
     @if (isAuthenticated()) {
-      <button type="button" class="secondary" (click)="signOut()">Cerrar sesión</button>
+    <button type="button" class="secondary" (click)="signOut()">Cerrar sesión</button>
     }
   </header>
 
   @if (!isAuthenticated()) {
-    <form class="card auth-card" (ngSubmit)="signIn()">
-      <h2>Iniciar sesión</h2>
+  <span> Redirigiendo al inicio de sesión... </span> } @else {
+  <section class="summary-grid" aria-label="Resumen del paciente">
+    <article class="metric-card">
+      <span>Registros de glucosa</span>
+      <strong>{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }}</strong>
+    </article>
 
+    <article class="metric-card">
+      <span>Promedio de glucosa</span>
+      <strong>{{ dashboardService.summary()?.averageGlucoseLevel ?? 'Sin datos' }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>Alertas pendientes</span>
+      <strong>{{ dashboardService.summary()?.unresolvedAlertsCount ?? 0 }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>Medicamentos activos</span>
+      <strong>{{ dashboardService.summary()?.activeMedicationsCount ?? 0 }}</strong>
+    </article>
+  </section>
+
+  <section class="card">
+    <div class="section-header">
+      <div>
+        <h2>Resumen clínico</h2>
+        <p>Datos consolidados según la sesión actual.</p>
+      </div>
+      <button type="button" class="secondary" (click)="reload()">Actualizar</button>
+    </div>
+
+    @if (dashboardService.loading()) {
+    <p class="empty-state">Cargando información del dashboard...</p>
+    } @else if (dashboardService.error()) {
+    <p class="error">{{ dashboardService.error() }}</p>
+    } @else {
+    <div class="detail-grid">
+      <div>
+        <span>Última medición</span>
+        <strong>
+          {{ dashboardService.summary()?.latestGlucoseRecord?.glucoseLevel ?? 'Sin datos' }}
+        </strong>
+      </div>
+      <div>
+        <span>Alertas críticas</span>
+        <strong>{{ dashboardService.summary()?.criticalAlertsCount ?? 0 }}</strong>
+      </div>
+      <div>
+        <span>Medicamentos registrados</span>
+        <strong>{{ dashboardService.summary()?.medicationsCount ?? 0 }}</strong>
+      </div>
+    </div>
+    }
+  </section>
+
+  <section class="card">
+    <div class="section-header">
+      <div>
+        <h2>Glucosa por paciente</h2>
+        <p>Busca las mediciones usando el identificador del paciente.</p>
+      </div>
+    </div>
+
+    <div class="patient-filter">
       <label>
-        <span>Usuario o email</span>
+        <span>Patient ID</span>
         <input
-          autocomplete="username"
-          [ngModel]="identifier()"
-          (ngModelChange)="identifier.set($event)"
-          name="identifier"
-          required
+          type="number"
+          min="1"
+          [ngModel]="patientId()"
+          (ngModelChange)="patientId.set(+$event)"
+          name="patientId"
         />
       </label>
 
-      <label>
-        <span>Contraseña</span>
-        <input
-          autocomplete="current-password"
-          type="password"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          name="password"
-          required
-        />
-      </label>
+      <button type="button" (click)="loadPatientGlucoseRecords()">Cargar registros</button>
+    </div>
 
-      @if (authError()) {
-        <p class="error">{{ authError() }}</p>
-      }
-
-      <button type="submit" [disabled]="authLoading()">
-        {{ authLoading() ? 'Validando...' : 'Entrar' }}
-      </button>
-    </form>
-  } @else {
-    <section class="summary-grid" aria-label="Resumen del paciente">
-      <article class="metric-card">
-        <span>Registros de glucosa</span>
-        <strong>{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }}</strong>
-      </article>
-
-      <article class="metric-card">
-        <span>Promedio de glucosa</span>
-        <strong>{{ dashboardService.summary()?.averageGlucoseLevel ?? 'Sin datos' }}</strong>
-      </article>
-
-      <article class="metric-card">
-        <span>Alertas pendientes</span>
-        <strong>{{ dashboardService.summary()?.unresolvedAlertsCount ?? 0 }}</strong>
-      </article>
-
-      <article class="metric-card">
-        <span>Medicamentos activos</span>
-        <strong>{{ dashboardService.summary()?.activeMedicationsCount ?? 0 }}</strong>
-      </article>
-    </section>
-
-    <section class="card">
-      <div class="section-header">
-        <div>
-          <h2>Resumen clínico</h2>
-          <p>Datos consolidados según la sesión actual.</p>
-        </div>
-        <button type="button" class="secondary" (click)="reload()">Actualizar</button>
+    @if (patientGlucoseLoading()) {
+    <p class="empty-state">Cargando registros de glucosa...</p>
+    } @else if (patientGlucoseError()) {
+    <p class="error">{{ patientGlucoseError() }}</p>
+    } @else if (patientGlucoseRecords().length) {
+    <div class="records-table">
+      <div class="table-row table-head">
+        <span>Fecha</span>
+        <span>Valor</span>
+        <span>Estado</span>
       </div>
 
-      @if (dashboardService.loading()) {
-        <p class="empty-state">Cargando información del dashboard...</p>
-      } @else if (dashboardService.error()) {
-        <p class="error">{{ dashboardService.error() }}</p>
-      } @else {
-        <div class="detail-grid">
-          <div>
-            <span>Última medición</span>
-            <strong>
-              {{ dashboardService.summary()?.latestGlucoseRecord?.glucoseLevel ?? 'Sin datos' }}
-            </strong>
-          </div>
-          <div>
-            <span>Alertas críticas</span>
-            <strong>{{ dashboardService.summary()?.criticalAlertsCount ?? 0 }}</strong>
-          </div>
-          <div>
-            <span>Medicamentos registrados</span>
-            <strong>{{ dashboardService.summary()?.medicationsCount ?? 0 }}</strong>
-          </div>
-        </div>
-      }
-    </section>
-
-    <section class="card">
-      <div class="section-header">
-        <div>
-          <h2>Glucosa por paciente</h2>
-          <p>Busca las mediciones usando el identificador del paciente.</p>
-        </div>
+      @for (record of patientGlucoseRecords(); track record.id) {
+      <div class="table-row">
+        <span>{{ record.recordedAt ?? 'Sin fecha' }}</span>
+        <strong>{{ record.glucoseLevel ?? 'Sin dato' }}</strong>
+        <span>{{ glucoseStatus(record) }}</span>
       </div>
-
-      <div class="patient-filter">
-        <label>
-          <span>Patient ID</span>
-          <input
-            type="number"
-            min="1"
-            [ngModel]="patientId()"
-            (ngModelChange)="patientId.set(+$event)"
-            name="patientId"
-          />
-        </label>
-
-        <button type="button" (click)="loadPatientGlucoseRecords()">Cargar registros</button>
-      </div>
-
-      @if (patientGlucoseLoading()) {
-        <p class="empty-state">Cargando registros de glucosa...</p>
-      } @else if (patientGlucoseError()) {
-        <p class="error">{{ patientGlucoseError() }}</p>
-      } @else if (patientGlucoseRecords().length) {
-        <div class="records-table">
-          <div class="table-row table-head">
-            <span>Fecha</span>
-            <span>Valor</span>
-            <span>Estado</span>
-          </div>
-
-          @for (record of patientGlucoseRecords(); track record.id) {
-            <div class="table-row">
-              <span>{{ record.recordedAt ?? 'Sin fecha' }}</span>
-              <strong>{{ record.glucoseLevel ?? 'Sin dato' }}</strong>
-              <span>{{ glucoseStatus(record) }}</span>
-            </div>
-          }
-        </div>
-      } @else {
-        <p class="empty-state">No hay registros cargados para este paciente.</p>
       }
-    </section>
+    </div>
+    } @else {
+    <p class="empty-state">No hay registros cargados para este paciente.</p>
+    }
+  </section>
   }
 </section>

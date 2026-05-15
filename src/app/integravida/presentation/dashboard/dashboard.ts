@@ -1,6 +1,7 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { DashboardService } from '../../application/dashboard.service';
 import { AuthStore } from '../../../account-management/application/auth.store';
@@ -18,6 +19,7 @@ export class Dashboard {
   private readonly authStore = inject(AuthStore);
   protected readonly dashboardService = inject(DashboardService);
   private readonly glucoseRecordApi = inject(GlucoseRecordApi);
+  private readonly router = inject(Router);
 
   protected readonly identifier = signal('');
   protected readonly password = signal('');

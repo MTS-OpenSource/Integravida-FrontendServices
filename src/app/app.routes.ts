@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ForgetPassword } from './account-management/presentation/forget-password/forget-password';
+import { authGuard } from './account-management/auth.guard';
 
 /**
  * Main application routes.
@@ -15,13 +16,8 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./account-management/presentation/login/login').then((module) => module.Login),
-  },
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./account-management/presentation/register/register').then(
-        (module) => module.Register,
+      import('./account-management/presentation/login-page/login-page').then(
+        (module) => module.LoginPage,
       ),
   },
   {
@@ -30,6 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./integravida/presentation/dashboard/dashboard.routes').then(
         (module) => module.DASHBOARD_ROUTES,
