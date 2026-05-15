@@ -1,119 +1,131 @@
-<section class="dashboard">
-  <header class="page-heading">
-    <div>
-      <span class="eyebrow">Patient Dashboard</span>
-      <h1>Seguimiento integral de salud</h1>
-      <p>Consulta el resumen clínico y los registros de glucosa asociados al paciente.</p>
+<section class="dashboard-wrapper">
+  <header class="page-header">
+    <div class="header-info">
+      <span class="eyebrow">PATIENT DASHBOARD</span>
+      <h1>Health Summary</h1>
+      <p class="timestamp">
+        {{ currentDate() }} • Last updated: {{ lastUpdateText() }}
+      </p>
     </div>
-
-    @if (isAuthenticated()) {
-    <button type="button" class="secondary" (click)="signOut()">Cerrar sesión</button>
-    }
+    <div class="header-actions">
+      <button class="btn-secondary">📅 This Week</button>
+      <button class="btn-primary">+ Log Reading</button>
+    </div>
   </header>
 
-  @if (!isAuthenticated()) {
-  <span> Redirigiendo al inicio de sesión... </span> } @else {
-  <section class="summary-grid" aria-label="Resumen del paciente">
+  <div class="metrics-grid">
     <article class="metric-card">
-      <span>Registros de glucosa</span>
-      <strong>{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }}</strong>
+      <div class="card-icon glucose-icon">💧</div>
+      <span class="label">CURRENT GLUCOSE</span>
+      <div class="value-row">
+        <strong>{{ dashboardService.summary()?.latestGlucoseRecord?.glucoseLevel ?? '--' }}</strong>
+        <span class="unit">mg/dL</span>
+        <span class="status-badge success">● Normal</span>
+      </div>
+      <p class="target-info">Target range: 80-130 mg/dL</p>
     </article>
 
     <article class="metric-card">
-      <span>Promedio de glucosa</span>
-      <strong>{{ dashboardService.summary()?.averageGlucoseLevel ?? 'Sin datos' }}</strong>
+      <div class="card-icon status-icon">🧡</div>
+      <span class="label">TREATMENT STATUS</span>
+      <div class="value-row">
+        <strong>{{ dashboardService.summary()?.activeMedicationsCount ?? 0 }}</strong>
+        <span class="unit">Active meds</span>
+        <span class="status-badge warning">On Track</span>
+      </div>
+      <div class="progress-bar"><div class="progress" style="width: 86%;"></div></div>
     </article>
 
     <article class="metric-card">
-      <span>Alertas pendientes</span>
-      <strong>{{ dashboardService.summary()?.unresolvedAlertsCount ?? 0 }}</strong>
+      <div class="card-icon readings-icon">📊</div>
+      <span class="label">READINGS TODAY</span>
+      <div class="value-row">
+        <strong>{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }}</strong>
+        <span class="unit">of 5</span>
+      </div>
+      <div class="dot-indicator">
+        <span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot"></span>
+      </div>
     </article>
 
-    <article class="metric-card">
-      <span>Medicamentos activos</span>
-      <strong>{{ dashboardService.summary()?.activeMedicationsCount ?? 0 }}</strong>
+    <article class="metric-card dark-card">
+      <div class="card-icon hba1c-icon">🧪</div>
+      <span class="label">HbA1C LEVEL</span>
+      <div class="value-row">
+        <strong>6.2</strong><span class="unit">%</span>
+        <span class="status-badge success-alt">Excellent</span>
+      </div>
+      <p class="test-date">Last tested: Jun 28, 2025</p>
     </article>
-  </section>
+  </div>
 
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>Resumen clínico</h2>
-        <p>Datos consolidados según la sesión actual.</p>
+  <div class="content-grid">
+    <section class="card chart-area">
+      <div class="section-header">
+        <h2>Glucose Trends</h2>
+        <span class="subtext">Last 7 days • mg/dL readings</span>
       </div>
-      <button type="button" class="secondary" (click)="reload()">Actualizar</button>
-    </div>
+      <div class="canvas-wrapper">
+        <canvas #trendsChart></canvas>
+      </div>
+    </section>
 
-    @if (dashboardService.loading()) {
-    <p class="empty-state">Cargando información del dashboard...</p>
-    } @else if (dashboardService.error()) {
-    <p class="error">{{ dashboardService.error() }}</p>
-    } @else {
-    <div class="detail-grid">
-      <div>
-        <span>Última medición</span>
-        <strong>
-          {{ dashboardService.summary()?.latestGlucoseRecord?.glucoseLevel ?? 'Sin datos' }}
-        </strong>
+    <aside class="card doses-area">
+      <div class="section-header">
+        <h3>Upcoming Doses</h3>
+        <span class="subtext">Today's medication schedule</span>
       </div>
-      <div>
-        <span>Alertas críticas</span>
-        <strong>{{ dashboardService.summary()?.criticalAlertsCount ?? 0 }}</strong>
+      <div class="doses-list">
+        @for (med of dashboardService.summary()?.activeMedications; track med.id) {
+          <div class="dose-item" [class]="med.status">
+            <div class="check-box">
+              @if(med.status === 'done'){ ✓ }
+            </div>
+            <div class="dose-content">
+              <h4>{{ med.name }} {{ med.dose }}</h4>
+              <p>{{ med.scheduleTime }} • {{ med.frequency }}</p>
+            </div>
+            <span class="status-tag">{{ med.status | titlecase }}</span>
+          </div>
+        }
       </div>
-      <div>
-        <span>Medicamentos registrados</span>
-        <strong>{{ dashboardService.summary()?.medicationsCount ?? 0 }}</strong>
-      </div>
-    </div>
-    }
-  </section>
+      <button class="btn-full">View Full Schedule</button>
+    </aside>
+  </div>
 
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>Glucosa por paciente</h2>
-        <p>Busca las mediciones usando el identificador del paciente.</p>
+  <div class="bottom-grid">
+    <section class="card alerts-area">
+      <div class="section-header">
+        <h2>Recent Alerts</h2>
+        <a href="#" class="view-all">View All ></a>
       </div>
-    </div>
+      <div class="alerts-list">
+        @for (alert of dashboardService.summary()?.recentAlerts; track alert.id) {
+          <div class="alert-row">
+            <div class="alert-icon" [class]="alert.type">⚠️</div>
 
-    <div class="patient-filter">
-      <label>
-        <span>Patient ID</span>
-        <input
-          type="number"
-          min="1"
-          [ngModel]="patientId()"
-          (ngModelChange)="patientId.set(+$event)"
-          name="patientId"
-        />
-      </label>
+            <div class="alert-main">
+              <strong>{{ alert.title }}</strong>
+              <p>{{ alert.desc }}</p>
+            </div>
 
-      <button type="button" (click)="loadPatientGlucoseRecords()">Cargar registros</button>
-    </div>
-
-    @if (patientGlucoseLoading()) {
-    <p class="empty-state">Cargando registros de glucosa...</p>
-    } @else if (patientGlucoseError()) {
-    <p class="error">{{ patientGlucoseError() }}</p>
-    } @else if (patientGlucoseRecords().length) {
-    <div class="records-table">
-      <div class="table-row table-head">
-        <span>Fecha</span>
-        <span>Valor</span>
-        <span>Estado</span>
+            <div class="alert-meta">
+              <span class="time">{{ alert.time }}</span>
+              <span class="tag" [class]="alert.type">{{ alert.type | uppercase }}</span>
+            </div>
+          </div>
+        }
       </div>
+    </section>
 
-      @for (record of patientGlucoseRecords(); track record.id) {
-      <div class="table-row">
-        <span>{{ record.recordedAt ?? 'Sin fecha' }}</span>
-        <strong>{{ record.glucoseLevel ?? 'Sin dato' }}</strong>
-        <span>{{ glucoseStatus(record) }}</span>
-      </div>
-      }
-    </div>
-    } @else {
-    <p class="empty-state">No hay registros cargados para este paciente.</p>
-    }
-  </section>
-  }
+    <section class="card summary-area">
+      <h3>Weekly Summary</h3>
+      <ul class="summary-stats">
+        <li><span>Avg. Glucose</span> <strong>{{ dashboardService.summary()?.averageGlucoseLevel }} mg/dL</strong></li>
+        <li><span>In Range</span> <strong>78%</strong></li>
+        <li><span>High Episodes</span> <strong class="text-danger">{{ dashboardService.summary()?.unresolvedAlertsCount }}</strong></li>
+        <li><span>Medication Score</span> <strong>86%</strong></li>
+      </ul>
+    </section>
+  </div>
 </section>

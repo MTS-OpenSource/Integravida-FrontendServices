@@ -1,0 +1,26 @@
+<div class="chart-container">
+  <div class="chart-header">
+    <div class="title-group">
+      <h2>Evolución</h2>
+      <span class="subtitle">Niveles registrados (mg/dL)</span>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="line dark"></span> Glucosa</span>
+      <span class="legend-item"><span class="line dashed"></span> Rango objetivo</span>
+    </div>
+  </div>
+
+  <div class="svg-wrapper">
+    <svg viewBox="0 0 800 200" preserveAspectRatio="none">
+      <line x1="0" [attr.y1]="limitY().upper" x2="800" [attr.y2]="limitY().upper" class="limit-line" />
+      <line x1="0" [attr.y1]="limitY().lower" x2="800" [attr.y2]="limitY().lower" class="limit-line" />
+
+      <polyline
+        fill="none"
+        stroke="#333"
+        stroke-width="2"
+        [attr.points]="chartData().points"
+      />
+    </svg>
+  </div>
+</div>

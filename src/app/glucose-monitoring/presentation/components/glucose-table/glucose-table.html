@@ -1,0 +1,38 @@
+<div class="table-container">
+  <div class="table-header">
+    <div class="title-group">
+      <h2>Registros</h2>
+      <span class="count">{{ records().length }} encontrados</span>
+    </div>
+    <div class="actions">
+      <button class="btn-export">Exportar CSV</button>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Valor</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (record of records(); track record.id) {
+          <tr>
+            <td>{{ formatDate(record.recordedAt) }}</td>
+            <td>{{ formatTime(record.recordedAt) }}</td>
+            <td><strong>{{ record.glucoseLevel }}</strong> mg/dL</td>
+            <td>
+              <span class="status-tag" [ngClass]="getStatusClass(record.glucoseLevel)">
+                {{ getStatus(record.glucoseLevel) }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

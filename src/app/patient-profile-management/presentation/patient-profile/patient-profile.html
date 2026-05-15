@@ -2,78 +2,228 @@
   <header class="page-heading">
     <div>
       <span class="eyebrow">Patient Profile Management</span>
-      <h1>Perfil del paciente</h1>
-      <p>Información médica y de contacto registrada en IntegraVida.</p>
+      <h1>Perfil del Paciente</h1>
+      <p>Gestiona la información médica, contacto y configuración del paciente.</p>
     </div>
 
     @if (patientProfileService.profile() && !editing()) {
-      <button type="button" (click)="startEditing()">Editar perfil</button>
+      <button type="button" class="primary-btn" (click)="startEditing()">✎ Editar perfil</button>
     }
   </header>
 
   @if (patientProfileService.loading()) {
-    <section class="card">
-      <p class="empty-state">Cargando perfil del paciente...</p>
+    <section class="profile-layout">
+      <aside class="left-column">
+        <article class="card patient-card skeleton-card">
+          <div class="skeleton avatar-skeleton"></div>
+          <div class="skeleton line medium"></div>
+          <div class="skeleton line small"></div>
+          <div class="skeleton button-skeleton"></div>
+          <div class="skeleton button-skeleton"></div>
+        </article>
+      </aside>
+
+      <main class="right-column">
+        <article class="card section-card skeleton-card">
+          <div class="skeleton line title"></div>
+          <div class="medical-grid">
+            <div class="skeleton box-skeleton"></div>
+            <div class="skeleton box-skeleton"></div>
+            <div class="skeleton box-skeleton"></div>
+          </div>
+          <div class="skeleton long-box"></div>
+          <div class="skeleton long-box"></div>
+        </article>
+      </main>
     </section>
   } @else if (patientProfileService.error()) {
     <section class="card">
       <p class="error">{{ patientProfileService.error() }}</p>
     </section>
   } @else if (patientProfileService.profile(); as profile) {
-    <section class="card profile-card">
-      @if (!editing()) {
-        <div class="detail-grid">
-          <article>
-            <span>Nombre completo</span>
-            <strong>{{ profile.fullName }}</strong>
-          </article>
-          <article>
-            <span>Tipo de diabetes</span>
-            <strong>{{ profile.diabetesType ?? 'No registrado' }}</strong>
-          </article>
-          <article>
-            <span>Teléfono</span>
-            <strong>{{ profile.phone || 'No registrado' }}</strong>
-          </article>
-          <article>
-            <span>ID de usuario</span>
-            <strong>{{ profile.userId ?? 'No registrado' }}</strong>
-          </article>
-        </div>
-      } @else {
-        <form class="profile-form" (ngSubmit)="saveProfile()">
-          <label>
-            <span>Nombre completo</span>
-            <input name="fullName" required [ngModel]="fullName()" (ngModelChange)="fullName.set($event)" />
-          </label>
-
-          <label>
-            <span>Tipo de diabetes</span>
-            <input
-              name="diabetesType"
-              type="number"
-              min="1"
-              max="2"
-              [ngModel]="diabetesType()"
-              (ngModelChange)="diabetesType.set(+$event)"
-            />
-          </label>
-
-          <label>
-            <span>Teléfono</span>
-            <input name="phone" [ngModel]="phone()" (ngModelChange)="phone.set($event)" />
-          </label>
-
-          <div class="form-actions">
-            <button type="submit" [disabled]="patientProfileService.loading()">Guardar</button>
-            <button type="button" class="secondary" (click)="cancelEditing()">Cancelar</button>
+    <section class="profile-layout">
+      <aside class="left-column">
+        <article class="card patient-card">
+          <div class="avatar-wrapper">
+            <div class="avatar">
+              {{ profile.fullName.charAt(0) }}
+            </div>
+            <button type="button" class="camera-btn">●</button>
           </div>
-        </form>
-      }
 
-      @if (saveMessage()) {
-        <p class="success">{{ saveMessage() }}</p>
-      }
+          <h2>{{ profile.fullName }}</h2>
+          <p class="patient-age">Paciente registrado</p>
+          <span class="status-pill">Paciente activo</span>
+
+          <button type="button" class="dark-btn" (click)="startEditing()">✎ Editar Perfil</button>
+          <button type="button" class="outline-btn">↗ Compartir Perfil</button>
+        </article>
+
+        <article class="card stats-card">
+          <h3>Estadísticas rápidas</h3>
+
+          <div class="stat-row">
+            <span>Glucosa promedio</span>
+            <strong>118 mg/dL</strong>
+          </div>
+
+          <div class="stat-row">
+            <span>Último registro</span>
+            <strong>Hoy</strong>
+          </div>
+
+          <div class="stat-row">
+            <span>En rango</span>
+            <strong>74%</strong>
+          </div>
+
+          <div class="stat-row">
+            <span>Próxima cita</span>
+            <strong>15 Jun 2025</strong>
+          </div>
+        </article>
+      </aside>
+
+      <main class="right-column">
+        @if (!editing()) {
+          <article class="card section-card">
+            <div class="section-header">
+              <h3>Información Médica</h3>
+              <button type="button" class="small-edit-btn" (click)="startEditing()">✎ Editar</button>
+            </div>
+
+            <div class="medical-grid">
+              <div class="info-box">
+                <span>Tipo de sangre</span>
+                <strong>O+</strong>
+                <small>Grupo sanguíneo</small>
+              </div>
+
+              <div class="info-box">
+                <span>Tipo de diabetes</span>
+                <strong>Tipo {{ profile.diabetesType ?? 'No registrado' }}</strong>
+                <small>Diagnóstico registrado</small>
+              </div>
+
+              <div class="info-box">
+                <span>HbA1c</span>
+                <strong>6.8%</strong>
+                <small>Última medición</small>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <span class="sub-title">Alergias</span>
+              <div class="pill-list">
+                <span>Penicilina</span>
+                <span>Sulfamidas</span>
+                <span>Látex</span>
+                <button type="button">+ Agregar</button>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <span class="sub-title">Medicación actual</span>
+
+              <div class="medicine-row">
+                <strong>Metformina 850mg</strong>
+                <span>Diario, 09:00</span>
+                <small>Activo</small>
+              </div>
+
+              <div class="medicine-row">
+                <strong>Glibenclamida 5mg</strong>
+                <span>2 veces/día</span>
+                <small>Activo</small>
+              </div>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-header">
+              <h3>Información de Contacto</h3>
+              <button type="button" class="small-edit-btn" (click)="startEditing()">✎ Editar</button>
+            </div>
+
+            <div class="contact-grid">
+              <div class="contact-box">
+                <span>Email</span>
+                <strong>paciente&#64;gmail.com</strong>
+              </div>
+
+              <div class="contact-box">
+                <span>Teléfono</span>
+                <strong>{{ profile.phone || 'No registrado' }}</strong>
+              </div>
+
+              <div class="contact-box">
+                <span>Dirección</span>
+                <strong>No registrada</strong>
+              </div>
+
+              <div class="contact-box">
+                <span>Contacto de emergencia</span>
+                <strong>No registrado</strong>
+              </div>
+            </div>
+          </article>
+        } @else {
+          <article class="card section-card">
+            <div class="section-header">
+              <h3>Editar perfil</h3>
+            </div>
+
+            <form class="profile-form" (ngSubmit)="saveProfile()">
+              <div class="form-grid">
+                <label>
+                  <span>Nombre completo</span>
+                  <input
+                    name="fullName"
+                    required
+                    [ngModel]="fullName()"
+                    (ngModelChange)="fullName.set($event)"
+                  />
+                </label>
+
+                <label>
+                  <span>Tipo de diabetes</span>
+                  <input
+                    name="diabetesType"
+                    type="number"
+                    min="1"
+                    max="2"
+                    [ngModel]="diabetesType()"
+                    (ngModelChange)="diabetesType.set(+$event)"
+                  />
+                </label>
+
+                <label>
+                  <span>Teléfono</span>
+                  <input
+                    name="phone"
+                    [ngModel]="phone()"
+                    (ngModelChange)="phone.set($event)"
+                  />
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="secondary-btn" (click)="cancelEditing()">Cancelar</button>
+                <button type="submit" class="dark-btn" [disabled]="patientProfileService.loading()">
+                  Guardar cambios
+                </button>
+              </div>
+            </form>
+          </article>
+        }
+
+        @if (saveMessage()) {
+          <div class="toast-success">
+            <span>✓</span>
+            <p>{{ saveMessage() }}</p>
+          </div>
+        }
+      </main>
     </section>
   } @else {
     <section class="card">

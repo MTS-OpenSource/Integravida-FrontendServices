@@ -5,12 +5,13 @@ import { MedicationResponse } from './medication.response';
 export class MedicationAssembler extends BaseAssembler<MedicationEntity, MedicationResponse> {
   override toEntityFrom(response: MedicationResponse): MedicationEntity {
     return new MedicationEntity(
-      response.id,
-      this.toNullableNumber(response.treatment_id ?? response.treatmentId),
-      this.toNullableString(response.name),
-      this.toNullableString(response.dose),
-      this.toNullableString(response.frequency),
-      this.toNullableString(response.schedule_time ?? response.scheduleTime),
+      response['id'],
+      this.toNullableNumber(response['treatment_id'] ?? response['treatmentId']),
+      this.toNullableString(response['name']),
+      this.toNullableString(response['dose']),
+      this.toNullableString(response['frequency']),
+      this.toNullableString(response['schedule_time'] ?? response['scheduleTime']),
+      this.toNullableString(response['status']),
       response,
     );
   }

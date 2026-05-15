@@ -1,0 +1,26 @@
+<div class="summary-grid">
+  <article class="metric-card">
+    <span class="label">Promedio</span>
+    <span class="value">{{ average() }} <small>mg/dL</small></span>
+  </article>
+
+  <article class="metric-card">
+    <span class="label">Máximo</span>
+    <span class="value">{{ max() }} <small>mg/dL</small></span>
+  </article>
+
+  <article class="metric-card">
+    <span class="label">Mínimo</span>
+    <span class="value">{{ min() }} <small>mg/dL</small></span>
+  </article>
+
+  <article class="metric-card">
+    <span class="label">Total Registros</span>
+    <span class="value">{{ total() }}</span>
+  </article>
+
+  <article class="metric-card">
+    <span class="label">En Rango</span>
+    <span class="value">{{ inRangePercent() }}%</span>
+  </article>
+</div>

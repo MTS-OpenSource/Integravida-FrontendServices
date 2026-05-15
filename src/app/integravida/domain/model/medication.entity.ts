@@ -8,6 +8,7 @@ export class MedicationEntity extends BaseEntity {
     public readonly dose: string | null,
     public readonly frequency: string | null,
     public readonly scheduleTime: string | null,
+    public readonly status: string | null,
     public readonly raw: Record<string, unknown>,
   ) {
     super(id);
