@@ -1,0 +1,50 @@
+<section class="alerts">
+  <h1>Alertas</h1>
+
+  <label>
+    <span>Patient ID</span>
+    <input
+      type="number"
+      [ngModel]="patientId()"
+      (ngModelChange)="patientId.set(+$event)"
+    />
+  </label>
+
+  <div class="buttons">
+    <button type="button" (click)="loadAlerts()">Cargar alertas</button>
+    <button type="button" (click)="selectedTab.set('Todas')">Todas</button>
+    <button type="button" (click)="selectedTab.set('Activas')">Activas</button>
+    <button type="button" (click)="selectedTab.set('Resueltas')">Resueltas</button>
+    <button type="button" (click)="alertService.markAllAsRead()">Marcar todas como vistas</button>
+  </div>
+
+  @if (alertService.loading()) {
+  <p>Cargando...</p>
+  }
+
+  @if (alertService.error()) {
+  <p class="error">{{ alertService.error() }}</p>
+  }
+
+  <div class="list">
+    @for (alert of visibleAlerts(); track alert.id) {
+    <article class="card">
+      <h3>{{ alert.type ?? 'Alerta' }}</h3>
+      <p>Paciente: {{ alert.patientId }}</p>
+      <p>Glucosa: {{ alert.glucoseValue }} mg/dL</p>
+      <p>Severidad: {{ alert.severity }}</p>
+      <p>Fecha: {{ alert.createdAt }}</p>
+      <p>Estado: {{ alert.read ? 'Vista' : 'Activa' }}</p>
+
+      @if (!alert.read) {
+      <button type="button" (click)="alertService.markAsRead(alert)">
+        Marcar como vista
+      </button>
+      }
+    </article>
+    }
+  </div>
+
+  <h2>Debug</h2>
+  <pre>{{ visibleAlerts() | json }}</pre>
+</section>

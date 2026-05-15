@@ -24,4 +24,20 @@ export class GlucoseRecordApi extends BaseApi<GlucoseRecordEntity, GlucoseRecord
       .get<GlucoseRecordResponse[]>(this.glucoseRecordEndpoint.getByPatientId(patientId))
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
+
+  create(record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
+    return this.http
+      .post<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getAll(), record)
+      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  }
+
+  update(id: number, record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
+    return this.http
+      .put<GlucoseRecordResponse>(`${this.glucoseRecordEndpoint.getAll()}/${id}`, record)
+      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.glucoseRecordEndpoint.getAll()}/${id}`);
+  }
 }

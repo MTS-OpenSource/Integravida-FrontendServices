@@ -73,6 +73,73 @@ export class GlucoseService {
       });
   }
 
+  saveReading(record: GlucoseRecordEntity): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.glucoseRecordApi
+      .create(record)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (createdRecord) => {
+          this.recordsSignal.update((records) =>
+            this.sortByDateDesc([...records, createdRecord])
+          );
+          this.loadingSignal.set(false);
+        },
+        error: (error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to save glucose record'));
+          this.loadingSignal.set(false);
+        },
+      });
+  }
+
+  updateReading(id: number, record: GlucoseRecordEntity): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.glucoseRecordApi
+      .update(id, record)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updatedRecord) => {
+          this.recordsSignal.update((records) =>
+            this.sortByDateDesc(
+              records.map((currentRecord) =>
+                currentRecord.id === id ? updatedRecord : currentRecord
+              )
+            )
+          );
+          this.loadingSignal.set(false);
+        },
+        error: (error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to update glucose record'));
+          this.loadingSignal.set(false);
+        },
+      });
+  }
+
+  deleteReading(id: number): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.glucoseRecordApi
+      .delete(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.recordsSignal.update((records) =>
+            records.filter((record) => record.id !== id)
+          );
+          this.loadingSignal.set(false);
+        },
+        error: (error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to delete glucose record'));
+          this.loadingSignal.set(false);
+        },
+      });
+  }
+
   evaluateRange(glucoseValue: number, range: GlucoseRange = DEFAULT_RANGE): GlucoseStatus {
     if (glucoseValue < range.min) return 'Bajo';
     if (glucoseValue > range.max) return 'Alto';
