@@ -4,8 +4,8 @@ import { retry } from 'rxjs';
 
 import { AuthSession } from '../domain/model/auth-session.model';
 import { userEntity } from '../domain/model/user.entity';
-import { AuthSessionStorage } from '../infrastucture/auth-session.storage';
-import { UserApi } from '../infrastucture/user.api';
+import { AuthSessionStorage } from '../infrastructure/auth-session.storage';
+import { UserApi } from '../infrastructure/user.api';
 
 @Injectable({
   providedIn: 'root',

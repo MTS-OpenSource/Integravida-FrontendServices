@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
-import { BaseApiEndpoint } from '../../shared/infrastucture/base.api.endpoint';
+import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MedicationApiEndpoint extends BaseApiEndpoint {
+export class DoctorApiEndpoint extends BaseApiEndpoint {
   constructor() {
     super(
       environment.integravidaProviderApiBaseUrl,
-      environment.integravidaProviderMedicationsEndpointPath,
+      environment.integravidaProviderDoctorEndpointPath,
     );
   }
 

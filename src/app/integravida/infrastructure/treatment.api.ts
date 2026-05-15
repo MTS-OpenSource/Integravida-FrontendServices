@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastucture/base.api';
+import { BaseApi } from '../../shared/infrastructure/base.api';
 import { TreatmentEntity } from '../domain/model/treatment.entity';
 import { TreatmentApiEndpoint } from './treatment.api.endpoint';
 import { TreatmentAssembler } from './treatment.assembler';

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastucture/base.api';
+import { BaseApi } from '../../shared/infrastructure/base.api';
 import { AlertEntity } from '../domain/model/alert.entity';
 import { AlertApiEndpoint } from './alert.api.endpoint';
 import { AlertAssembler } from './alert.assembler';

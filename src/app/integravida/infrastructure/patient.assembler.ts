@@ -1,4 +1,4 @@
-import { BaseAssembler } from '../../shared/infrastucture/base.assembler';
+import { BaseAssembler } from '../../shared/infrastructure/base.assembler';
 import { PatientEntity } from '../domain/model/patient.entity';
 import { PatientResponse } from './patient.response';
 

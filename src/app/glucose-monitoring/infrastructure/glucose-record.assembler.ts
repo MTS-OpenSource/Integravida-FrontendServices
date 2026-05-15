@@ -1,4 +1,4 @@
-import { BaseAssembler } from '../../shared/infrastucture/base.assembler';
+import { BaseAssembler } from '../../shared/infrastructure/base.assembler';
 import { GlucoseRecordEntity } from '../domain/model/glucose-record.entity';
 import { GlucoseRecordResponse } from './glucose-record.response';
 

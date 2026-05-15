@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastucture/base.api';
+import { BaseApi } from '../../shared/infrastructure/base.api';
 import { DoctorEntity } from '../domain/model/doctor.entity';
 import { DoctorApiEndpoint } from './doctor.api.endpoint';
 import { DoctorAssembler } from './doctor.assembler';

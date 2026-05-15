@@ -1,4 +1,4 @@
-import { BaseResponse } from '../../shared/infrastucture/base.response';
+import { BaseResponse } from '../../shared/infrastructure/base.response';
 
 export interface AlertResponse extends BaseResponse {
   patient_id?: number | null;

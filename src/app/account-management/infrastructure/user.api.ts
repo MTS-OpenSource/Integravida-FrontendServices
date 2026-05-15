@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, map, of, switchMap } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastucture/base.api';
+import { BaseApi } from '../../shared/infrastructure/base.api';
 import { userEntity } from '../domain/model/user.entity';
 import { UserAssembler } from './user.assembler';
 import { UserApiEndpoint } from './user.api.endpoint';
