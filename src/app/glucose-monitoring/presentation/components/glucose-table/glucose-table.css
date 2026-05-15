@@ -1,0 +1,150 @@
+.table-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-group h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.title-group .count {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-secondary, .btn-export {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-secondary {
+  background: white;
+  color: #0f172a;
+}
+
+.btn-export {
+  background: #f97316;
+  color: white;
+  border: none;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-cell .date {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.date-cell .day {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: capitalize;
+}
+
+.value-cell strong {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.value-cell small {
+  margin-left: 4px;
+  color: #94a3b8;
+}
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-pill.normal { background: #f0fdf4; color: #16a34a; }
+.status-pill.alto { background: #fef2f2; color: #dc2626; }
+.status-pill.bajo { background: #fffbeb; color: #d97706; }
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.pagination .info {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.pages {
+  display: flex;
+  gap: 5px;
+}
+
+.pages button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.pages button.active {
+  background: #2dd4bf;
+  color: white;
+  border-color: #2dd4bf;
+}

@@ -1,0 +1,53 @@
+<div class="table-container">
+  <div class="table-header">
+    <div class="title-group">
+      <h2>Registros Detallados</h2>
+      <span class="count">{{ records().length }} registros encontrados</span>
+    </div>
+    <div class="actions">
+      <button class="btn-secondary">⇅ Ordenar</button>
+      <button class="btn-export">📥 Exportar</button>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>FECHA</th>
+          <th>HORA</th>
+          <th>GLUCOSA</th>
+          <th>ESTADO</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (record of records(); track record.id) {
+          <tr>
+            <td>
+              <div class="date-cell">
+                <span class="date">{{ formatDate(record.recordedAt) }}</span>
+                <span class="day">{{ getDayName(record.recordedAt) }}</span>
+              </div>
+            </td>
+            <td>{{ formatTime(record.recordedAt) }}</td>
+            <td class="value-cell"><strong>{{ record.glucoseLevel }}</strong><small>mg/dL</small></td>
+            <td>
+              <span class="status-pill" [ngClass]="getStatusClass(record.glucoseLevel)">
+                {{ getStatus(record.glucoseLevel) }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <span class="info">Mostrando 1-{{ records().length }} de {{ records().length }}</span>
+    <div class="pages">
+      <button class="arrow">‹</button>
+      <button class="page active">1</button>
+      <button class="arrow">›</button>
+    </div>
+  </div>
+</div>

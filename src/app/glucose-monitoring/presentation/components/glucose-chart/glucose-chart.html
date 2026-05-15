@@ -1,0 +1,55 @@
+<div class="chart-container">
+  <div class="chart-header">
+    <div class="title-group">
+      <h2>Evolución de Glucosa</h2>
+      <span class="subtitle">Niveles de glucosa en mg/dL · Enero - Mayo 2025</span>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="line teal"></span> Glucosa</span>
+      <span class="legend-item"><span class="line dashed"></span> Rango objetivo</span>
+      <span class="legend-item badge red">⚠ 2 picos altos</span>
+    </div>
+  </div>
+
+  <div class="svg-wrapper">
+    <svg viewBox="0 0 800 200" preserveAspectRatio="none">
+      <!-- Grid lines -->
+      <line x1="0" y1="180" x2="800" y2="180" class="grid-line" />
+      <line x1="0" y1="130" x2="800" y2="130" class="grid-line" />
+      <line x1="0" y1="80" x2="800" y2="80" class="grid-line" />
+      <line x1="0" y1="30" x2="800" y2="30" class="grid-line" />
+
+      <!-- Limit lines -->
+      <line x1="0" [attr.y1]="limitY().upper" x2="800" [attr.y2]="limitY().upper" class="limit-line upper" />
+      <line x1="0" [attr.y1]="limitY().lower" x2="800" [attr.y2]="limitY().lower" class="limit-line lower" />
+
+      <!-- Data line -->
+      <polyline
+        fill="none"
+        stroke="#2dd4bf"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [attr.points]="chartData().points"
+      />
+
+      <!-- Dots -->
+       @for (dot of chartData().dots; track $index) {
+        <circle [attr.cx]="dot.x" [attr.cy]="dot.y" r="4" fill="white" stroke="#2dd4bf" stroke-width="2" />
+       }
+    </svg>
+    <div class="x-axis">
+      <span>01 Ene</span>
+      <span>15 Ene</span>
+      <span>01 Feb</span>
+      <span>15 Feb</span>
+      <span>01 Mar</span>
+      <span>15 Mar</span>
+      <span>01 Abr</span>
+      <span>15 Abr</span>
+      <span>01 May</span>
+      <span>15 May</span>
+      <span>31 May</span>
+    </div>
+  </div>
+</div>

@@ -12,6 +12,19 @@
   gap: 1rem;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-primary {
+  background-color: #f97316;
+}
+
+.btn-primary:hover {
+  background-color: #ea580c;
+}
+
 .page-heading h1,
 .card h2 {
   margin: 0;

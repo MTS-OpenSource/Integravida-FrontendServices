@@ -1,0 +1,40 @@
+<div class="glucose-container">
+  <header class="main-header">
+    <div class="left-actions">
+      <button class="btn-back" routerLink="/dashboard">← Volver al Dashboard</button>
+      <div class="logo">
+        <div class="logo-icon">💧</div>
+        <span class="logo-text">GlucoSmart</span>
+      </div>
+    </div>
+    
+    <div class="user-profile">
+      <div class="user-info">
+        <span class="user-name">{{ authStore.currentUser()?.username ?? 'Usuario' }}</span>
+        <span class="user-role">{{ authStore.currentUser()?.role ?? 'Paciente' }}</span>
+      </div>
+      <div class="avatar">👤</div>
+    </div>
+  </header>
+
+  <main class="content-wrapper">
+    <section class="page-title">
+      <h1>Historial de Datos de Salud</h1>
+      <p>Consulta y analiza la evolución de tus niveles de glucosa</p>
+    </section>
+
+    <app-glucose-filters (filterChanged)="onFilterChanged($event)" />
+
+    <app-glucose-summary [records]="glucoseService.records()" />
+
+    <div class="dashboard-grid">
+      <div class="main-column">
+        <app-glucose-chart [records]="glucoseService.records()" />
+        <app-glucose-stats [records]="glucoseService.records()" />
+      </div>
+      <div class="side-column">
+        <app-glucose-table [records]="glucoseService.records()" />
+      </div>
+    </div>
+  </main>
+</div>

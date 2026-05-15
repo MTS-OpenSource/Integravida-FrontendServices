@@ -1,0 +1,56 @@
+<div class="summary-grid">
+  <article class="metric-card">
+    <div class="card-header">
+      <span class="label">PROMEDIO GLUCOSA</span>
+      <div class="icon-bg teal">📈</div>
+    </div>
+    <div class="card-content">
+      <span class="value">{{ average() }} <small>mg/dL</small></span>
+      <span class="trend down">↓ 3% <small>vs período anterior</small></span>
+    </div>
+  </article>
+
+  <article class="metric-card">
+    <div class="card-header">
+      <span class="label">VALOR MÁXIMO</span>
+      <div class="icon-bg red">↑</div>
+    </div>
+    <div class="card-content">
+      <span class="value">{{ max() }} <small>mg/dL</small></span>
+      <span class="date">📅 14/03/2025 · 08:30</span>
+    </div>
+  </article>
+
+  <article class="metric-card">
+    <div class="card-header">
+      <span class="label">VALOR MÍNIMO</span>
+      <div class="icon-bg yellow">↓</div>
+    </div>
+    <div class="card-content">
+      <span class="value">{{ min() }} <small>mg/dL</small></span>
+      <span class="date">📅 02/02/2025 · 22:15</span>
+    </div>
+  </article>
+
+  <article class="metric-card">
+    <div class="card-header">
+      <span class="label">REGISTROS TOTALES</span>
+      <div class="icon-bg teal">📊</div>
+    </div>
+    <div class="card-content">
+      <span class="value">{{ total() }}</span>
+      <span class="info">En el período seleccionado</span>
+    </div>
+  </article>
+
+  <article class="metric-card">
+    <div class="card-header">
+      <span class="label">EN RANGO OBJETIVO</span>
+      <div class="icon-bg teal">🎯</div>
+    </div>
+    <div class="card-content">
+      <span class="value">{{ inRangePercent() }}%</span>
+      <span class="info">Objetivo: 70-180 mg/dL</span>
+    </div>
+  </article>
+</div>

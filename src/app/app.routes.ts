@@ -47,6 +47,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'glucose-monitoring',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./glucose-monitoring/presentation/glucose-monitoring.routes').then(
+        (module) => module.GLUCOSE_MONITORING_ROUTES,
+      ),
+  },
+  {
     path: '**',
     redirectTo: 'login',
   },

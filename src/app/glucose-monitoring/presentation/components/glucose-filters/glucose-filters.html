@@ -1,0 +1,47 @@
+<div class="filters-container">
+  <div class="date-filters">
+    <div class="filter-group">
+      <label>Desde:</label>
+      <div class="input-with-icon">
+        <input type="date" [(ngModel)]="fromDate" (ngModelChange)="fromDate.set($event)" />
+      </div>
+    </div>
+    <div class="filter-group">
+      <label>Hasta:</label>
+      <div class="input-with-icon">
+        <input type="date" [(ngModel)]="toDate" (ngModelChange)="toDate.set($event)" />
+      </div>
+    </div>
+    <div class="filter-group">
+      <label>Período:</label>
+      <select>
+        <option>Personalizado</option>
+      </select>
+    </div>
+    <button class="btn-apply" (click)="applyFilters()">Aplicar filtros</button>
+  </div>
+
+  <div class="quick-access">
+    <span class="label">Acceso rápido:</span>
+    <div class="pills">
+      <button
+        [class.active]="activePeriod() === 'ultima-semana'"
+        (click)="setPeriod('ultima-semana')"
+      >
+        Última semana
+      </button>
+      <button [class.active]="activePeriod() === 'ultimo-mes'" (click)="setPeriod('ultimo-mes')">
+        Último mes
+      </button>
+      <button [class.active]="activePeriod() === '3-meses'" (click)="setPeriod('3-meses')">
+        3 meses
+      </button>
+      <button [class.active]="activePeriod() === '6-meses'" (click)="setPeriod('6-meses')">
+        6 meses
+      </button>
+      <button [class.active]="activePeriod() === 'este-año'" (click)="setPeriod('este-año')">
+        Este año
+      </button>
+    </div>
+  </div>
+</div>
