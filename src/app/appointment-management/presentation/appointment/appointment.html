@@ -1,0 +1,180 @@
+<section class="appointment-page">
+  <header class="appointment-header">
+    <div>
+      <p class="eyebrow">GlucoSmart</p>
+      <h1>Appointment Management</h1>
+      <p class="description">
+        Gestiona las citas médicas del paciente, visualiza su estado y registra nuevas
+        solicitudes de atención.
+      </p>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-label">Citas registradas</span>
+      <strong>{{ totalAppointments() }}</strong>
+    </div>
+  </header>
+
+  <main class="appointment-grid">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Agenda de citas</h2>
+          <p>Consulta las citas registradas por paciente.</p>
+        </div>
+
+        <button class="secondary-button" type="button" (click)="loadAppointments()">
+          Recargar
+        </button>
+      </div>
+
+      <label class="form-label" for="patient-filter">Patient ID</label>
+      <div class="filter-row">
+        <input
+          id="patient-filter"
+          class="form-control"
+          type="number"
+          [ngModel]="patientId()"
+          (ngModelChange)="updatePatientId($event)"
+        />
+
+        <button class="primary-button" type="button" (click)="loadAppointments()">
+          Buscar citas
+        </button>
+      </div>
+
+      @if (loading()) {
+      <p class="state-message">Cargando citas médicas...</p>
+      }
+
+      @if (error()) {
+      <p class="error-message">{{ error() }}</p>
+      }
+
+      <div class="appointment-list">
+        @for (appointment of appointments(); track appointment.id) {
+        <article class="appointment-card">
+          <div>
+            <span class="status-badge">{{ appointment.status || 'pending' }}</span>
+            <h3>Cita médica #{{ appointment.id }}</h3>
+            <p>{{ appointment.notes || 'Sin notas registradas' }}</p>
+          </div>
+
+          <div class="appointment-meta">
+            <span>Patient ID: {{ appointment.patientId }}</span>
+            <span>Doctor ID: {{ appointment.doctorId }}</span>
+            <span>{{ appointment.scheduledAt || 'Fecha no registrada' }}</span>
+          </div>
+        </article>
+        } @empty {
+        <p class="state-message">No hay citas registradas para este paciente.</p>
+        }
+      </div>
+    </section>
+
+    <aside class="side-column">
+      <section class="panel">
+        <h2>Crear cita</h2>
+        <p class="panel-description">
+          Registra una nueva cita médica indicando paciente, doctor, fecha y motivo.
+        </p>
+
+        <form class="appointment-form" (ngSubmit)="createAppointment()">
+          <label class="form-label" for="patient-id">Patient ID</label>
+          <input
+            id="patient-id"
+            class="form-control"
+            type="number"
+            [ngModel]="patientId()"
+            (ngModelChange)="updatePatientId($event)"
+            name="patientId"
+          />
+
+          <label class="form-label" for="doctor-id">Doctor ID</label>
+          <input
+            id="doctor-id"
+            class="form-control"
+            type="number"
+            [ngModel]="doctorId()"
+            (ngModelChange)="updateDoctorId($event)"
+            name="doctorId"
+          />
+
+          <label class="form-label" for="scheduled-at">Fecha y hora</label>
+          <input
+            id="scheduled-at"
+            class="form-control"
+            type="text"
+            [ngModel]="scheduledAt()"
+            (ngModelChange)="scheduledAt.set($event)"
+            name="scheduledAt"
+            placeholder="20/05/2026 10:30"
+          />
+
+          <label class="form-label" for="notes">Notas</label>
+          <textarea
+            id="notes"
+            class="form-control"
+            rows="4"
+            [ngModel]="notes()"
+            (ngModelChange)="notes.set($event)"
+            name="notes"
+          ></textarea>
+
+          <button class="primary-button full-width" type="submit">
+            Crear cita
+          </button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Configuración de alertas</h2>
+        <p class="panel-description">
+          Activa o desactiva recordatorios y notificaciones relacionadas con el seguimiento.
+        </p>
+
+        <div class="toggle-list">
+          <label class="toggle-item">
+            <input
+              type="checkbox"
+              [ngModel]="appointmentRemindersEnabled()"
+              (ngModelChange)="appointmentRemindersEnabled.set($event)"
+              name="appointmentReminders"
+            />
+            <span>Recordatorios de citas</span>
+          </label>
+
+          <label class="toggle-item">
+            <input
+              type="checkbox"
+              [ngModel]="cancellationNotificationsEnabled()"
+              (ngModelChange)="cancellationNotificationsEnabled.set($event)"
+              name="cancellationNotifications"
+            />
+            <span>Notificación por cancelación</span>
+          </label>
+
+          <label class="toggle-item">
+            <input
+              type="checkbox"
+              [ngModel]="glucoseAlertsEnabled()"
+              (ngModelChange)="glucoseAlertsEnabled.set($event)"
+              name="glucoseAlerts"
+            />
+            <span>Alertas de glucosa</span>
+          </label>
+
+          <label class="toggle-item">
+            <input
+              type="checkbox"
+              [ngModel]="medicationAlertsEnabled()"
+              (ngModelChange)="medicationAlertsEnabled.set($event)"
+              name="medicationAlerts"
+            />
+            <span>Alertas de medicación</span>
+          </label>
+        </div>
+      </section>
+    </aside>
+  </main>
+</section>

@@ -1,0 +1,127 @@
+.profile-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-heading h1 {
+  margin: 0;
+}
+
+.page-heading p,
+.empty-state {
+  color: #667085;
+  margin: 0.35rem 0 0;
+}
+
+.eyebrow {
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #dfe5ef;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.04);
+  padding: 1.25rem;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detail-grid article {
+  border: 1px solid #e7ecf3;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.detail-grid span,
+label span {
+  color: #667085;
+  font-size: 0.85rem;
+}
+
+.detail-grid strong {
+  display: block;
+  color: #172033;
+  font-size: 1.1rem;
+  margin-top: 0.35rem;
+}
+
+.profile-form {
+  display: grid;
+  gap: 1rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+input {
+  min-height: 42px;
+  border: 1px solid #cfd8e6;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  background: #0f766e;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0 1rem;
+}
+
+button.secondary {
+  background: #e6f4f1;
+  color: #0f766e;
+}
+
+button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.error {
+  color: #b42318;
+  margin: 0;
+}
+
+.success {
+  color: #067647;
+  margin: 1rem 0 0;
+}
+
+@media (max-width: 720px) {
+  .page-heading,
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
