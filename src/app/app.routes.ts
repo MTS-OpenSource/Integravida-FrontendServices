@@ -26,13 +26,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'glucose-monitoring',
-    loadChildren: () =>
-      import('./glucose-monitoring/presentation/glucose-monitoring.routes').then(
-        (module) => module.GLUCOSE_MONITORING_ROUTES,
-      ),
-  },
-  {
     path: 'patient-profile',
     loadChildren: () =>
       import('./patient-profile-management/presentation/patient-profile-management.routes').then(
