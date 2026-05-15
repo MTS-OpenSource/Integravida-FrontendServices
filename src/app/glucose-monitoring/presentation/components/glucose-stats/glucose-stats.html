@@ -1,35 +1,23 @@
 <div class="stats-container">
   <div class="stat-card">
-    <div class="icon teal">✓</div>
-    <div class="stat-info">
-      <span class="label">TIEMPO EN RANGO</span>
-      <span class="value">{{ timeInRange() }}% <small>del tiempo</small></span>
-    </div>
+    <span class="label">Tiempo en Rango</span>
+    <span class="value">{{ timeInRange() }}%</span>
   </div>
 
   <div class="stat-card">
-    <div class="icon red">📈</div>
-    <div class="stat-info">
-      <span class="label">HIPERGLUCEMIA</span>
-      <span class="value">{{ hyperglycemia() }}% <small>sobre 180</small></span>
-    </div>
+    <span class="label">Hiperglucemia</span>
+    <span class="value">{{ hyperglycemia() }}%</span>
   </div>
 
   <div class="stat-card">
-    <div class="icon yellow">📉</div>
-    <div class="stat-info">
-      <span class="label">HIPOGLUCEMIA</span>
-      <span class="value">{{ hypoglycemia() }}% <small>bajo 70</small></span>
-    </div>
+    <span class="label">Hipoglucemia</span>
+    <span class="value">{{ hypoglycemia() }}%</span>
   </div>
 
   <div class="stat-card">
-    <div class="icon purple">∿</div>
-    <div class="stat-info">
-      <span class="label">VARIABILIDAD (CV)</span>
-      <span class="value">{{ variability() }}% <small>coef. var.</small></span>
-    </div>
+    <span class="label">Variabilidad</span>
+    <span class="value">{{ variability() }}%</span>
   </div>
 
-  <button class="btn-report">📄 Generar informe</button>
+  <button class="btn-report">Generar Informe</button>
 </div>

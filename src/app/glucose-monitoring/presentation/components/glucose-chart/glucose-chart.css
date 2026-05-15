@@ -1,95 +1,60 @@
 .chart-container {
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #eee;
+  border-radius: 4px;
   padding: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .title-group h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 600;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 0.85rem;
-  color: #64748b;
+  font-size: 0.8rem;
+  color: #888;
 }
 
 .legend {
   display: flex;
-  gap: 15px;
-  align-items: center;
+  gap: 16px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.8rem;
-  color: #64748b;
-  font-weight: 500;
+  font-size: 0.75rem;
+  color: #666;
 }
 
 .line {
-  width: 20px;
-  height: 3px;
-  border-radius: 2px;
+  width: 16px;
+  height: 2px;
 }
 
-.line.teal { background: #2dd4bf; }
-.line.dashed { border-top: 2px dashed #f97316; height: 0; }
-
-.badge.red {
-  background: #fef2f2;
-  color: #dc2626;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: 600;
-}
+.line.dark { background: #333; }
+.line.dashed { border-top: 1px dashed #999; height: 0; }
 
 .svg-wrapper {
-  position: relative;
-  height: 200px;
-  margin-bottom: 40px;
+  height: 160px;
 }
 
 svg {
   width: 100%;
   height: 100%;
-  overflow: visible;
-}
-
-.grid-line {
-  stroke: #f1f5f9;
-  stroke-width: 1;
 }
 
 .limit-line {
-  stroke: #f97316;
+  stroke: #ddd;
   stroke-width: 1;
   stroke-dasharray: 4;
-  opacity: 0.5;
-}
-
-.x-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  padding: 0 20px;
-}
-
-.x-axis span {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  font-weight: 500;
 }
