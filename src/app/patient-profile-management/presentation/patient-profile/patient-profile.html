@@ -167,6 +167,55 @@
               </div>
             </div>
           </article>
+
+          <article class="card section-card">
+            <div class="section-header">
+              <h3>Historial Médico</h3>
+              <button type="button" class="small-edit-btn" (click)="startEditing()">✎ Editar</button>
+            </div>
+
+            <div class="history-list">
+              <div class="history-item">
+                <div class="history-icon diagnosis-icon">🩺</div>
+                <div class="history-content">
+                  <strong>Diabetes Mellitus Tipo {{ profile.diabetesType ?? "–" }}</strong>
+                  <span>Diagnóstico principal · En seguimiento activo</span>
+                  <small>Registrado en el sistema</small>
+                </div>
+                <span class="history-tag active">Activo</span>
+              </div>
+
+              <div class="history-item">
+                <div class="history-icon treatment-icon">💊</div>
+                <div class="history-content">
+                  <strong>Tratamiento farmacológico activo</strong>
+                  <span>Medicación indicada por el médico tratante</span>
+                  <small>Ver sección Información Médica para detalle</small>
+                </div>
+                <span class="history-tag active">Activo</span>
+              </div>
+
+              <div class="history-item">
+                <div class="history-icon monitoring-icon">📊</div>
+                <div class="history-content">
+                  <strong>Monitoreo continuo de glucosa</strong>
+                  <span>Registros diarios de niveles de glucosa en sangre</span>
+                  <small>Vinculado al módulo de monitoreo</small>
+                </div>
+                <span class="history-tag monitoring">En curso</span>
+              </div>
+            </div>
+
+            <div class="subsection">
+              <span class="sub-title">Notas clínicas</span>
+              <p class="clinical-note">
+                Paciente bajo control glucémico activo. Se recomienda mantener
+                los registros de glucosa actualizados y respetar los horarios
+                de medicación indicados por el médico.
+              </p>
+            </div>
+          </article>
+
         } @else {
           <article class="card section-card">
             <div class="section-header">
