@@ -217,8 +217,77 @@ textarea {
   color: #b42318;
 }
 
+.range-config {
+  max-width: 760px;
+}
+
+.range-preview {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #ccfbf1;
+  border-radius: 14px;
+  background: #f0fdfa;
+}
+
+.range-preview span {
+  color: #667085;
+  font-weight: 700;
+}
+
+.range-preview strong {
+  color: #0f766e;
+  font-size: 1rem;
+}
+
+.range-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #b42318;
+  font-weight: 700;
+}
+
+.range-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.secondary {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #344054;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.secondary:hover {
+  background: #f9fafb;
+}
+
+.primary.compact {
+  grid-column: auto;
+  min-height: 44px;
+  padding: 0 1rem;
+}
+
 @media (max-width: 720px) {
   .form {
     grid-template-columns: 1fr;
+  }
+
+  .range-preview,
+  .range-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

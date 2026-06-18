@@ -1,0 +1,135 @@
+<section class="adverse-effects">
+  <header class="page-header">
+    <div>
+      <h1>Efectos adversos</h1>
+      <p>Registra y consulta los efectos adversos relacionados con la medicación del paciente.</p>
+    </div>
+  </header>
+
+  <section class="form-card">
+    <div class="card-header">
+      <div class="icon-box">⚕️</div>
+      <div>
+        <h2>Registrar efecto adverso</h2>
+        <p>Completa la información para guardar el reporte en el historial.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <label>
+        <span>Patient ID</span>
+        <input
+          type="number"
+          [ngModel]="patientId()"
+          (ngModelChange)="patientId.set(+$event)"
+        />
+      </label>
+
+      <label>
+        <span>Medication ID</span>
+        <input
+          type="number"
+          [ngModel]="medicationId()"
+          (ngModelChange)="medicationId.set(+$event)"
+          placeholder="Ej: 1"
+        />
+      </label>
+
+      <label>
+        <span>Severidad</span>
+        <select [ngModel]="severity()" (ngModelChange)="severity.set($event)">
+          @for (option of severityOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Fecha y hora</span>
+        <input
+          type="datetime-local"
+          [ngModel]="occurredAt()"
+          (ngModelChange)="occurredAt.set($event)"
+        />
+      </label>
+
+      <label class="full">
+        <span>Descripción del efecto adverso</span>
+        <textarea
+          rows="4"
+          [ngModel]="description()"
+          (ngModelChange)="description.set($event)"
+          placeholder="Ej: náuseas, mareos o dolor después de tomar la medicación"
+        ></textarea>
+      </label>
+
+      @if (formError()) {
+        <p class="error full">{{ formError() }}</p>
+      }
+
+      @if (adverseEffectService.error()) {
+        <p class="error full">{{ adverseEffectService.error() }}</p>
+      }
+
+      <div class="actions full">
+        <button type="button" class="secondary" (click)="loadHistory()">
+          Cargar historial
+        </button>
+
+        <button
+          type="button"
+          class="primary"
+          [disabled]="adverseEffectService.loading()"
+          (click)="registerAdverseEffect()"
+        >
+          @if (adverseEffectService.loading()) {
+            Guardando...
+          } @else {
+            Registrar efecto adverso
+          }
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="history-card">
+    <div class="card-header">
+      <div class="icon-box">📋</div>
+      <div>
+        <h2>Historial de efectos adversos</h2>
+        <p>Consulta los efectos adversos registrados para el paciente seleccionado.</p>
+      </div>
+    </div>
+
+    @if (adverseEffectService.loading()) {
+      <p class="info">Cargando información...</p>
+    }
+
+    <div class="history-list">
+      @for (effect of adverseEffectService.adverseEffects(); track effect.id) {
+        <article class="history-item">
+          <div class="history-header">
+            <div>
+              <h3>{{ effect.description ?? 'Efecto adverso registrado' }}</h3>
+              <p>Medication ID: {{ effect.medicationId ?? 'No registrado' }}</p>
+            </div>
+
+            <span class="severity" [class]="effect.severity ?? 'mild'">
+            {{ effect.severity ?? 'reported' }}
+          </span>
+          </div>
+
+          <div class="details">
+            <p><strong>Paciente:</strong> {{ effect.patientId }}</p>
+            <p><strong>Fecha:</strong> {{ effect.occurredAt ?? 'Sin fecha' }}</p>
+            <p><strong>Estado:</strong> {{ effect.status ?? 'reported' }}</p>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">
+          No hay efectos adversos registrados para este paciente.
+        </div>
+      }
+    </div>
+  </section>
+</section>
