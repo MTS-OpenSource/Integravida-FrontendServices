@@ -72,6 +72,15 @@ button:hover {
   background: #e4e7ec;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+button:disabled:hover {
+  background: #eef2f6;
+}
+
 button.primary {
   background: #0f766e;
   color: white;
