@@ -6,81 +6,111 @@
     </div>
   </header>
 
-  <section class="controls-card">
+  <section class="controls-card search-section">
     <label>
-      <span>Patient ID</span>
+      <span>ID del Paciente</span>
       <input
         type="number"
         [ngModel]="patientId()"
         (ngModelChange)="patientId.set(+$event)"
+        placeholder="Ej. 1"
       />
     </label>
+    <button type="button" class="primary" (click)="loadAlerts()">
+      Cargar alertas
+    </button>
+  </section>
 
-    <div class="buttons">
-      <button type="button" class="primary" (click)="loadAlerts()">
-        Cargar alertas
-      </button>
+  <section class="tabs-container">
+    <div class="tabs-header">
+      <nav class="tabs-nav">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="selectedTab() === 'Todas'"
+          (click)="selectedTab.set('Todas')">
+          Todas
+          <span class="badge gray">{{ alertService.alerts().length }}</span>
+        </button>
 
-      <button type="button" (click)="selectedTab.set('Todas')">
-        Todas
-      </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="selectedTab() === 'Activas'"
+          (click)="selectedTab.set('Activas')">
+          Activas
+          <span class="badge red">{{ alertService.activeAlerts().length }}</span>
+        </button>
 
-      <button type="button" (click)="selectedTab.set('Activas')">
-        Activas
-      </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="selectedTab() === 'Resueltas'"
+          (click)="selectedTab.set('Resueltas')">
+          Resueltas
+          <span class="badge green">{{ alertService.resolvedAlerts().length }}</span>
+        </button>
+      </nav>
 
-      <button type="button" (click)="selectedTab.set('Resueltas')">
-        Resueltas
-      </button>
-
-      <button type="button" class="secondary" (click)="alertService.markAllAsRead()">
-        Marcar todas como vistas
+      <button
+        *ngIf="alertService.activeAlerts().length > 0"
+        type="button"
+        class="secondary mark-all-btn"
+        (click)="alertService.markAllAsRead()">
+        ✓ Marcar activas como vistas
       </button>
     </div>
   </section>
 
   @if (alertService.loading()) {
-  <p class="info">Cargando alertas...</p>
+    <div class="loading-state">
+      <span class="spinner"></span>
+      <p>Cargando el historial de alertas...</p>
+    </div>
   }
 
   @if (alertService.error()) {
-  <p class="error">{{ alertService.error() }}</p>
+    <p class="error-banner">⚠️ {{ alertService.error() }}</p>
   }
 
   <section class="list">
     @for (alert of visibleAlerts(); track alert.id) {
-    <article class="card" [class.unread]="!alert.read">
-      <div class="card-header">
-        <div>
-          <h3>{{ alert.type ?? 'Alerta' }}</h3>
-          <p class="severity">{{ alert.severity }}</p>
+      <article class="card" [class.unread]="!alert.read">
+        <div class="card-header">
+          <div>
+            <h3>{{ alert.type ?? 'Alerta' }}</h3>
+            <p class="severity" [ngClass]="alert.severity?.toLowerCase() || ''">Nivel: {{ alert.severity }}</p>
+          </div>
+
+          <span
+            class="status-pill"
+            [class.active]="!alert.read"
+            [class.resolved]="alert.read"
+          >
+            {{ alert.read ? 'Resuelta' : 'Requiere Atención' }}
+          </span>
         </div>
 
-        <span
-          class="status"
-          [class.active]="!alert.read"
-          [class.resolved]="alert.read"
-        >
-            {{ alert.read ? 'Vista' : 'Activa' }}
-          </span>
-      </div>
+        <div class="details grid-details">
+          <p><strong>Paciente ID:</strong> {{ alert.patientId }}</p>
+          <p><strong>Valor Registrado:</strong> <span class="highlight">{{ alert.glucoseValue }} mg/dL</span></p>
+          <p><strong>Fecha y Hora:</strong> {{ alert.createdAt | date:'medium' }}</p>
+        </div>
 
-      <div class="details">
-        <p><strong>Paciente:</strong> {{ alert.patientId }}</p>
-        <p><strong>Glucosa:</strong> {{ alert.glucoseValue }} mg/dL</p>
-        <p><strong>Fecha:</strong> {{ alert.createdAt }}</p>
-      </div>
-
-      @if (!alert.read) {
-      <button type="button" class="mark-read" (click)="alertService.markAsRead(alert)">
-        Marcar como vista
-      </button>
-      }
-    </article>
+        @if (!alert.read) {
+          <div class="card-actions">
+            <button type="button" class="btn-resolve" (click)="alertService.markAsRead(alert)">
+              Marcar como resuelta
+            </button>
+          </div>
+        }
+      </article>
     } @empty {
-    <div class="empty-state">
-      No hay alertas para mostrar.
-    </div>
+      <div class="empty-state">
+        <div class="empty-icon">✅</div>
+        <h3>Todo en orden</h3>
+        <p>No hay alertas en esta categoría.</p>
+      </div>
     }
   </section>
 </section>

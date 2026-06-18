@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GlucoseService } from '../../application/glucose.service';
 import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
+import { HistoryChartComponent } from '../../../medical-followup/presentation/components/history-chart/history-chart.component';
 
 @Component({
   selector: 'app-health-history',
-  imports: [FormsModule,RouterLink],
+  imports: [FormsModule, RouterLink, HistoryChartComponent], // Añadido HistoryChartComponent aquí
   templateUrl: './health-history.html',
   styleUrl: './health-history.css',
 })
@@ -55,6 +56,32 @@ export class HealthHistory {
 
     this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
   }
+
+  // --- NUEVOS FILTROS T50 (US-38) ---
+  protected filterLastMonth(): void {
+    const to = new Date();
+    const from = new Date();
+    from.setMonth(to.getMonth() - 1);
+
+    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+  }
+
+  protected filterLast3Months(): void {
+    const to = new Date();
+    const from = new Date();
+    from.setMonth(to.getMonth() - 3);
+
+    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+  }
+
+  protected filterLast6Months(): void {
+    const to = new Date();
+    const from = new Date();
+    from.setMonth(to.getMonth() - 6);
+
+    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+  }
+  // ----------------------------------
 
   protected startEdit(record: GlucoseRecordEntity): void {
     this.editingRecord.set(record);
