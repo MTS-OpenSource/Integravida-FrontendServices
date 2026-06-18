@@ -6,12 +6,12 @@
       <p>Gestiona la información médica, contacto y configuración del paciente.</p>
     </div>
 
-    @if (patientProfileService.profile() && !editing()) {
+    @if (profileService.profile() && !editing()) {
       <button type="button" class="primary-btn" (click)="startEditing()">✎ Editar perfil</button>
     }
   </header>
 
-  @if (patientProfileService.loading()) {
+  @if (profileService.loading()) {
     <section class="profile-layout">
       <aside class="left-column">
         <article class="card patient-card skeleton-card">
@@ -36,17 +36,17 @@
         </article>
       </main>
     </section>
-  } @else if (patientProfileService.error()) {
+  } @else if (profileService.error()) {
     <section class="card">
-      <p class="error">{{ patientProfileService.error() }}</p>
+      <p class="error">{{ profileService.error() }}</p>
     </section>
-  } @else if (patientProfileService.profile(); as profile) {
+  } @else if (profileService.profile(); as profile) {
     <section class="profile-layout">
       <aside class="left-column">
         <article class="card patient-card">
           <div class="avatar-wrapper">
             <div class="avatar">
-              {{ profile.fullName.charAt(0) }}
+              {{ (profile.firstName?.charAt(0) ?? "?") }}
             </div>
             <button type="button" class="camera-btn">●</button>
           </div>
@@ -101,7 +101,7 @@
 
               <div class="info-box">
                 <span>Tipo de diabetes</span>
-                <strong>Tipo {{ profile.diabetesType ?? 'No registrado' }}</strong>
+                <strong>Tipo {{ "No registrado" }}</strong>
                 <small>Diagnóstico registrado</small>
               </div>
 
@@ -153,7 +153,7 @@
 
               <div class="contact-box">
                 <span>Teléfono</span>
-                <strong>{{ profile.phone || 'No registrado' }}</strong>
+                <strong>{{ profile.phoneNumber || "No registrado" }}</strong>
               </div>
 
               <div class="contact-box">
@@ -178,7 +178,7 @@
               <div class="history-item">
                 <div class="history-icon diagnosis-icon">🩺</div>
                 <div class="history-content">
-                  <strong>Diabetes Mellitus Tipo {{ profile.diabetesType ?? "–" }}</strong>
+                  <strong>Diabetes Mellitus Tipo {{ "–" }}</strong>
                   <span>Diagnóstico principal · En seguimiento activo</span>
                   <small>Registrado en el sistema</small>
                 </div>
@@ -227,38 +227,38 @@
                 <label>
                   <span>Nombre completo</span>
                   <input
-                    name="fullName"
+                    name="firstName"
                     required
-                    [ngModel]="fullName()"
-                    (ngModelChange)="fullName.set($event)"
+                    [ngModel]="firstName()"
+                    (ngModelChange)="firstName.set($event)"
                   />
                 </label>
 
                 <label>
                   <span>Tipo de diabetes</span>
                   <input
-                    name="diabetesType"
+                    name="dateOfBirth"
                     type="number"
                     min="1"
                     max="2"
-                    [ngModel]="diabetesType()"
-                    (ngModelChange)="diabetesType.set(+$event)"
+                    [ngModel]="dateOfBirth()"
+                    (ngModelChange)="dateOfBirth.set($event)"
                   />
                 </label>
 
                 <label>
                   <span>Teléfono</span>
                   <input
-                    name="phone"
-                    [ngModel]="phone()"
-                    (ngModelChange)="phone.set($event)"
+                    name="phoneNumber"
+                    [ngModel]="phoneNumber()"
+                    (ngModelChange)="phoneNumber.set($event)"
                   />
                 </label>
               </div>
 
               <div class="form-actions">
                 <button type="button" class="secondary-btn" (click)="cancelEditing()">Cancelar</button>
-                <button type="submit" class="dark-btn" [disabled]="patientProfileService.loading()">
+                <button type="submit" class="dark-btn" [disabled]="profileService.loading()">
                   Guardar cambios
                 </button>
               </div>
