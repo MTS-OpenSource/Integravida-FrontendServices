@@ -57,7 +57,7 @@ export class GlucoseLog {
     const recordedAtIso = new Date(this.recordedAt()).toISOString();
 
     const record = new GlucoseRecordEntity(0, this.patientId(), value, recordedAtIso, {
-      patientID: this.patientId(),
+      patientId: this.patientId(),
       glucoseLevel: value,
       recordedAt: recordedAtIso,
       status: this.status(),

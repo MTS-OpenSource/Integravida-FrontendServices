@@ -35,7 +35,7 @@ export class GlucoseHistory implements OnInit {
     }
   }
 
-  protected onFilterChanged(filters: { from: Date; to: Date }): void {
+  protected onFilterChanged(filters: { from: string; to: string }): void {
     const user = this.authStore.currentUser();
     if (user && user.id) {
       this.glucoseService.getReadingsByDateRange(user.id, filters.from, filters.to);

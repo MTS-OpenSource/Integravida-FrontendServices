@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './glucose-filters.css',
 })
 export class GlucoseFilters {
-  @Output() filterChanged = new EventEmitter<{ from: Date; to: Date }>();
+  @Output() filterChanged = new EventEmitter<{ from: string; to: string }>();
 
   protected readonly fromDate = signal('2025-01-01');
   protected readonly toDate = signal('2025-05-31');
@@ -18,8 +18,8 @@ export class GlucoseFilters {
 
   protected applyFilters(): void {
     this.filterChanged.emit({
-      from: new Date(this.fromDate()),
-      to: new Date(this.toDate()),
+      from: this.fromDate(),
+      to: this.toDate(),
     });
   }
 

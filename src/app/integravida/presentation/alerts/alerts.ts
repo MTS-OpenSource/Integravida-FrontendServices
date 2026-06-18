@@ -8,7 +8,7 @@ import { AlertEntity } from '../../domain/model/alert.entity';
 
 @Component({
   selector: 'app-alerts',
-  imports: [FormsModule, JsonPipe, CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './alerts.html',
   styleUrl: './alerts.css',
 })

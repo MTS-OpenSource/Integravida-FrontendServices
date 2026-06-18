@@ -12,7 +12,7 @@ import { GlucoseRecordEntity } from '../../../glucose-monitoring/domain/model/gl
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, RouterLink, CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

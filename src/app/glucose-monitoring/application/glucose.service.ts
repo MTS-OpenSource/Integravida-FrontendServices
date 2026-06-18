@@ -57,23 +57,20 @@ export class GlucoseService {
       });
   }
 
-  getReadingsByDateRange(patientId: number, from: Date, to: Date): void {
+  getReadingsByDateRange(patientId: number, from: Date | string, to: Date | string): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.glucoseRecordApi
-      .getByPatientId(patientId)
+      .getByPatientId(
+        patientId,
+        this.toDateQueryValue(from),
+        this.toDateQueryValue(to),
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (records) => {
-          const filtered = records.filter((record) => {
-            if (!record.recordedAt) return false;
-
-            const date = new Date(record.recordedAt);
-            return date >= from && date <= to;
-          });
-
-          this.recordsSignal.set(this.sortByDateDesc(filtered));
+          this.recordsSignal.set(this.sortByDateDesc(records));
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -181,14 +178,21 @@ export class GlucoseService {
   }
 
   private createAlertFromReading(record: GlucoseRecordEntity, status: GlucoseStatus): void {
-    this.alertApi.create({
-      patientID: record.patientId,
-      type: status === 'Alto' ? 'Glucosa alta' : 'Glucosa baja',
-      glucoseValue: record.glucoseLevel,
-      severity: status === 'Alto' ? 'High' : 'Low',
-      createdAt: record.recordedAt,
-      read: false,
-    });
+    this.alertApi
+      .create({
+        patientId: record.patientId,
+        type: status === 'Alto' ? 'Glucosa alta' : 'Glucosa baja',
+        glucoseValue: record.glucoseLevel,
+        severity: status === 'Alto' ? 'High' : 'Low',
+        createdAt: record.recordedAt,
+        read: false,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to create alert'));
+        },
+      });
   }
 
   private sortByDateDesc(records: GlucoseRecordEntity[]): GlucoseRecordEntity[] {
@@ -218,6 +222,18 @@ export class GlucoseService {
 
   private persistRange(range: GlucoseRange): void {
     localStorage.setItem(GLUCOSE_RANGE_STORAGE_KEY, JSON.stringify(range));
+  }
+
+  private toDateQueryValue(value: Date | string): string {
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   private formatError(error: unknown, fallback: string): string {

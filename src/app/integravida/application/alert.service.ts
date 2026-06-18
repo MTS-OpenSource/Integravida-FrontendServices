@@ -32,12 +32,12 @@ export class AlertService {
 
   readonly hasUnreadAlerts = computed(() => this.unreadCount() > 0);
 
-  getAlerts(patientId: number): void {
+  getAlerts(patientId: number, unreadOnly = false): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.alertApi
-      .getByPatientId(patientId)
+      .getByPatientId(patientId, unreadOnly)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (alerts) => {
@@ -58,7 +58,7 @@ export class AlertService {
     this.errorSignal.set(null);
 
     this.alertApi
-      .markAsRead(alert.id, alert)
+      .markAsRead(alert.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedAlert) => {
@@ -84,7 +84,7 @@ export class AlertService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    forkJoin(unreadAlerts.map((alert) => this.alertApi.markAsRead(alert.id, alert)))
+    forkJoin(unreadAlerts.map((alert) => this.alertApi.markAsRead(alert.id)))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedAlerts) => {

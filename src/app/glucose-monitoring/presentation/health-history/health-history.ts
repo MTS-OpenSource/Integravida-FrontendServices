@@ -32,10 +32,7 @@ export class HealthHistory {
   protected filterByDateRange(): void {
     if (!this.fromDate() || !this.toDate()) return;
 
-    const from = new Date(this.fromDate());
-    const to = new Date(this.toDate());
-
-    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+    this.glucoseService.getReadingsByDateRange(this.patientId(), this.fromDate(), this.toDate());
   }
 
   protected filterToday(): void {
@@ -112,7 +109,7 @@ export class HealthHistory {
       recordedAtIso,
       {
         ...record.raw,
-        patientID: record.patientId,
+        patientId: record.patientId,
         glucoseLevel: value,
         recordedAt: recordedAtIso,
         status: this.glucoseService.evaluateRange(value),

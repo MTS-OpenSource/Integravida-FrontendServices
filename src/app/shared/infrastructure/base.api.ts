@@ -26,4 +26,26 @@ export abstract class BaseApi<TEntity extends BaseEntity, TResponse extends Base
       .get<TResponse | null>(url)
       .pipe(map((response) => (response ? this.assembler.toEntityFrom(response) : null)));
   }
+
+  protected postTo(url: string, body: unknown): Observable<TEntity> {
+    return this.http
+      .post<TResponse>(url, body)
+      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  }
+
+  protected putTo(url: string, body: unknown): Observable<TEntity> {
+    return this.http
+      .put<TResponse>(url, body)
+      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  }
+
+  protected patchTo(url: string, body: unknown): Observable<TEntity> {
+    return this.http
+      .patch<TResponse>(url, body)
+      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  }
+
+  protected deleteFrom(url: string): Observable<void> {
+    return this.http.delete<void>(url);
+  }
 }

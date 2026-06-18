@@ -19,21 +19,17 @@ export class AlertApi extends BaseApi<AlertEntity, AlertResponse> {
     return this.getAllFrom(this.alertEndpoint.getAll());
   }
 
-  getByPatientId(patientId: number): Observable<AlertEntity[]> {
+  getByPatientId(patientId: number, unreadOnly = false): Observable<AlertEntity[]> {
     return this.http
-      .get<AlertResponse[]>(this.alertEndpoint.getByPatientId(patientId))
+      .get<AlertResponse[]>(this.alertEndpoint.getByPatientId(patientId, unreadOnly))
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 
-  markAsRead(id: number, alert: AlertEntity): Observable<AlertEntity> {
-    return this.http
-      .patch<AlertResponse>(this.alertEndpoint.getById(id), {
-        ...alert.raw,
-        read: true,
-      })
-      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  markAsRead(id: number): Observable<AlertEntity> {
+    return this.patchTo(this.alertEndpoint.markAsRead(id), {});
   }
-  create(alert: Record<string, unknown>): void {
-    this.http.post(this.alertEndpoint.getAll(), alert).subscribe();
+
+  create(alert: Record<string, unknown>): Observable<AlertEntity> {
+    return this.postTo(this.alertEndpoint.getAll(), alert);
   }
 }

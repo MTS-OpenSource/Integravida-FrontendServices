@@ -18,12 +18,19 @@ export class AlertApiEndpoint extends BaseApiEndpoint {
     return this.collectionUrl();
   }
 
-  getByPatientId(patientId: number): string {
-    const params = new URLSearchParams({ patientID: String(patientId) });
+  getByPatientId(patientId: number, unreadOnly = false): string {
+    const params = new URLSearchParams({
+      patientId: String(patientId),
+      unreadOnly: String(unreadOnly),
+    });
     return `${this.collectionUrl()}?${params.toString()}`;
   }
 
   getById(id: number): string {
     return `${this.collectionUrl()}/${id}`;
+  }
+
+  markAsRead(id: number): string {
+    return `${this.resourceUrl(id)}/read`;
   }
 }

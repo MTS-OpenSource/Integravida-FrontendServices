@@ -19,25 +19,23 @@ export class GlucoseRecordApi extends BaseApi<GlucoseRecordEntity, GlucoseRecord
     return this.getAllFrom(this.glucoseRecordEndpoint.getAll());
   }
 
-  getByPatientId(patientId: number): Observable<GlucoseRecordEntity[]> {
+  getByPatientId(patientId: number, from?: string, to?: string): Observable<GlucoseRecordEntity[]> {
     return this.http
-      .get<GlucoseRecordResponse[]>(this.glucoseRecordEndpoint.getByPatientId(patientId))
+      .get<GlucoseRecordResponse[]>(
+        this.glucoseRecordEndpoint.getByPatientId(patientId, from, to),
+      )
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 
   create(record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
-    return this.http
-      .post<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getAll(), record.raw)
-      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+    return this.postTo(this.glucoseRecordEndpoint.getAll(), record.raw);
   }
 
   update(id: number, record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
-    return this.http
-      .put<GlucoseRecordResponse>(`${this.glucoseRecordEndpoint.getAll()}/${id}`, record.raw)
-      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+    return this.putTo(`${this.glucoseRecordEndpoint.getAll()}/${id}`, record.raw);
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.glucoseRecordEndpoint.getAll()}/${id}`);
+    return this.deleteFrom(`${this.glucoseRecordEndpoint.getAll()}/${id}`);
   }
 }

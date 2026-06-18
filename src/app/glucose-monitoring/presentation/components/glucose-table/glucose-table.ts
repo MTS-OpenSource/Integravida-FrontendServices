@@ -74,6 +74,7 @@ export class GlucoseTable {
       updatedDateIso,
       {
         ...currentRecord.raw,
+        patientId: currentRecord.patientId,
         glucoseLevel: newValue,
         recordedAt: updatedDateIso,
         status: this.glucoseService.evaluateRange(newValue),
