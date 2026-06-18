@@ -9,6 +9,8 @@
     </div>
   </header>
 
+  <app-history-chart [records]="records()"></app-history-chart>
+
   <section class="filters-card">
     <div class="filters">
       <label>
@@ -55,15 +57,27 @@
       <button type="button" (click)="filterLast7Days()">
         Últimos 7 días
       </button>
+
+      <button type="button" (click)="filterLastMonth()">
+        Último Mes
+      </button>
+
+      <button type="button" (click)="filterLast3Months()">
+        3 Meses
+      </button>
+
+      <button type="button" (click)="filterLast6Months()">
+        6 Meses
+      </button>
     </div>
   </section>
 
   @if (glucoseService.loading()) {
-  <p class="info">Cargando registros...</p>
+    <p class="info">Cargando registros...</p>
   }
 
   @if (glucoseService.error()) {
-  <p class="error">{{ glucoseService.error() }}</p>
+    <p class="error">{{ glucoseService.error() }}</p>
   }
 
   <section class="table-card">
@@ -87,16 +101,16 @@
         </thead>
 
         <tbody>
-        @for (record of records(); track record.id) {
-        <tr>
-          <td>{{ record.recordedAt }}</td>
+          @for (record of records(); track record.id) {
+            <tr>
+              <td>{{ record.recordedAt }}</td>
 
-          <td>
-            <strong>{{ record.glucoseLevel }}</strong>
-            <span class="unit">mg/dL</span>
-          </td>
+              <td>
+                <strong>{{ record.glucoseLevel }}</strong>
+                <span class="unit">mg/dL</span>
+              </td>
 
-          <td>
+              <td>
                 <span
                   class="badge"
                   [class.low]="getStatus(record) === 'Bajo'"
@@ -105,84 +119,84 @@
                 >
                   {{ getStatus(record) }}
                 </span>
-          </td>
+              </td>
 
-          <td>{{ record.raw['notes'] }}</td>
+              <td>{{ record.raw['notes'] }}</td>
 
-          <td>
-            <div class="row-actions">
-              <button
-                type="button"
-                class="edit"
-                (click)="startEdit(record)"
-              >
-                Editar
-              </button>
+              <td>
+                <div class="row-actions">
+                  <button
+                    type="button"
+                    class="edit"
+                    (click)="startEdit(record)"
+                  >
+                    Editar
+                  </button>
 
-              <button
-                type="button"
-                class="delete"
-                (click)="deleteRecord(record)"
-              >
-                Eliminar
-              </button>
-            </div>
-          </td>
-        </tr>
-        } @empty {
-        <tr>
-          <td colspan="5" class="empty">
-            No hay lecturas de glucosa para mostrar.
-          </td>
-        </tr>
-        }
+                  <button
+                    type="button"
+                    class="delete"
+                    (click)="deleteRecord(record)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty">
+                No hay lecturas de glucosa para mostrar.
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
   </section>
 
   @if (editingRecord()) {
-  <div class="modal-backdrop">
-    <div class="modal">
-      <h2>Editar lectura</h2>
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h2>Editar lectura</h2>
 
-      <label>
-        <span>Glucosa mg/dL</span>
-        <input
-          type="number"
-          [ngModel]="editGlucoseLevel()"
-          (ngModelChange)="editGlucoseLevel.set(+$event)"
-        />
-      </label>
+        <label>
+          <span>Glucosa mg/dL</span>
+          <input
+            type="number"
+            [ngModel]="editGlucoseLevel()"
+            (ngModelChange)="editGlucoseLevel.set(+$event)"
+          />
+        </label>
 
-      <label>
-        <span>Fecha y hora</span>
-        <input
-          type="datetime-local"
-          [ngModel]="editRecordedAt()"
-          (ngModelChange)="editRecordedAt.set($event)"
-        />
-      </label>
+        <label>
+          <span>Fecha y hora</span>
+          <input
+            type="datetime-local"
+            [ngModel]="editRecordedAt()"
+            (ngModelChange)="editRecordedAt.set($event)"
+          />
+        </label>
 
-      <label>
-        <span>Notas</span>
-        <textarea
-          [ngModel]="editNotes()"
-          (ngModelChange)="editNotes.set($event)"
-        ></textarea>
-      </label>
+        <label>
+          <span>Notas</span>
+          <textarea
+            [ngModel]="editNotes()"
+            (ngModelChange)="editNotes.set($event)"
+          ></textarea>
+        </label>
 
-      <div class="buttons">
-        <button type="button" class="primary" (click)="saveEdit()">
-          Guardar cambios
-        </button>
+        <div class="buttons">
+          <button type="button" class="primary" (click)="saveEdit()">
+            Guardar cambios
+          </button>
 
-        <button type="button" (click)="cancelEdit()">
-          Cancelar
-        </button>
+          <button type="button" (click)="cancelEdit()">
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   }
 </section>
 

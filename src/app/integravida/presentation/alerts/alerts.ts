@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
+import { JsonPipe, CommonModule } from '@angular/common';
 
 import { AlertService } from '../../application/alert.service';
 
@@ -8,7 +8,7 @@ import { AlertEntity } from '../../domain/model/alert.entity';
 
 @Component({
   selector: 'app-alerts',
-  imports: [FormsModule, JsonPipe],
+  imports: [FormsModule, JsonPipe, CommonModule],
   templateUrl: './alerts.html',
   styleUrl: './alerts.css',
 })

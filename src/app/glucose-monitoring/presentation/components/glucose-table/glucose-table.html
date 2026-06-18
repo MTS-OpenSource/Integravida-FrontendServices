@@ -12,12 +12,12 @@
   <div class="table-wrapper">
     <table>
       <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Valor</th>
-          <th>Estado</th>
-        </tr>
+      <tr>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Valor</th>
+        <th>Estado</th>
+        <th>Acciones</th> </tr>
       </thead>
       <tbody>
         @for (record of records(); track record.id) {
@@ -30,9 +30,91 @@
                 {{ getStatus(record.glucoseLevel) }}
               </span>
             </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon edit" (click)="openEditModal(record)" title="Editar">
+                  ✏️
+                </button>
+                <button class="btn-icon delete" (click)="openDeleteModal(record.id)" title="Eliminar">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">
+              No se encontraron registros de glucosa.
+            </td>
           </tr>
         }
       </tbody>
     </table>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="isEditModalOpen()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Editar Registro</h3>
+      <button class="close-btn" (click)="closeEditModal()">×</button>
+    </div>
+
+    <div class="modal-body form-grid">
+      <div class="form-group">
+        <label>Nivel de Glucosa (mg/dL)</label>
+        <input
+          type="number"
+          [ngModel]="editGlucoseValue()"
+          (ngModelChange)="editGlucoseValue.set($event)"
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Fecha y Hora</label>
+        <input
+          type="datetime-local"
+          [ngModel]="editDateValue()"
+          (ngModelChange)="editDateValue.set($event)"
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group full-width">
+        <label>Notas Clínicas</label>
+        <textarea
+          [ngModel]="editNotesValue()"
+          (ngModelChange)="editNotesValue.set($event)"
+          class="form-control"
+          rows="3"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeEditModal()">Cancelar</button>
+      <button class="btn-primary" (click)="confirmEdit()">Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="isDeleteModalOpen()">
+  <div class="modal-content delete-modal">
+    <div class="modal-header warning-header">
+      <h3>Confirmar Eliminación</h3>
+      <button class="close-btn" (click)="closeDeleteModal()">×</button>
+    </div>
+
+    <div class="modal-body text-center">
+      <div class="warning-icon">⚠️</div>
+      <p>¿Estás seguro de que deseas eliminar este registro de forma permanente?</p>
+      <span class="sub-text">Esta acción no se puede deshacer y afectará a las estadísticas TIR.</span>
+    </div>
+
+    <div class="modal-footer split">
+      <button class="btn-secondary full" (click)="closeDeleteModal()">Cancelar</button>
+      <button class="btn-danger full" (click)="confirmDelete()">Sí, Eliminar</button>
+    </div>
   </div>
 </div>
