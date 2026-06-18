@@ -1,6 +1,8 @@
 export const environment = {
   production: false,
   integravidaProviderApiBaseUrl: 'https://integravida-data.onrender.com',
+  integravidaBackendApiBaseUrl: 'http://localhost:8096',
+  integravidaBackendProfilesEndpointPath: '/api/v1/profiles',
   integravidaProviderUsersEndpointPath: '/users',
   integravidaProviderPatientsEndpointPath: '/patients',
   integravidaProviderDoctorEndpointPath: '/doctor',
