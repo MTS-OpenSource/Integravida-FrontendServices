@@ -7,6 +7,52 @@
     </div>
   </header>
 
+  <section class="card range-config">
+    <div class="card-header">
+      <div class="icon-box">🎯</div>
+      <div>
+        <h2>Rango objetivo de glucosa</h2>
+        <p>Configura los valores mínimo y máximo para evaluar las lecturas del paciente.</p>
+      </div>
+    </div>
+
+    <div class="form">
+      <label>
+        <span>Mínimo mg/dL</span>
+        <input
+          type="number"
+          [ngModel]="minRange()"
+          (ngModelChange)="minRange.set(+$event)"
+          placeholder="Ej: 70"
+        />
+      </label>
+
+      <label>
+        <span>Máximo mg/dL</span>
+        <input
+          type="number"
+          [ngModel]="maxRange()"
+          (ngModelChange)="maxRange.set(+$event)"
+          placeholder="Ej: 180"
+        />
+      </label>
+
+      <div class="range-preview">
+        <span>Rango actual</span>
+        <strong>{{ currentRange().min }} - {{ currentRange().max }} mg/dL</strong>
+      </div>
+
+      @if (rangeError()) {
+        <p class="range-error">{{ rangeError() }}</p>
+      }
+
+      <div class="range-actions">
+        <button type="button" class="secondary" (click)="resetRange()">Restablecer</button>
+        <button type="button" class="primary compact" (click)="saveRange()">Guardar rango</button>
+      </div>
+    </div>
+  </section>
+
   <section class="card">
     <div class="card-header">
       <div class="icon-box">💧</div>

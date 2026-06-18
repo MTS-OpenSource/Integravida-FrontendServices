@@ -13,6 +13,7 @@ export interface GlucoseRange {
 }
 
 const DEFAULT_RANGE: GlucoseRange = { min: 70, max: 180 };
+const GLUCOSE_RANGE_STORAGE_KEY = 'integravida.glucoseRange';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +29,9 @@ export class GlucoseService {
 
   private readonly errorSignal = signal<string | null>(null);
   readonly error = this.errorSignal.asReadonly();
+
+  private readonly rangeSignal = signal<GlucoseRange>(this.loadRange());
+  readonly range = this.rangeSignal.asReadonly();
 
   constructor(
     private readonly glucoseRecordApi: GlucoseRecordApi,
@@ -153,9 +157,26 @@ export class GlucoseService {
       });
   }
 
-  evaluateRange(glucoseValue: number, range: GlucoseRange = DEFAULT_RANGE): GlucoseStatus {
-    if (glucoseValue < range.min) return 'Bajo';
-    if (glucoseValue > range.max) return 'Alto';
+  updateRange(min: number, max: number): void {
+    const range = { min, max };
+    this.rangeSignal.set(range);
+    this.persistRange(range);
+  }
+
+  resetRange(): void {
+    this.rangeSignal.set(DEFAULT_RANGE);
+    this.persistRange(DEFAULT_RANGE);
+  }
+
+  isValidRange(min: number, max: number): boolean {
+    return Number.isFinite(min) && Number.isFinite(max) && min > 0 && max > min;
+  }
+
+  evaluateRange(glucoseValue: number, range?: GlucoseRange): GlucoseStatus {
+    const currentRange = range ?? this.rangeSignal();
+
+    if (glucoseValue < currentRange.min) return 'Bajo';
+    if (glucoseValue > currentRange.max) return 'Alto';
     return 'Normal';
   }
 
@@ -176,6 +197,27 @@ export class GlucoseService {
       const dateB = b.recordedAt ? new Date(b.recordedAt).getTime() : 0;
       return dateB - dateA;
     });
+  }
+
+  private loadRange(): GlucoseRange {
+    try {
+      const savedRange = localStorage.getItem(GLUCOSE_RANGE_STORAGE_KEY);
+      if (!savedRange) return DEFAULT_RANGE;
+
+      const parsedRange = JSON.parse(savedRange) as GlucoseRange;
+
+      if (this.isValidRange(parsedRange.min, parsedRange.max)) {
+        return parsedRange;
+      }
+
+      return DEFAULT_RANGE;
+    } catch {
+      return DEFAULT_RANGE;
+    }
+  }
+
+  private persistRange(range: GlucoseRange): void {
+    localStorage.setItem(GLUCOSE_RANGE_STORAGE_KEY, JSON.stringify(range));
   }
 
   private formatError(error: unknown, fallback: string): string {
