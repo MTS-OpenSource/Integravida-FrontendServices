@@ -33,8 +33,16 @@
         Resueltas
       </button>
 
-      <button type="button" class="secondary" (click)="alertService.markAllAsRead()">
+      <button
+        type="button"
+        class="secondary"
+        [disabled]="!alertService.hasUnreadAlerts() || alertService.loading()"
+        (click)="markAllAsRead()"
+      >
         Marcar todas como vistas
+        @if (alertService.unreadCount() > 0) {
+          <span>({{ alertService.unreadCount() }})</span>
+        }
       </button>
     </div>
   </section>
@@ -72,9 +80,14 @@
       </div>
 
       @if (!alert.read) {
-      <button type="button" class="mark-read" (click)="alertService.markAsRead(alert)">
-        Marcar como vista
-      </button>
+        <button
+          type="button"
+          class="mark-read"
+          [disabled]="alertService.loading()"
+          (click)="markAsRead(alert)"
+        >
+          Marcar como vista
+        </button>
       }
     </article>
     } @empty {

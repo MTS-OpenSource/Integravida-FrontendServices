@@ -4,6 +4,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AlertApi } from '../infrastructure/alert.api';
 import { AlertEntity } from '../domain/model/alert.entity';
 
+import { forkJoin } from 'rxjs';
+
 export type AlertTab = 'Todas' | 'Activas' | 'Resueltas';
 
 @Injectable({
@@ -26,6 +28,10 @@ export class AlertService {
 
   readonly resolvedAlerts = computed(() => this.alertsSignal().filter((alert) => alert.read));
 
+  readonly unreadCount = computed(() => this.activeAlerts().length);
+
+  readonly hasUnreadAlerts = computed(() => this.unreadCount() > 0);
+
   getAlerts(patientId: number): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
@@ -46,6 +52,8 @@ export class AlertService {
   }
 
   markAsRead(alert: AlertEntity): void {
+    if (alert.read) return;
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -69,9 +77,32 @@ export class AlertService {
   }
 
   markAllAsRead(): void {
-    this.alertsSignal()
-      .filter((alert) => !alert.read)
-      .forEach((alert) => this.markAsRead(alert));
+    const unreadAlerts = this.alertsSignal().filter((alert) => !alert.read);
+
+    if (unreadAlerts.length === 0) return;
+
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    forkJoin(unreadAlerts.map((alert) => this.alertApi.markAsRead(alert.id, alert)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updatedAlerts) => {
+          const updatedAlertsById = new Map(
+            updatedAlerts.map((updatedAlert) => [updatedAlert.id, updatedAlert]),
+          );
+
+          this.alertsSignal.update((alerts) =>
+            alerts.map((alert) => updatedAlertsById.get(alert.id) ?? alert),
+          );
+
+          this.loadingSignal.set(false);
+        },
+        error: (error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to mark all alerts as read'));
+          this.loadingSignal.set(false);
+        },
+      });
   }
 
   private sortByDateDesc(alerts: AlertEntity[]): AlertEntity[] {

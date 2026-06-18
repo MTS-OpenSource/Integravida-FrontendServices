@@ -73,7 +73,14 @@ export const routes: Routes = [
         (module) => module.ALERTS_ROUTES,
       ),
   },
-
+  {
+    path: 'adverse-effects',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./integravida/presentation/adverse-effects/adverse-effects.routes').then(
+        (module) => module.ADVERSE_EFFECTS_ROUTES,
+      ),
+  },
   {
     path: 'glucose-monitoring',
     canActivate: [authGuard],
