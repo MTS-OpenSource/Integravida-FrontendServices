@@ -20,6 +20,8 @@ import { PatientDoctorApi } from '../infrastructure/patient-doctor.api';
 import { PatientDoctorResponse } from '../infrastructure/patient-doctor.response';
 import { TreatmentApi } from '../infrastructure/treatment.api';
 
+import { MedicationIntakeApi } from '../infrastructure/medication-intake.api';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -48,6 +50,61 @@ export class DashboardService {
 
   readonly hasSummary = computed(() => this.summary() !== null);
 
+  private readonly confirmedMedicationIdsSignal = signal<Set<number>>(new Set());
+  private readonly medicationIntakeLoadingIdsSignal = signal<Set<number>>(new Set());
+
+  isMedicationConfirmed(medicationId: number): boolean {
+    return this.confirmedMedicationIdsSignal().has(medicationId);
+  }
+
+  isMedicationIntakeLoading(medicationId: number): boolean {
+    return this.medicationIntakeLoadingIdsSignal().has(medicationId);
+  }
+
+  confirmMedicationIntake(medication: MedicationEntity): void {
+    if (this.isMedicationConfirmed(medication.id) || this.isMedicationIntakeLoading(medication.id)) {
+      return;
+    }
+
+    this.addMedicationIntakeLoadingId(medication.id);
+    this.errorSignal.set(null);
+
+    this.medicationIntakeApi
+      .confirmDose(medication)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.confirmedMedicationIdsSignal.update((ids) => {
+            const updatedIds = new Set(ids);
+            updatedIds.add(medication.id);
+            return updatedIds;
+          });
+
+          this.removeMedicationIntakeLoadingId(medication.id);
+        },
+        error: (error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to confirm medication intake'));
+          this.removeMedicationIntakeLoadingId(medication.id);
+        },
+      });
+  }
+
+  private addMedicationIntakeLoadingId(medicationId: number): void {
+    this.medicationIntakeLoadingIdsSignal.update((ids) => {
+      const updatedIds = new Set(ids);
+      updatedIds.add(medicationId);
+      return updatedIds;
+    });
+  }
+
+  private removeMedicationIntakeLoadingId(medicationId: number): void {
+    this.medicationIntakeLoadingIdsSignal.update((ids) => {
+      const updatedIds = new Set(ids);
+      updatedIds.delete(medicationId);
+      return updatedIds;
+    });
+  }
+
   constructor(
     private readonly authStore: AuthStore,
     private readonly patientApi: PatientApi,
@@ -56,6 +113,7 @@ export class DashboardService {
     private readonly treatmentApi: TreatmentApi,
     private readonly glucoseRecordApi: GlucoseRecordApi,
     private readonly medicationApi: MedicationApi,
+    private readonly medicationIntakeApi: MedicationIntakeApi,
     private readonly alertApi: AlertApi,
   ) {
     effect(

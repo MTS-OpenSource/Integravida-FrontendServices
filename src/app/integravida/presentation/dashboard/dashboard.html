@@ -77,15 +77,38 @@
       </div>
       <div class="doses-list">
         @for (med of dashboardService.summary()?.activeMedications; track med.id) {
-          <div class="dose-item" [class]="med.status">
+          <div
+            class="dose-item"
+            [class.done]="dashboardService.isMedicationConfirmed(med.id) || med.status === 'done'"
+            [class.next]="!dashboardService.isMedicationConfirmed(med.id) && med.status === 'next'"
+          >
             <div class="check-box">
-              @if(med.status === 'done'){ ✓ }
+              @if (dashboardService.isMedicationConfirmed(med.id) || med.status === 'done') { ✓ }
             </div>
             <div class="dose-content">
               <h4>{{ med.name }} {{ med.dose }}</h4>
               <p>{{ med.scheduleTime }} • {{ med.frequency }}</p>
             </div>
-            <span class="status-tag">{{ med.status | titlecase }}</span>
+            <div class="dose-actions">
+  <span class="status-tag">
+    {{ dashboardService.isMedicationConfirmed(med.id) ? 'Done' : (med.status | titlecase) }}
+  </span>
+
+              <button
+                type="button"
+                class="dose-confirm"
+                [disabled]="dashboardService.isMedicationConfirmed(med.id) || dashboardService.isMedicationIntakeLoading(med.id)"
+                (click)="dashboardService.confirmMedicationIntake(med)"
+              >
+                @if (dashboardService.isMedicationIntakeLoading(med.id)) {
+                  Guardando...
+                } @else if (dashboardService.isMedicationConfirmed(med.id)) {
+                  Confirmada
+                } @else {
+                  Confirmar toma
+                }
+              </button>
+            </div>
           </div>
         }
       </div>

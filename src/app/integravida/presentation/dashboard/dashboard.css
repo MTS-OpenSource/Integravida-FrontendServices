@@ -98,6 +98,58 @@
   margin-bottom: 0.75rem;
 }
 
+.dose-content {
+  flex: 1;
+}
+
+.dose-content h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.dose-content p {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.dose-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.dose-confirm {
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  background: var(--primary-mint);
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dose-confirm:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.dose-item.done {
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+}
+
+.dose-item.done .check-box {
+  background: var(--primary-mint);
+}
+
+.status-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #0f766e;
+}
+
 .dose-item.next {
   background: #f0fdfa;
   border: 1.5px solid var(--primary-mint);
