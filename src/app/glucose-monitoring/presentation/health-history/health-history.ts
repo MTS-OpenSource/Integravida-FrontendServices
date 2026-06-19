@@ -101,18 +101,18 @@ export class HealthHistory {
 
     if (!record || value === null || Number.isNaN(value)) return;
 
-    const recordedAtIso = new Date(this.editRecordedAt()).toISOString();
+    const recordedAt = this.normalizeDateTimeForApi(this.editRecordedAt());
     const notes = this.editNotes().trim();
 
     const updatedRecord = new GlucoseRecordEntity(
       record.id,
       record.patientId,
       value,
-      recordedAtIso,
+      recordedAt,
       {
         patientId: record.patientId,
         glucoseValue: value,
-        measuredAt: recordedAtIso,
+        measuredAt: recordedAt,
       },
       notes || null,
     );
@@ -131,5 +131,29 @@ export class HealthHistory {
   protected getStatus(record: GlucoseRecordEntity): string {
     if (record.glucoseLevel === null) return 'Sin dato';
     return this.glucoseService.evaluateRange(record.glucoseLevel);
+  }
+
+  private normalizeDateTimeForApi(value: string): string {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return this.toDateTimeLocalValue(new Date());
+    }
+
+    if (trimmed.length === 16) {
+      return `${trimmed}:00`;
+    }
+
+    return trimmed.slice(0, 19);
+  }
+
+  private toDateTimeLocalValue(date: Date): string {
+    const pad = (value: number): string => String(value).padStart(2, '0');
+
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate()),
+    ].join('-') + `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 }

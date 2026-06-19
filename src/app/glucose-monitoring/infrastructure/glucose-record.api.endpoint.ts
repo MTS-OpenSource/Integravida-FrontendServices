@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { environment } from '../../../environments/environment';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
+
+const GLUCOSE_RECORDS_RESOURCE_PATH = '/glucose-records';
+const LOCAL_MONITORING_API_BASE_URL = '/api/v1';
 
 @Injectable({
   providedIn: 'root',
@@ -9,8 +11,8 @@ import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
   constructor() {
     super(
-      environment.integravidaProviderApiBaseUrl,
-      environment.integravidaProviderGlucoseRecordsEndpointPath,
+      LOCAL_MONITORING_API_BASE_URL,
+      GLUCOSE_RECORDS_RESOURCE_PATH,
     );
   }
 

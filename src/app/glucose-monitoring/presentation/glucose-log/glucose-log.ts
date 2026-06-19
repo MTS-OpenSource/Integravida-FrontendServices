@@ -14,8 +14,9 @@ export class GlucoseLog {
   protected readonly glucoseService = inject(GlucoseService);
 
   protected readonly patientId = signal('');
+  protected readonly rangePatientId = signal('');
   protected readonly glucoseLevel = signal<number | null>(null);
-  protected readonly recordedAt = signal(new Date().toISOString().slice(0, 16));
+  protected readonly recordedAt = signal(this.toDateTimeLocalValue(new Date()));
   protected readonly notes = signal('');
 
   protected readonly minRange = signal(this.glucoseService.range().min);
@@ -30,16 +31,49 @@ export class GlucoseLog {
   });
 
   protected saveRange(): void {
+    const patientId = this.rangePatientId().trim();
     const min = Number(this.minRange());
     const max = Number(this.maxRange());
+
+    if (!patientId) {
+      this.rangeError.set('Debes ingresar un Patient UUID para guardar el rango.');
+      return;
+    }
 
     if (!this.glucoseService.isValidRange(min, max)) {
       this.rangeError.set('El rango debe tener un mínimo mayor a 0 y un máximo mayor al mínimo.');
       return;
     }
 
-    this.glucoseService.updateRange(min, max);
-    this.rangeError.set(null);
+    this.glucoseService.updateRange(patientId, min, max).subscribe({
+      next: (range) => {
+        if (!range || range.minimumValue === null || range.maximumValue === null) return;
+
+        this.minRange.set(range.minimumValue);
+        this.maxRange.set(range.maximumValue);
+
+        this.rangeError.set(null);
+      },
+    });
+  }
+
+  protected loadRange(): void {
+    const patientId = this.rangePatientId().trim();
+
+    if (!patientId) {
+      this.rangeError.set('Debes ingresar un Patient UUID para cargar el rango.');
+      return;
+    }
+
+    this.glucoseService.loadRange(patientId).subscribe({
+      next: (range) => {
+        if (!range || range.minimumValue === null || range.maximumValue === null) return;
+
+        this.minRange.set(range.minimumValue);
+        this.maxRange.set(range.maximumValue);
+        this.rangeError.set(null);
+      },
+    });
   }
 
   protected resetRange(): void {
@@ -55,18 +89,18 @@ export class GlucoseLog {
 
     if (!patientId || value === null || Number.isNaN(value)) return;
 
-    const recordedAtIso = new Date(this.recordedAt()).toISOString();
+    const recordedAt = this.normalizeDateTimeForApi(this.recordedAt());
     const notes = this.notes().trim();
 
     const record = new GlucoseRecordEntity(
       '',
       patientId,
       value,
-      recordedAtIso,
+      recordedAt,
       {
         patientId,
         glucoseValue: value,
-        measuredAt: recordedAtIso,
+        measuredAt: recordedAt,
       },
       notes || null,
     );
@@ -75,6 +109,30 @@ export class GlucoseLog {
 
     this.glucoseLevel.set(null);
     this.notes.set('');
-    this.recordedAt.set(new Date().toISOString().slice(0, 16));
+    this.recordedAt.set(this.toDateTimeLocalValue(new Date()));
+  }
+
+  private normalizeDateTimeForApi(value: string): string {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return this.toDateTimeLocalValue(new Date());
+    }
+
+    if (trimmed.length === 16) {
+      return `${trimmed}:00`;
+    }
+
+    return trimmed.slice(0, 19);
+  }
+
+  private toDateTimeLocalValue(date: Date): string {
+    const pad = (value: number): string => String(value).padStart(2, '0');
+
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate()),
+    ].join('-') + `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 }

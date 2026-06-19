@@ -65,18 +65,18 @@ export class GlucoseTable {
 
     if (!currentRecord || newValue === null || Number.isNaN(newValue)) return;
 
-    const updatedDateIso = new Date(this.editDateValue()).toISOString();
+    const updatedDate = this.normalizeDateTimeForApi(this.editDateValue());
     const notes = this.editNotesValue().trim();
 
     const updatedEntity = new GlucoseRecordEntity(
       currentRecord.id,
       currentRecord.patientId,
       newValue,
-      updatedDateIso,
+      updatedDate,
       {
         patientId: currentRecord.patientId,
         glucoseValue: newValue,
-        measuredAt: updatedDateIso,
+        measuredAt: updatedDate,
       },
       notes || null,
     );
@@ -101,5 +101,29 @@ export class GlucoseTable {
       this.glucoseService.deleteReading(id);
       this.closeDeleteModal();
     }
+  }
+
+  private normalizeDateTimeForApi(value: string): string {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return this.toDateTimeLocalValue(new Date());
+    }
+
+    if (trimmed.length === 16) {
+      return `${trimmed}:00`;
+    }
+
+    return trimmed.slice(0, 19);
+  }
+
+  private toDateTimeLocalValue(date: Date): string {
+    const pad = (value: number): string => String(value).padStart(2, '0');
+
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate()),
+    ].join('-') + `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 }

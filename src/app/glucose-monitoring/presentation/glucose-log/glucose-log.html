@@ -17,6 +17,16 @@
     </div>
 
     <div class="form">
+      <label class="full">
+        <span>Patient UUID</span>
+        <input
+          type="text"
+          [ngModel]="rangePatientId()"
+          (ngModelChange)="rangePatientId.set($event)"
+          placeholder="30b03b5c-33e4-4c88-bb09-a10bff88f3a0"
+        />
+      </label>
+
       <label>
         <span>Mínimo mg/dL</span>
         <input
@@ -48,6 +58,7 @@
 
       <div class="range-actions">
         <button type="button" class="secondary" (click)="resetRange()">Restablecer</button>
+        <button type="button" class="secondary" (click)="loadRange()">Cargar rango</button>
         <button type="button" class="primary compact" (click)="saveRange()">Guardar rango</button>
       </div>
     </div>

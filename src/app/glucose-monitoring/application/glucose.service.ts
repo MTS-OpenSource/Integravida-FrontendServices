@@ -1,9 +1,12 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, finalize, of, tap } from 'rxjs';
 import { AlertApi } from '../../integravida/infrastructure/alert.api';
 
 import { GlucoseRecordApi } from '../infrastructure/glucose-record.api';
 import { GlucoseRecordEntity } from '../domain/model/glucose-record.entity';
+import { GlucoseRangeApi } from '../infrastructure/glucose-range.api';
+import { GlucoseRangeEntity } from '../domain/model/glucose-range.entity';
 
 export type GlucoseStatus = 'Normal' | 'Alto' | 'Bajo';
 
@@ -13,7 +16,6 @@ export interface GlucoseRange {
 }
 
 const DEFAULT_RANGE: GlucoseRange = { min: 70, max: 180 };
-const GLUCOSE_RANGE_STORAGE_KEY = 'integravida.glucoseRange';
 
 @Injectable({
   providedIn: 'root',
@@ -30,11 +32,12 @@ export class GlucoseService {
   private readonly errorSignal = signal<string | null>(null);
   readonly error = this.errorSignal.asReadonly();
 
-  private readonly rangeSignal = signal<GlucoseRange>(this.loadRange());
+  private readonly rangeSignal = signal<GlucoseRange>(DEFAULT_RANGE);
   readonly range = this.rangeSignal.asReadonly();
 
   constructor(
     private readonly glucoseRecordApi: GlucoseRecordApi,
+    private readonly glucoseRangeApi: GlucoseRangeApi,
     private readonly alertApi: AlertApi,
   ) {}
 
@@ -160,15 +163,78 @@ export class GlucoseService {
       });
   }
 
-  updateRange(min: number, max: number): void {
-    const range = { min, max };
-    this.rangeSignal.set(range);
-    this.persistRange(range);
+  loadRange(patientId: string | number) {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.errorSignal.set('Debes ingresar un patientId UUID para cargar el rango.');
+      return of(null);
+    }
+
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.glucoseRangeApi
+      .getByPatientId(normalizedPatientId)
+      .pipe(
+        tap((range) => {
+          if (!range || range.minimumValue === null || range.maximumValue === null) {
+            this.rangeSignal.set(DEFAULT_RANGE);
+            return;
+          }
+
+          this.rangeSignal.set({
+            min: range.minimumValue,
+            max: range.maximumValue,
+          });
+        }),
+        finalize(() => {
+          this.loadingSignal.set(false);
+        }),
+        catchError((error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to load glucose range'));
+          return of(null);
+        }),
+      );
+  }
+
+  updateRange(patientId: string | number, min: number, max: number) {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.errorSignal.set('Debes ingresar un patientId UUID para guardar el rango.');
+      return of(null as GlucoseRangeEntity | null);
+    }
+
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.glucoseRangeApi
+      .update(normalizedPatientId, {
+        minimumValue: min,
+        maximumValue: max,
+      })
+      .pipe(
+        tap((range) => {
+          if (!range || range.minimumValue === null || range.maximumValue === null) return;
+
+          this.rangeSignal.set({
+            min: range.minimumValue,
+            max: range.maximumValue,
+          });
+        }),
+        finalize(() => {
+          this.loadingSignal.set(false);
+        }),
+        catchError((error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to save glucose range'));
+          return of(null as GlucoseRangeEntity | null);
+        }),
+      );
   }
 
   resetRange(): void {
     this.rangeSignal.set(DEFAULT_RANGE);
-    this.persistRange(DEFAULT_RANGE);
   }
 
   isValidRange(min: number, max: number): boolean {
@@ -218,27 +284,6 @@ export class GlucoseService {
       pad(normalized.getMonth() + 1),
       pad(normalized.getDate()),
     ].join('-') + `T${pad(normalized.getHours())}:${pad(normalized.getMinutes())}:${pad(normalized.getSeconds())}`;
-  }
-
-  private loadRange(): GlucoseRange {
-    try {
-      const savedRange = localStorage.getItem(GLUCOSE_RANGE_STORAGE_KEY);
-      if (!savedRange) return DEFAULT_RANGE;
-
-      const parsedRange = JSON.parse(savedRange) as GlucoseRange;
-
-      if (this.isValidRange(parsedRange.min, parsedRange.max)) {
-        return parsedRange;
-      }
-
-      return DEFAULT_RANGE;
-    } catch {
-      return DEFAULT_RANGE;
-    }
-  }
-
-  private persistRange(range: GlucoseRange): void {
-    localStorage.setItem(GLUCOSE_RANGE_STORAGE_KEY, JSON.stringify(range));
   }
 
   private formatError(error: unknown, fallback: string): string {

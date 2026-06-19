@@ -1,9 +1,7 @@
-import { BaseEntity } from '../../../shared/infrastructure/base.entity';
-
-export class AlertEntity extends BaseEntity {
+export class AlertEntity {
   constructor(
-    id: number,
-    public readonly patientId: number | null,
+    public readonly id: string,
+    public readonly patientId: string | number | null,
     public readonly type: string | null,
     public readonly title: string | null,
     public readonly desc: string | null,
@@ -13,7 +11,5 @@ export class AlertEntity extends BaseEntity {
     public readonly createdAt: string | null,
     public readonly read: boolean | null,
     public readonly raw: Record<string, unknown>,
-  ) {
-    super(id);
-  }
+  ) {}
 }
