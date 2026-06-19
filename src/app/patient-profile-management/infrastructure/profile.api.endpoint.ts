@@ -19,6 +19,10 @@ export class ProfileApiEndpoint extends BaseApiEndpoint {
   }
 
   getByEmail(email: string): string {
-    return `${this.baseUrl}?email=${encodeURIComponent(email)}`;
+    return `${this.collectionUrl()}?email=${encodeURIComponent(email)}`;
+  }
+
+  getAll(): string {
+    return this.collectionUrl();
   }
 }

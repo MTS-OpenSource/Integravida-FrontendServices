@@ -23,7 +23,7 @@ export class ProfileApi {
   }
 
   getAll(): Observable<ProfileResponse[]> {
-    return this.http.get<ProfileResponse[]>(this.endpoint.baseUrl);
+    return this.http.get<ProfileResponse[]>(this.endpoint.getAll());
   }
 
   update(profileId: string, request: UpdateProfileRequest): Observable<ProfileResponse> {
