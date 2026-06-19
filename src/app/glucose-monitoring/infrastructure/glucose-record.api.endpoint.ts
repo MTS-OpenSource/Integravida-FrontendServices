@@ -18,8 +18,21 @@ export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
     return this.collectionUrl();
   }
 
-  getByPatientId(patientId: number): string {
-    const params = new URLSearchParams({ patientID: String(patientId) });
+  getById(id: string | number): string {
+    return this.resourceUrl(id);
+  }
+
+  getByPatientId(patientId: string | number, from?: string, to?: string): string {
+    const params = new URLSearchParams({ patientId: String(patientId) });
+
+    if (from) {
+      params.set('from', from);
+    }
+
+    if (to) {
+      params.set('to', to);
+    }
+
     return `${this.collectionUrl()}?${params.toString()}`;
   }
 }

@@ -22,7 +22,7 @@ export class GlucoseTable {
   protected readonly editNotesValue = signal('');
 
   protected readonly isDeleteModalOpen = signal(false);
-  protected readonly recordToDelete = signal<number | null>(null);
+  protected readonly recordToDelete = signal<string | number | null>(null);
 
   protected getStatus(value: number | null): string {
     if (value === null) return 'Desconocido';
@@ -50,7 +50,7 @@ export class GlucoseTable {
     this.recordToEdit.set(record);
     this.editGlucoseValue.set(record.glucoseLevel);
     this.editDateValue.set(record.recordedAt ? record.recordedAt.slice(0, 16) : '');
-    this.editNotesValue.set(String(record.raw['notes'] ?? ''));
+    this.editNotesValue.set(record.notes ?? '');
     this.isEditModalOpen.set(true);
   }
 
@@ -66,6 +66,7 @@ export class GlucoseTable {
     if (!currentRecord || newValue === null || Number.isNaN(newValue)) return;
 
     const updatedDateIso = new Date(this.editDateValue()).toISOString();
+    const notes = this.editNotesValue().trim();
 
     const updatedEntity = new GlucoseRecordEntity(
       currentRecord.id,
@@ -73,19 +74,18 @@ export class GlucoseTable {
       newValue,
       updatedDateIso,
       {
-        ...currentRecord.raw,
-        glucoseLevel: newValue,
-        recordedAt: updatedDateIso,
-        status: this.glucoseService.evaluateRange(newValue),
-        notes: this.editNotesValue(),
+        patientId: currentRecord.patientId,
+        glucoseValue: newValue,
+        measuredAt: updatedDateIso,
       },
+      notes || null,
     );
 
     this.glucoseService.updateReading(currentRecord.id, updatedEntity);
     this.closeEditModal();
   }
 
-  protected openDeleteModal(recordId: number): void {
+  protected openDeleteModal(recordId: string | number): void {
     this.recordToDelete.set(recordId);
     this.isDeleteModalOpen.set(true);
   }

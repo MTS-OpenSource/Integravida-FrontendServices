@@ -13,7 +13,7 @@ import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
 export class GlucoseLog {
   protected readonly glucoseService = inject(GlucoseService);
 
-  protected readonly patientId = signal(1);
+  protected readonly patientId = signal('');
   protected readonly glucoseLevel = signal<number | null>(null);
   protected readonly recordedAt = signal(new Date().toISOString().slice(0, 16));
   protected readonly notes = signal('');
@@ -51,18 +51,25 @@ export class GlucoseLog {
 
   protected save(): void {
     const value = this.glucoseLevel();
+    const patientId = this.patientId().trim();
 
-    if (value === null || Number.isNaN(value)) return;
+    if (!patientId || value === null || Number.isNaN(value)) return;
 
     const recordedAtIso = new Date(this.recordedAt()).toISOString();
+    const notes = this.notes().trim();
 
-    const record = new GlucoseRecordEntity(0, this.patientId(), value, recordedAtIso, {
-      patientID: this.patientId(),
-      glucoseLevel: value,
-      recordedAt: recordedAtIso,
-      status: this.status(),
-      notes: this.notes(),
-    });
+    const record = new GlucoseRecordEntity(
+      '',
+      patientId,
+      value,
+      recordedAtIso,
+      {
+        patientId,
+        glucoseValue: value,
+        measuredAt: recordedAtIso,
+      },
+      notes || null,
+    );
 
     this.glucoseService.saveReading(record);
 

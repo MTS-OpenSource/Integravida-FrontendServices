@@ -9,7 +9,7 @@ import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 export class ProfileApiEndpoint extends BaseApiEndpoint {
   constructor() {
     super(
-      environment.integravidaBackendApiBaseUrl,
+      environment.integravidaProviderApiBaseUrl,
       environment.integravidaBackendProfilesEndpointPath,
     );
   }
@@ -18,7 +18,11 @@ export class ProfileApiEndpoint extends BaseApiEndpoint {
     return this.resourceUrl(profileId);
   }
 
+  getAll(): string {
+    return this.collectionUrl();
+  }
+
   getByEmail(email: string): string {
-    return `${this.baseUrl}?email=${encodeURIComponent(email)}`;
+    return `${this.collectionUrl()}?email=${encodeURIComponent(email)}`;
   }
 }

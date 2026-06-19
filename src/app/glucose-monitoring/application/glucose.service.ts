@@ -38,12 +38,20 @@ export class GlucoseService {
     private readonly alertApi: AlertApi,
   ) {}
 
-  getReadings(patientId: number): void {
+  getReadings(patientId: string | number): void {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.recordsSignal.set([]);
+      this.errorSignal.set('Debes ingresar un patientId UUID para consultar lecturas.');
+      return;
+    }
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.glucoseRecordApi
-      .getByPatientId(patientId)
+      .getByPatientId(normalizedPatientId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (records) => {
@@ -57,23 +65,27 @@ export class GlucoseService {
       });
   }
 
-  getReadingsByDateRange(patientId: number, from: Date, to: Date): void {
+  getReadingsByDateRange(patientId: string | number, from: Date, to: Date): void {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.recordsSignal.set([]);
+      this.errorSignal.set('Debes ingresar un patientId UUID para filtrar lecturas.');
+      return;
+    }
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
+    const fromParam = this.formatDateTimeForApi(from);
+    const toParam = this.formatDateTimeForApi(to, true);
+
     this.glucoseRecordApi
-      .getByPatientId(patientId)
+      .getByPatientId(normalizedPatientId, fromParam, toParam)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (records) => {
-          const filtered = records.filter((record) => {
-            if (!record.recordedAt) return false;
-
-            const date = new Date(record.recordedAt);
-            return date >= from && date <= to;
-          });
-
-          this.recordsSignal.set(this.sortByDateDesc(filtered));
+          this.recordsSignal.set(this.sortByDateDesc(records));
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -93,15 +105,6 @@ export class GlucoseService {
       .subscribe({
         next: (createdRecord) => {
           this.recordsSignal.update((records) => this.sortByDateDesc([...records, createdRecord]));
-
-          if (createdRecord.glucoseLevel !== null) {
-            const status = this.evaluateRange(createdRecord.glucoseLevel);
-
-            if (status !== 'Normal') {
-              this.createAlertFromReading(createdRecord, status);
-            }
-          }
-
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -111,7 +114,7 @@ export class GlucoseService {
       });
   }
 
-  updateReading(id: number, record: GlucoseRecordEntity): void {
+  updateReading(id: string | number, record: GlucoseRecordEntity): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -137,7 +140,7 @@ export class GlucoseService {
       });
   }
 
-  deleteReading(id: number): void {
+  deleteReading(id: string | number): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -184,19 +187,37 @@ export class GlucoseService {
     this.alertApi.create({
       patientID: record.patientId,
       type: status === 'Alto' ? 'Glucosa alta' : 'Glucosa baja',
-      glucoseValue: record.glucoseLevel,
+      glucoseValue: record.glucoseValue,
       severity: status === 'Alto' ? 'High' : 'Low',
-      createdAt: record.recordedAt,
+      createdAt: record.measuredAt,
       read: false,
     });
   }
 
   private sortByDateDesc(records: GlucoseRecordEntity[]): GlucoseRecordEntity[] {
     return [...records].sort((a, b) => {
-      const dateA = a.recordedAt ? new Date(a.recordedAt).getTime() : 0;
-      const dateB = b.recordedAt ? new Date(b.recordedAt).getTime() : 0;
+      const dateA = a.measuredAt ? new Date(a.measuredAt).getTime() : 0;
+      const dateB = b.measuredAt ? new Date(b.measuredAt).getTime() : 0;
       return dateB - dateA;
     });
+  }
+
+  private formatDateTimeForApi(date: Date, endOfDay = false): string {
+    const normalized = new Date(date);
+
+    if (endOfDay) {
+      normalized.setHours(23, 59, 59, 999);
+    } else {
+      normalized.setHours(0, 0, 0, 0);
+    }
+
+    const pad = (value: number): string => String(value).padStart(2, '0');
+
+    return [
+      normalized.getFullYear(),
+      pad(normalized.getMonth() + 1),
+      pad(normalized.getDate()),
+    ].join('-') + `T${pad(normalized.getHours())}:${pad(normalized.getMinutes())}:${pad(normalized.getSeconds())}`;
   }
 
   private loadRange(): GlucoseRange {

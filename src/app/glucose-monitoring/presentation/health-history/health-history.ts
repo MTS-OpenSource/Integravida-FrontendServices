@@ -7,14 +7,14 @@ import { HistoryChartComponent } from '../../../medical-followup/presentation/co
 
 @Component({
   selector: 'app-health-history',
-  imports: [FormsModule, RouterLink, HistoryChartComponent], // Añadido HistoryChartComponent aquí
+  imports: [FormsModule, RouterLink, HistoryChartComponent],
   templateUrl: './health-history.html',
   styleUrl: './health-history.css',
 })
 export class HealthHistory {
   protected readonly glucoseService = inject(GlucoseService);
 
-  protected readonly patientId = signal(1);
+  protected readonly patientId = signal('');
   protected readonly fromDate = signal('');
   protected readonly toDate = signal('');
 
@@ -57,7 +57,6 @@ export class HealthHistory {
     this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
   }
 
-  // --- NUEVOS FILTROS T50 (US-38) ---
   protected filterLastMonth(): void {
     const to = new Date();
     const from = new Date();
@@ -81,13 +80,12 @@ export class HealthHistory {
 
     this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
   }
-  // ----------------------------------
 
   protected startEdit(record: GlucoseRecordEntity): void {
     this.editingRecord.set(record);
     this.editGlucoseLevel.set(record.glucoseLevel);
     this.editRecordedAt.set(record.recordedAt?.slice(0, 16) ?? '');
-    this.editNotes.set(String(record.raw['notes'] ?? ''));
+    this.editNotes.set(record.notes ?? '');
   }
 
   protected cancelEdit(): void {
@@ -104,6 +102,7 @@ export class HealthHistory {
     if (!record || value === null || Number.isNaN(value)) return;
 
     const recordedAtIso = new Date(this.editRecordedAt()).toISOString();
+    const notes = this.editNotes().trim();
 
     const updatedRecord = new GlucoseRecordEntity(
       record.id,
@@ -111,13 +110,11 @@ export class HealthHistory {
       value,
       recordedAtIso,
       {
-        ...record.raw,
-        patientID: record.patientId,
-        glucoseLevel: value,
-        recordedAt: recordedAtIso,
-        status: this.glucoseService.evaluateRange(value),
-        notes: this.editNotes(),
+        patientId: record.patientId,
+        glucoseValue: value,
+        measuredAt: recordedAtIso,
       },
+      notes || null,
     );
 
     this.glucoseService.updateReading(record.id, updatedRecord);

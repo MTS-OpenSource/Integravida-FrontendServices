@@ -88,20 +88,8 @@ export class Dashboard implements OnInit, AfterViewInit {
   protected readonly password = signal('');
   protected readonly patientId = signal(1);
   protected readonly patientGlucoseRecords = signal<GlucoseRecordEntity[]>([
-    {
-      id: 1,
-      recordedAt: '2025-07-15 10:00',
-      glucoseLevel: 98,
-      patientId: 1,
-      raw: {},
-    },
-    {
-      id: 2,
-      recordedAt: '2025-07-15 14:00',
-      glucoseLevel: 145,
-      patientId: 1,
-      raw: {},
-    },
+    new GlucoseRecordEntity(1, 1, 98, '2025-07-15 10:00', {}, null),
+    new GlucoseRecordEntity(2, 1, 145, '2025-07-15 14:00', {}, null),
   ]);
   protected readonly patientGlucoseLoading = signal(false);
   protected readonly patientGlucoseError = signal<string | null>(null);
