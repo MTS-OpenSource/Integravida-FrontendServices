@@ -14,11 +14,12 @@
   <section class="filters-card">
     <div class="filters">
       <label>
-        <span>Patient ID</span>
+        <span>Patient UUID</span>
         <input
-          type="number"
+          type="text"
           [ngModel]="patientId()"
-          (ngModelChange)="patientId.set(+$event)"
+          (ngModelChange)="patientId.set($event)"
+          placeholder="62a9e0f6-00e9-46bd-9ee8-f53b64a96030"
         />
       </label>
 
@@ -121,7 +122,7 @@
                 </span>
               </td>
 
-              <td>{{ record.raw['notes'] }}</td>
+              <td>{{ record.notes ?? '---' }}</td>
 
               <td>
                 <div class="row-actions">

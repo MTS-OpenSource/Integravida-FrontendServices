@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { environment } from '../../../environments/environment';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
+
+const GLUCOSE_RECORDS_RESOURCE_PATH = '/glucose-records';
+const LOCAL_MONITORING_API_BASE_URL = '/api/v1';
 
 @Injectable({
   providedIn: 'root',
@@ -9,8 +11,8 @@ import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
   constructor() {
     super(
-      environment.integravidaProviderApiBaseUrl,
-      environment.integravidaProviderGlucoseRecordsEndpointPath,
+      LOCAL_MONITORING_API_BASE_URL,
+      GLUCOSE_RECORDS_RESOURCE_PATH,
     );
   }
 
@@ -18,8 +20,21 @@ export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
     return this.collectionUrl();
   }
 
-  getByPatientId(patientId: number): string {
-    const params = new URLSearchParams({ patientID: String(patientId) });
+  getById(id: string | number): string {
+    return this.resourceUrl(id);
+  }
+
+  getByPatientId(patientId: string | number, from?: string, to?: string): string {
+    const params = new URLSearchParams({ patientId: String(patientId) });
+
+    if (from) {
+      params.set('from', from);
+    }
+
+    if (to) {
+      params.set('to', to);
+    }
+
     return `${this.collectionUrl()}?${params.toString()}`;
   }
 }

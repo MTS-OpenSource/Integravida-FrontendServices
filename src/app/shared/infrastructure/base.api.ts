@@ -4,10 +4,8 @@ import { Observable, map } from 'rxjs';
 
 import { BaseApiEndpoint } from './base.api.endpoint';
 import { BaseAssembler } from './base.assembler';
-import { BaseEntity } from './base.entity';
-import { BaseResponse } from './base.response';
 
-export abstract class BaseApi<TEntity extends BaseEntity, TResponse extends BaseResponse> {
+export abstract class BaseApi<TEntity, TResponse> {
   protected readonly http = inject(HttpClient);
 
   protected constructor(

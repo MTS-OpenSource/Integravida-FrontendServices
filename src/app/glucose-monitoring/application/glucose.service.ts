@@ -1,9 +1,12 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, finalize, of, tap } from 'rxjs';
 import { AlertApi } from '../../integravida/infrastructure/alert.api';
 
 import { GlucoseRecordApi } from '../infrastructure/glucose-record.api';
 import { GlucoseRecordEntity } from '../domain/model/glucose-record.entity';
+import { GlucoseRangeApi } from '../infrastructure/glucose-range.api';
+import { GlucoseRangeEntity } from '../domain/model/glucose-range.entity';
 
 export type GlucoseStatus = 'Normal' | 'Alto' | 'Bajo';
 
@@ -13,7 +16,6 @@ export interface GlucoseRange {
 }
 
 const DEFAULT_RANGE: GlucoseRange = { min: 70, max: 180 };
-const GLUCOSE_RANGE_STORAGE_KEY = 'integravida.glucoseRange';
 
 @Injectable({
   providedIn: 'root',
@@ -30,20 +32,29 @@ export class GlucoseService {
   private readonly errorSignal = signal<string | null>(null);
   readonly error = this.errorSignal.asReadonly();
 
-  private readonly rangeSignal = signal<GlucoseRange>(this.loadRange());
+  private readonly rangeSignal = signal<GlucoseRange>(DEFAULT_RANGE);
   readonly range = this.rangeSignal.asReadonly();
 
   constructor(
     private readonly glucoseRecordApi: GlucoseRecordApi,
+    private readonly glucoseRangeApi: GlucoseRangeApi,
     private readonly alertApi: AlertApi,
   ) {}
 
-  getReadings(patientId: number): void {
+  getReadings(patientId: string | number): void {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.recordsSignal.set([]);
+      this.errorSignal.set('Debes ingresar un patientId UUID para consultar lecturas.');
+      return;
+    }
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.glucoseRecordApi
-      .getByPatientId(patientId)
+      .getByPatientId(normalizedPatientId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (records) => {
@@ -57,23 +68,27 @@ export class GlucoseService {
       });
   }
 
-  getReadingsByDateRange(patientId: number, from: Date, to: Date): void {
+  getReadingsByDateRange(patientId: string | number, from: Date, to: Date): void {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.recordsSignal.set([]);
+      this.errorSignal.set('Debes ingresar un patientId UUID para filtrar lecturas.');
+      return;
+    }
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
+    const fromParam = this.formatDateTimeForApi(from);
+    const toParam = this.formatDateTimeForApi(to, true);
+
     this.glucoseRecordApi
-      .getByPatientId(patientId)
+      .getByPatientId(normalizedPatientId, fromParam, toParam)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (records) => {
-          const filtered = records.filter((record) => {
-            if (!record.recordedAt) return false;
-
-            const date = new Date(record.recordedAt);
-            return date >= from && date <= to;
-          });
-
-          this.recordsSignal.set(this.sortByDateDesc(filtered));
+          this.recordsSignal.set(this.sortByDateDesc(records));
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -93,15 +108,6 @@ export class GlucoseService {
       .subscribe({
         next: (createdRecord) => {
           this.recordsSignal.update((records) => this.sortByDateDesc([...records, createdRecord]));
-
-          if (createdRecord.glucoseLevel !== null) {
-            const status = this.evaluateRange(createdRecord.glucoseLevel);
-
-            if (status !== 'Normal') {
-              this.createAlertFromReading(createdRecord, status);
-            }
-          }
-
           this.loadingSignal.set(false);
         },
         error: (error: unknown) => {
@@ -111,7 +117,7 @@ export class GlucoseService {
       });
   }
 
-  updateReading(id: number, record: GlucoseRecordEntity): void {
+  updateReading(id: string | number, record: GlucoseRecordEntity): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -137,7 +143,7 @@ export class GlucoseService {
       });
   }
 
-  deleteReading(id: number): void {
+  deleteReading(id: string | number): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -157,15 +163,78 @@ export class GlucoseService {
       });
   }
 
-  updateRange(min: number, max: number): void {
-    const range = { min, max };
-    this.rangeSignal.set(range);
-    this.persistRange(range);
+  loadRange(patientId: string | number) {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.errorSignal.set('Debes ingresar un patientId UUID para cargar el rango.');
+      return of(null);
+    }
+
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.glucoseRangeApi
+      .getByPatientId(normalizedPatientId)
+      .pipe(
+        tap((range) => {
+          if (!range || range.minimumValue === null || range.maximumValue === null) {
+            this.rangeSignal.set(DEFAULT_RANGE);
+            return;
+          }
+
+          this.rangeSignal.set({
+            min: range.minimumValue,
+            max: range.maximumValue,
+          });
+        }),
+        finalize(() => {
+          this.loadingSignal.set(false);
+        }),
+        catchError((error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to load glucose range'));
+          return of(null);
+        }),
+      );
+  }
+
+  updateRange(patientId: string | number, min: number, max: number) {
+    const normalizedPatientId = String(patientId).trim();
+
+    if (!normalizedPatientId) {
+      this.errorSignal.set('Debes ingresar un patientId UUID para guardar el rango.');
+      return of(null as GlucoseRangeEntity | null);
+    }
+
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.glucoseRangeApi
+      .update(normalizedPatientId, {
+        minimumValue: min,
+        maximumValue: max,
+      })
+      .pipe(
+        tap((range) => {
+          if (!range || range.minimumValue === null || range.maximumValue === null) return;
+
+          this.rangeSignal.set({
+            min: range.minimumValue,
+            max: range.maximumValue,
+          });
+        }),
+        finalize(() => {
+          this.loadingSignal.set(false);
+        }),
+        catchError((error: unknown) => {
+          this.errorSignal.set(this.formatError(error, 'Failed to save glucose range'));
+          return of(null as GlucoseRangeEntity | null);
+        }),
+      );
   }
 
   resetRange(): void {
     this.rangeSignal.set(DEFAULT_RANGE);
-    this.persistRange(DEFAULT_RANGE);
   }
 
   isValidRange(min: number, max: number): boolean {
@@ -184,40 +253,37 @@ export class GlucoseService {
     this.alertApi.create({
       patientID: record.patientId,
       type: status === 'Alto' ? 'Glucosa alta' : 'Glucosa baja',
-      glucoseValue: record.glucoseLevel,
+      glucoseValue: record.glucoseValue,
       severity: status === 'Alto' ? 'High' : 'Low',
-      createdAt: record.recordedAt,
+      createdAt: record.measuredAt,
       read: false,
     });
   }
 
   private sortByDateDesc(records: GlucoseRecordEntity[]): GlucoseRecordEntity[] {
     return [...records].sort((a, b) => {
-      const dateA = a.recordedAt ? new Date(a.recordedAt).getTime() : 0;
-      const dateB = b.recordedAt ? new Date(b.recordedAt).getTime() : 0;
+      const dateA = a.measuredAt ? new Date(a.measuredAt).getTime() : 0;
+      const dateB = b.measuredAt ? new Date(b.measuredAt).getTime() : 0;
       return dateB - dateA;
     });
   }
 
-  private loadRange(): GlucoseRange {
-    try {
-      const savedRange = localStorage.getItem(GLUCOSE_RANGE_STORAGE_KEY);
-      if (!savedRange) return DEFAULT_RANGE;
+  private formatDateTimeForApi(date: Date, endOfDay = false): string {
+    const normalized = new Date(date);
 
-      const parsedRange = JSON.parse(savedRange) as GlucoseRange;
-
-      if (this.isValidRange(parsedRange.min, parsedRange.max)) {
-        return parsedRange;
-      }
-
-      return DEFAULT_RANGE;
-    } catch {
-      return DEFAULT_RANGE;
+    if (endOfDay) {
+      normalized.setHours(23, 59, 59, 999);
+    } else {
+      normalized.setHours(0, 0, 0, 0);
     }
-  }
 
-  private persistRange(range: GlucoseRange): void {
-    localStorage.setItem(GLUCOSE_RANGE_STORAGE_KEY, JSON.stringify(range));
+    const pad = (value: number): string => String(value).padStart(2, '0');
+
+    return [
+      normalized.getFullYear(),
+      pad(normalized.getMonth() + 1),
+      pad(normalized.getDate()),
+    ].join('-') + `T${pad(normalized.getHours())}:${pad(normalized.getMinutes())}:${pad(normalized.getSeconds())}`;
   }
 
   private formatError(error: unknown, fallback: string): string {

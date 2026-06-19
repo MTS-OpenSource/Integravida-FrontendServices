@@ -18,11 +18,11 @@ export class ProfileApiEndpoint extends BaseApiEndpoint {
     return this.resourceUrl(profileId);
   }
 
-  getByEmail(email: string): string {
-    return `${this.collectionUrl()}?email=${encodeURIComponent(email)}`;
-  }
-
   getAll(): string {
     return this.collectionUrl();
+  }
+
+  getByEmail(email: string): string {
+    return `${this.collectionUrl()}?email=${encodeURIComponent(email)}`;
   }
 }

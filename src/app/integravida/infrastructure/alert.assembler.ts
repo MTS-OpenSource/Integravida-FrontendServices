@@ -5,11 +5,11 @@ import { AlertResponse } from './alert.response';
 export class AlertAssembler extends BaseAssembler<AlertEntity, AlertResponse> {
   override toEntityFrom(response: AlertResponse): AlertEntity {
     return new AlertEntity(
-      response['id'],
-      this.toNullableNumber(response['patientId']),
+      String(response['id']),
+      this.toNullableString(response['patientId'] ?? response['patientID'] ?? response['patient_id']),
       this.toNullableString(response['type']),
       this.toNullableString(response['title']),
-      this.toNullableString(response['desc']),
+      this.toNullableString(response['desc'] ?? response['message']),
       this.toNullableString(response['time']),
       this.toNullableNumber(response['glucoseValue']),
       this.toNullableString(response['severity']),
@@ -24,10 +24,14 @@ export class AlertAssembler extends BaseAssembler<AlertEntity, AlertResponse> {
   }
 
   private toNullableString(value: unknown): string | null {
-    return typeof value === 'string' ? value : null;
-  }
+    if (typeof value === 'string') {
+      return value;
+    }
 
-  private toNullableBoolean(value: unknown): boolean | null {
-    return typeof value === 'boolean' ? value : null;
+    if (typeof value === 'number') {
+      return String(value);
+    }
+
+    return null;
   }
 }

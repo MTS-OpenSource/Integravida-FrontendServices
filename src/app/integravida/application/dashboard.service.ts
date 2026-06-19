@@ -205,19 +205,19 @@ export class DashboardService {
     patients: PatientEntity[],
     doctors: DoctorEntity[],
     patientDoctorLinks: PatientDoctorResponse[],
-  ): Set<number> {
+  ): Set<string | number> {
     if (session.user.role === 'Patient') {
       const patient = patients.find((item) => item.userId === session.user.id);
-      return patient ? new Set([patient.id]) : new Set<number>();
+      return patient ? new Set([patient.id]) : new Set<string | number>();
     }
 
     const doctor = doctors.find((item) => item.userId === session.user.id);
 
     if (!doctor) {
-      return new Set<number>();
+      return new Set<string | number>();
     }
 
-    return new Set(
+    return new Set<string | number>(
       patientDoctorLinks
         .filter((link) => this.readDoctorId(link) === doctor.id)
         .map((link) => this.readPatientId(link))
@@ -236,7 +236,7 @@ export class DashboardService {
 
   private filterTreatments(
     treatments: TreatmentEntity[],
-    patientIds: Set<number>,
+    patientIds: Set<string | number>,
     doctorIds: Set<number>,
   ): TreatmentEntity[] {
     return treatments.filter((treatment) => {

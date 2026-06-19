@@ -22,7 +22,7 @@ export class GlucoseTable {
   protected readonly editNotesValue = signal('');
 
   protected readonly isDeleteModalOpen = signal(false);
-  protected readonly recordToDelete = signal<number | null>(null);
+  protected readonly recordToDelete = signal<string | number | null>(null);
 
   protected getStatus(value: number | null): string {
     if (value === null) return 'Desconocido';
@@ -50,7 +50,7 @@ export class GlucoseTable {
     this.recordToEdit.set(record);
     this.editGlucoseValue.set(record.glucoseLevel);
     this.editDateValue.set(record.recordedAt ? record.recordedAt.slice(0, 16) : '');
-    this.editNotesValue.set(String(record.raw['notes'] ?? ''));
+    this.editNotesValue.set(record.notes ?? '');
     this.isEditModalOpen.set(true);
   }
 
@@ -65,27 +65,27 @@ export class GlucoseTable {
 
     if (!currentRecord || newValue === null || Number.isNaN(newValue)) return;
 
-    const updatedDateIso = new Date(this.editDateValue()).toISOString();
+    const updatedDate = this.normalizeDateTimeForApi(this.editDateValue());
+    const notes = this.editNotesValue().trim();
 
     const updatedEntity = new GlucoseRecordEntity(
       currentRecord.id,
       currentRecord.patientId,
       newValue,
-      updatedDateIso,
+      updatedDate,
       {
-        ...currentRecord.raw,
-        glucoseLevel: newValue,
-        recordedAt: updatedDateIso,
-        status: this.glucoseService.evaluateRange(newValue),
-        notes: this.editNotesValue(),
+        patientId: currentRecord.patientId,
+        glucoseValue: newValue,
+        measuredAt: updatedDate,
       },
+      notes || null,
     );
 
     this.glucoseService.updateReading(currentRecord.id, updatedEntity);
     this.closeEditModal();
   }
 
-  protected openDeleteModal(recordId: number): void {
+  protected openDeleteModal(recordId: string | number): void {
     this.recordToDelete.set(recordId);
     this.isDeleteModalOpen.set(true);
   }
@@ -101,5 +101,29 @@ export class GlucoseTable {
       this.glucoseService.deleteReading(id);
       this.closeDeleteModal();
     }
+  }
+
+  private normalizeDateTimeForApi(value: string): string {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return this.toDateTimeLocalValue(new Date());
+    }
+
+    if (trimmed.length === 16) {
+      return `${trimmed}:00`;
+    }
+
+    return trimmed.slice(0, 19);
+  }
+
+  private toDateTimeLocalValue(date: Date): string {
+    const pad = (value: number): string => String(value).padStart(2, '0');
+
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate()),
+    ].join('-') + `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 }

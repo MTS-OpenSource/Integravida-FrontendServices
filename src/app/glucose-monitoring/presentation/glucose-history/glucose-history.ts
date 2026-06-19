@@ -1,5 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GlucoseService } from '../../application/glucose.service';
 import { AuthStore } from '../../../account-management/application/auth.store';
@@ -14,6 +15,7 @@ import { GlucoseTable } from '../components/glucose-table/glucose-table';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     GlucoseFilters,
     GlucoseSummary,
@@ -28,17 +30,20 @@ export class GlucoseHistory implements OnInit {
   protected readonly glucoseService = inject(GlucoseService);
   protected readonly authStore = inject(AuthStore);
 
+  protected readonly patientId = signal('');
+
   ngOnInit(): void {
-    const user = this.authStore.currentUser();
-    if (user && user.id) {
-      this.glucoseService.getReadings(user.id);
+    const currentPatientId = this.patientId().trim();
+    if (currentPatientId) {
+      this.glucoseService.getReadings(currentPatientId);
     }
   }
 
+  protected loadRecords(): void {
+    this.glucoseService.getReadings(this.patientId());
+  }
+
   protected onFilterChanged(filters: { from: Date; to: Date }): void {
-    const user = this.authStore.currentUser();
-    if (user && user.id) {
-      this.glucoseService.getReadingsByDateRange(user.id, filters.from, filters.to);
-    }
+    this.glucoseService.getReadingsByDateRange(this.patientId(), filters.from, filters.to);
   }
 }

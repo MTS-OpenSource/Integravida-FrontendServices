@@ -8,12 +8,12 @@
 
   <section class="controls-card search-section">
     <label>
-      <span>ID del Paciente</span>
+      <span>Patient UUID</span>
       <input
-        type="number"
+        type="text"
         [ngModel]="patientId()"
-        (ngModelChange)="patientId.set(+$event)"
-        placeholder="Ej. 1"
+        (ngModelChange)="patientId.set($event)"
+        placeholder="30b03b5c-33e4-4c88-bb09-a10bff88f3a0"
       />
     </label>
     <button type="button" class="primary" (click)="loadAlerts()">
@@ -28,7 +28,7 @@
           type="button"
           class="tab-btn"
           [class.active]="selectedTab() === 'Todas'"
-          (click)="selectedTab.set('Todas')">
+          (click)="setTab('Todas')">
           Todas
           <span class="badge gray">{{ alertService.alerts().length }}</span>
         </button>
@@ -37,7 +37,7 @@
           type="button"
           class="tab-btn"
           [class.active]="selectedTab() === 'Activas'"
-          (click)="selectedTab.set('Activas')">
+          (click)="setTab('Activas')">
           Activas
           <span class="badge red">{{ alertService.activeAlerts().length }}</span>
         </button>
@@ -46,7 +46,7 @@
           type="button"
           class="tab-btn"
           [class.active]="selectedTab() === 'Resueltas'"
-          (click)="selectedTab.set('Resueltas')">
+          (click)="setTab('Resueltas')">
           Resueltas
           <span class="badge green">{{ alertService.resolvedAlerts().length }}</span>
         </button>

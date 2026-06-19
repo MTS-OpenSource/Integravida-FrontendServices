@@ -8,15 +8,16 @@ export class GlucoseRecordAssembler extends BaseAssembler<
 > {
   override toEntityFrom(response: GlucoseRecordResponse): GlucoseRecordEntity {
     return new GlucoseRecordEntity(
-      response.id,
-      this.toNullableNumber(response.patientID ?? response.patientId ?? response.patient_id),
+      String(response.id),
+      this.toNullableString(response.patientId ?? response.patientID ?? response.patient_id),
       this.toNullableNumber(
-        response.valueMgdl ?? response.glucoseLevel ?? response.glucoseValue ?? response.value,
+        response.glucoseValue ?? response.glucoseLevel ?? response.valueMgdl ?? response.value,
       ),
       this.toNullableString(
-        response.recordedAt ?? response.createdAt ?? response.measurementDate ?? response.timestamp,
+        response.measuredAt ?? response.recordedAt ?? response.measurementDate ?? response.timestamp ?? response.createdAt,
       ),
       response,
+      this.toNullableString(response.notes ?? null),
     );
   }
 
@@ -25,6 +26,14 @@ export class GlucoseRecordAssembler extends BaseAssembler<
   }
 
   private toNullableString(value: unknown): string | null {
-    return typeof value === 'string' ? value : null;
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    if (typeof value === 'number') {
+      return String(value);
+    }
+
+    return null;
   }
 }

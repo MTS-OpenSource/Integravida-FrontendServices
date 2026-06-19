@@ -1,13 +1,18 @@
-import { BaseEntity } from '../../../shared/infrastructure/base.entity';
-
-export class GlucoseRecordEntity extends BaseEntity {
+export class GlucoseRecordEntity {
   constructor(
-    id: number,
-    public readonly patientId: number | null,
-    public readonly glucoseLevel: number | null,
-    public readonly recordedAt: string | null,
+    public readonly id: string | number,
+    public readonly patientId: string | number | null,
+    public readonly glucoseValue: number | null,
+    public readonly measuredAt: string | null,
     public readonly raw: Record<string, unknown>,
-  ) {
-    super(id);
+    public readonly notes: string | null = null,
+  ) {}
+
+  get glucoseLevel(): number | null {
+    return this.glucoseValue;
+  }
+
+  get recordedAt(): string | null {
+    return this.measuredAt;
   }
 }

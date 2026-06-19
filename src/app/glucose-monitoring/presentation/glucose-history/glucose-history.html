@@ -21,6 +21,22 @@
       <p>Resumen detallado y evolución de niveles.</p>
     </section>
 
+    <section class="card" style="margin-bottom: 1rem;">
+      <div class="form" style="grid-template-columns: 1fr auto; align-items: end;">
+        <label class="full">
+          <span>Patient UUID</span>
+          <input
+            type="text"
+            [ngModel]="patientId()"
+            (ngModelChange)="patientId.set($event)"
+            placeholder="62a9e0f6-00e9-46bd-9ee8-f53b64a96030"
+          />
+        </label>
+
+        <button type="button" class="primary" (click)="loadRecords()">Cargar lecturas</button>
+      </div>
+    </section>
+
     <app-glucose-filters (filterChanged)="onFilterChanged($event)" />
 
     <app-glucose-summary [records]="glucoseService.records()" />
