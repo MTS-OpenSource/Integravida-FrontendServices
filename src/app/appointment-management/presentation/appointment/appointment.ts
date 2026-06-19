@@ -19,9 +19,9 @@ import { AppointmentService } from '../../application/appointment.service';
 export class AppointmentComponent implements OnInit {
   protected readonly appointmentService = inject(AppointmentService);
 
-  protected readonly patientId = signal<number>(1);
-  protected readonly doctorId = signal<number>(1);
-  protected readonly scheduledAt = signal<string>('20/05/2026 10:30');
+  protected readonly patientId = signal<string>('1de8f2c5-7c4c-49d4-8fd8-97f2f2f2b101');
+  protected readonly doctorId = signal<string>('2ee7a314-9b2f-4f8e-8c31-73b3cdd0b221');
+  protected readonly scheduledAt = signal<string>('2026-06-20T10:30');
   protected readonly notes = signal<string>('Revisión médica de control');
 
   protected readonly appointmentRemindersEnabled = signal<boolean>(true);
@@ -73,7 +73,7 @@ export class AppointmentComponent implements OnInit {
    * @param value Input value received from the template.
    */
   protected updatePatientId(value: string): void {
-    this.patientId.set(Number(value));
+    this.patientId.set(value);
   }
 
   /**
@@ -82,6 +82,6 @@ export class AppointmentComponent implements OnInit {
    * @param value Input value received from the template.
    */
   protected updateDoctorId(value: string): void {
-    this.doctorId.set(Number(value));
+    this.doctorId.set(value);
   }
 }

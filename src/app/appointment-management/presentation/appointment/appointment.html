@@ -33,7 +33,7 @@
         <input
           id="patient-filter"
           class="form-control"
-          type="number"
+          type="text"
           [ngModel]="patientId()"
           (ngModelChange)="updatePatientId($event)"
         />
@@ -56,7 +56,7 @@
         <article class="appointment-card">
           <div>
             <span class="status-badge">{{ appointment.status || 'pending' }}</span>
-            <h3>Cita médica #{{ appointment.id }}</h3>
+            <h3>Cita médica #{{ appointment.backendId }}</h3>
             <p>{{ appointment.notes || 'Sin notas registradas' }}</p>
           </div>
 
@@ -84,7 +84,7 @@
           <input
             id="patient-id"
             class="form-control"
-            type="number"
+            type="text"
             [ngModel]="patientId()"
             (ngModelChange)="updatePatientId($event)"
             name="patientId"
@@ -94,7 +94,7 @@
           <input
             id="doctor-id"
             class="form-control"
-            type="number"
+            type="text"
             [ngModel]="doctorId()"
             (ngModelChange)="updateDoctorId($event)"
             name="doctorId"
@@ -104,11 +104,11 @@
           <input
             id="scheduled-at"
             class="form-control"
-            type="text"
+            type="datetime-local"
             [ngModel]="scheduledAt()"
             (ngModelChange)="scheduledAt.set($event)"
             name="scheduledAt"
-            placeholder="20/05/2026 10:30"
+            placeholder="2026-06-20T10:30"
           />
 
           <label class="form-label" for="notes">Notas</label>

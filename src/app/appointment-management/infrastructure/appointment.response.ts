@@ -1,28 +1,31 @@
-import { BaseResponse } from '../../shared/infrastructure/base.response';
 /**
- * Represents the response received from the appointments API endpoint.
+ * Represents the response received from the appointments backend endpoint.
  *
- * The API uses snake_case fields such as patient_id, doctor_id and scheduled_at.
- * This response interface keeps that external structure before it is converted
- * into an AppointmentEntity.
+ * The Spring Boot backend uses UUID string identifiers and camelCase fields.
+ * Some snake_case fields are still supported to keep compatibility with old fake data.
  */
-export interface AppointmentResponse extends BaseResponse {
-  patient_id?: number | null;
-  patientId?: number | null;
-  patientID?: number | null;
+export interface AppointmentResponse {
+  id: string | number;
 
-  doctor_id?: number | null;
-  doctorId?: number | null;
-  doctorID?: number | null;
+  patient_id?: string | number | null;
+  patientId?: string | number | null;
+  patientID?: string | number | null;
+
+  doctor_id?: string | number | null;
+  doctorId?: string | number | null;
+  doctorID?: string | number | null;
 
   scheduled_at?: string | null;
   scheduledAt?: string | null;
 
   status?: string | null;
-  notes?: string | null;
 
-  /**
-   * Allows additional fields from the fake API without breaking the application.
-   */
+  notes?: string | null;
+  reason?: string | null;
+
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  cancelledAt?: string | null;
+
   [key: string]: unknown;
 }

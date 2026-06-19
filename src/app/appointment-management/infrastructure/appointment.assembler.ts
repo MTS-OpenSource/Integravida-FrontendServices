@@ -4,45 +4,43 @@ import { AppointmentResponse } from './appointment.response';
 
 /**
  * Converts appointment API responses into appointment domain entities.
- *
- * This assembler isolates the transformation logic between the external API
- * structure and the internal model used by the Angular application.
  */
 export class AppointmentAssembler extends BaseAssembler<AppointmentEntity, AppointmentResponse> {
-  /**
-   * Converts one AppointmentResponse into one AppointmentEntity.
-   *
-   * @param response Raw appointment response from the API.
-   * @returns Appointment entity used by the application.
-   */
   override toEntityFrom(response: AppointmentResponse): AppointmentEntity {
     return new AppointmentEntity(
-      response.id,
-      this.toNullableNumber(response.patient_id ?? response.patientId ?? response.patientID),
-      this.toNullableNumber(response.doctor_id ?? response.doctorId ?? response.doctorID),
+      this.toLocalNumericId(response.id),
+      String(response.id),
+      this.toNullableIdentifier(response.patient_id ?? response.patientId ?? response.patientID),
+      this.toNullableIdentifier(response.doctor_id ?? response.doctorId ?? response.doctorID),
       this.toNullableString(response.scheduled_at ?? response.scheduledAt),
       this.toNullableString(response.status),
-      this.toNullableString(response.notes),
+      this.toNullableString(response.notes ?? response.reason),
       response,
     );
   }
 
-  /**
-   * Converts an unknown value into a nullable number.
-   *
-   * @param value Value received from the API.
-   * @returns A number when the value is valid, otherwise null.
-   */
-  private toNullableNumber(value: unknown): number | null {
-    return typeof value === 'number' ? value : null;
+  private toLocalNumericId(value: unknown): number {
+    if (typeof value === 'number') return value;
+
+    if (typeof value === 'string') {
+      let hash = 0;
+
+      for (const character of value) {
+        hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+      }
+
+      return hash;
+    }
+
+    return Date.now();
   }
 
-  /**
-   * Converts an unknown value into a nullable string.
-   *
-   * @param value Value received from the API.
-   * @returns A string when the value is valid, otherwise null.
-   */
+  private toNullableIdentifier(value: unknown): string | null {
+    if (typeof value === 'number') return String(value);
+    if (typeof value === 'string') return value;
+    return null;
+  }
+
   private toNullableString(value: unknown): string | null {
     return typeof value === 'string' ? value : null;
   }

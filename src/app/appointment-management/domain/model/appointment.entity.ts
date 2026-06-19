@@ -1,26 +1,17 @@
 import { BaseEntity } from '../../../shared/infrastructure/base.entity';
+
 /**
  * Represents an appointment inside the Appointment Management bounded context.
  *
- * This entity is used by the Angular application after transforming
- * the raw API response into a cleaner domain model.
+ * The local id is numeric to keep compatibility with BaseEntity.
+ * The backendId stores the real UUID received from the Spring Boot backend.
  */
 export class AppointmentEntity extends BaseEntity {
-  /**
-   * Creates an appointment entity.
-   *
-   * @param id Appointment identifier.
-   * @param patientId Patient identifier related to the appointment.
-   * @param doctorId Doctor identifier related to the appointment.
-   * @param scheduledAt Scheduled date and time of the appointment.
-   * @param status Current status of the appointment.
-   * @param notes Additional notes or reason for the appointment.
-   * @param raw Original API response used for traceability.
-   */
   constructor(
     id: number,
-    public readonly patientId: number | null,
-    public readonly doctorId: number | null,
+    public readonly backendId: string,
+    public readonly patientId: string | null,
+    public readonly doctorId: string | null,
     public readonly scheduledAt: string | null,
     public readonly status: string | null,
     public readonly notes: string | null,
