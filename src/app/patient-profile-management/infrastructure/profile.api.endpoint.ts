@@ -9,7 +9,7 @@ import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
 export class ProfileApiEndpoint extends BaseApiEndpoint {
   constructor() {
     super(
-      environment.integravidaProviderApiBaseUrl,
+      environment.integravidaBackendApiBaseUrl,
       environment.integravidaBackendProfilesEndpointPath,
     );
   }

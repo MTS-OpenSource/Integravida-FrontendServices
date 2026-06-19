@@ -2,8 +2,7 @@ import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AppointmentEntity } from '../domain/model/appointment.entity';
-import { AppointmentApi } from '../infrastructure/appointment.api';
-import { AppointmentResponse } from '../infrastructure/appointment.response';
+import { AppointmentApi, CreateAppointmentPayload } from '../infrastructure/appointment.api';
 
 /**
  * Application service for the Appointment Management bounded context.
@@ -63,7 +62,7 @@ export class AppointmentService {
    *
    * @param patientId Patient identifier used to retrieve appointments.
    */
-  getAppointmentsByPatientId(patientId: number): void {
+  getAppointmentsByPatientId(patientId: string): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -93,21 +92,19 @@ export class AppointmentService {
    * @param notes Additional notes or reason for the appointment.
    */
   createAppointment(
-    patientId: number,
-    doctorId: number,
+    patientId: string,
+    doctorId: string,
     scheduledAt: string,
     notes: string,
   ): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    const appointment: AppointmentResponse = {
-      id: Date.now(),
-      patient_id: patientId,
-      doctor_id: doctorId,
-      scheduled_at: scheduledAt,
-      status: 'pending',
-      notes,
+    const appointment: CreateAppointmentPayload = {
+      patientId,
+      doctorId,
+      scheduledAt: this.normalizeScheduledAt(scheduledAt),
+      reason: notes,
     };
 
     this.appointmentApi
@@ -144,6 +141,15 @@ export class AppointmentService {
       return dateA - dateB;
     });
   }
+
+  private normalizeScheduledAt(scheduledAt: string): string {
+    if (scheduledAt.length === 16) {
+      return `${scheduledAt}:00`;
+    }
+
+    return scheduledAt;
+  }
+
 
   /**
    * Formats an unknown error into a readable message.

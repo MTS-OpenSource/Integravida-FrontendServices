@@ -1,59 +1,44 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastructure/base.api';
 import { AppointmentEntity } from '../domain/model/appointment.entity';
 import { AppointmentApiEndpoint } from './appointment.api.endpoint';
 import { AppointmentAssembler } from './appointment.assembler';
 import { AppointmentResponse } from './appointment.response';
 
+export interface CreateAppointmentPayload {
+  patientId: string;
+  doctorId: string;
+  scheduledAt: string;
+  reason: string;
+}
+
 /**
- * Handles HTTP communication with the appointments API endpoint.
- *
- * This class belongs to the infrastructure layer because it is responsible
- * for accessing external data and converting API responses into domain entities.
+ * Handles HTTP communication with the real backend appointments API.
  */
 @Injectable({
   providedIn: 'root',
 })
-export class AppointmentApi extends BaseApi<AppointmentEntity, AppointmentResponse> {
-  /**
-   * Creates the AppointmentApi instance.
-   *
-   * @param appointmentEndpoint Endpoint class used to build appointment API URLs.
-   */
-  constructor(private readonly appointmentEndpoint: AppointmentApiEndpoint) {
-    super(appointmentEndpoint, new AppointmentAssembler());
-  }
+export class AppointmentApi {
+  private readonly http = inject(HttpClient);
+  private readonly assembler = new AppointmentAssembler();
 
-  /**
-   * Gets all appointments from the API.
-   *
-   * @returns An observable list of appointment entities.
-   */
+  constructor(private readonly appointmentEndpoint: AppointmentApiEndpoint) {}
+
   getAll(): Observable<AppointmentEntity[]> {
-    return this.getAllFrom(this.appointmentEndpoint.getAll());
+    return this.http
+      .get<AppointmentResponse[]>(this.appointmentEndpoint.getAll())
+      .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 
-  /**
-   * Gets appointments filtered by patient identifier.
-   *
-   * @param patientId Patient identifier used to filter appointments.
-   * @returns An observable list of appointment entities related to the patient.
-   */
-  getByPatientId(patientId: number): Observable<AppointmentEntity[]> {
+  getByPatientId(patientId: string): Observable<AppointmentEntity[]> {
     return this.http
       .get<AppointmentResponse[]>(this.appointmentEndpoint.getByPatientId(patientId))
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 
-  /**
-   * Creates a new appointment in the API.
-   *
-   * @param appointment Appointment data to be sent to the API.
-   * @returns An observable appointment entity created from the API response.
-   */
-  create(appointment: AppointmentResponse): Observable<AppointmentEntity> {
+  create(appointment: CreateAppointmentPayload): Observable<AppointmentEntity> {
     return this.http
       .post<AppointmentResponse>(this.appointmentEndpoint.getAll(), appointment)
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
