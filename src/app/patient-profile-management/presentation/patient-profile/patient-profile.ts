@@ -2,8 +2,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { PatientProfileService } from '../../application/patient-profile.service';
-import { PatientProfileEntity } from '../../domain/model/patient-profile.entity';
+import { ProfileService } from '../../application/profile.service';
+import { UpdateProfileRequest } from '../../infrastructure/profile.response';
 
 @Component({
   selector: 'app-patient-profile',
@@ -12,30 +12,34 @@ import { PatientProfileEntity } from '../../domain/model/patient-profile.entity'
   styleUrl: './patient-profile.css',
 })
 export class PatientProfile implements OnInit {
-  protected readonly patientProfileService = inject(PatientProfileService);
+  protected readonly profileService = inject(ProfileService);
   private readonly route = inject(ActivatedRoute);
 
   protected readonly editing = signal(false);
-  protected readonly fullName = signal('');
-  protected readonly phone = signal('');
-  protected readonly diabetesType = signal<number | null>(null);
+  protected readonly firstName = signal('');
+  protected readonly lastName = signal('');
+  protected readonly phoneNumber = signal('');
+  protected readonly dateOfBirth = signal('');
   protected readonly saveMessage = signal<string | null>(null);
 
   ngOnInit(): void {
-    const patientId = Number(this.route.snapshot.paramMap.get('patientId') ?? 1);
-    this.patientProfileService.getProfile(patientId);
+    const profileId = this.route.snapshot.paramMap.get('profileId')
+      ?? this.route.snapshot.paramMap.get('patientId')
+      ?? '';
+
+    if (profileId) {
+      this.profileService.loadById(profileId);
+    }
   }
 
   protected startEditing(): void {
-    const profile = this.patientProfileService.profile();
+    const profile = this.profileService.profile();
+    if (!profile) return;
 
-    if (!profile) {
-      return;
-    }
-
-    this.fullName.set(profile.fullName);
-    this.phone.set(profile.phone);
-    this.diabetesType.set(profile.diabetesType);
+    this.firstName.set(profile.firstName);
+    this.lastName.set(profile.lastName);
+    this.phoneNumber.set(profile.phoneNumber);
+    this.dateOfBirth.set(profile.dateOfBirth);
     this.saveMessage.set(null);
     this.editing.set(true);
   }
@@ -46,28 +50,21 @@ export class PatientProfile implements OnInit {
   }
 
   protected saveProfile(): void {
-    const profile = this.patientProfileService.profile();
+    const profile = this.profileService.profile();
+    if (!profile) return;
 
-    if (!profile) {
-      return;
-    }
+    const request: UpdateProfileRequest = {
+      firstName: this.firstName().trim(),
+      lastName: this.lastName().trim(),
+      phoneNumber: this.phoneNumber().trim(),
+      dateOfBirth: this.dateOfBirth(),
+    };
 
-    const updatedProfile = new PatientProfileEntity(
-      profile.id,
-      profile.userId,
-      this.fullName().trim(),
-      this.diabetesType(),
-      this.phone().trim(),
-    );
-
-    this.patientProfileService.saveProfile(updatedProfile).subscribe({
+    this.profileService.update(profile.id, request).subscribe({
       next: () => {
         this.editing.set(false);
         this.saveMessage.set('Perfil actualizado correctamente');
-
-        setTimeout(() => {
-          this.saveMessage.set(null);
-        }, 2500);
+        setTimeout(() => this.saveMessage.set(null), 2500);
       },
     });
   }
