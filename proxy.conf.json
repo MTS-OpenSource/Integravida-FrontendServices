@@ -1,6 +1,6 @@
 {
   "/api/v1": {
-    "target": "http://localhost:8096",
+    "target": "https://integravida-backendservices.onrender.com",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "warn"
