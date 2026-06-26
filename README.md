@@ -1,61 +1,162 @@
-# IntegravidaFrontendServices
+# Integravida Frontend Services
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.10.
+> **Plataforma de servicios frontend moderna para Integravida - Desarrollado por MTS OpenSource**
 
-## Development server
+[![TypeScript](https://img.shields.io/badge/TypeScript-63.7%25-blue?style=flat-square)](https://www.typescriptlang.org/)
+[![HTML](https://img.shields.io/badge/HTML-21.3%25-orange?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS](https://img.shields.io/badge/CSS-15%25-green?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![Angular](https://img.shields.io/badge/Framework-Angular-red?style=flat-square)](https://angular.dev/)
+[![License](https://img.shields.io/badge/License-Open%20Source-brightgreen?style=flat-square)](LICENSE)
 
-To start a local development server, run:
+## 📋 Descripción
+
+**Integravida Frontend Services** es una aplicación moderna desarrollada con Angular, diseñada para proporcionar una interfaz de usuario robusta y escalable. Este repositorio contiene los servicios y componentes frontend necesarios para la plataforma Integravida.
+
+**Stack tecnológico:**
+- **TypeScript (63.7%)** - Lenguaje principal para lógica de negocio
+- **HTML (21.3%)** - Estructura y marcado semántico
+- **CSS (15%)** - Estilos y diseño responsivo
+
+## 🚀 Primeros pasos
+
+### Requisitos previos
+
+- [Node.js](https://nodejs.org/) (v18 o superior)
+- [Angular CLI](https://angular.dev/tools/cli) v21.2.10 o superior
+- npm o yarn como gestor de paquetes
+
+### Instalación
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/MTS-OpenSource/Integravida-FrontendServices.git
+cd Integravida-FrontendServices
+
+# Instalar dependencias
+npm install
+```
+
+## 💻 Desarrollo
+
+### Servidor de desarrollo local
+
+Para iniciar el servidor de desarrollo:
+
+```bash
+# Iniciar Angular dev server
 ng serve
 
+# En otra terminal, inicia la API local (si aplica)
 npm run api
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Luego abre tu navegador en `http://localhost:4200/`. La aplicación se recargará automáticamente al modificar archivos de código fuente.
 
-## Code scaffolding
+## 🏗️ Estructura del proyecto
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+src/
+├── app/              # Componentes y servicios principales
+├── assets/           # Recursos estáticos
+├── styles/           # Estilos globales
+└── environments/     # Configuración de entornos
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🛠️ Comandos disponibles
+
+### Generar componentes y artefactos
+
+Angular CLI incluye herramientas poderosas para generar código:
 
 ```bash
+# Generar un nuevo componente
+ng generate component nombre-componente
+
+# Generar un servicio
+ng generate service nombre-servicio
+
+# Generar un módulo
+ng generate module nombre-modulo
+
+# Ver todas las opciones disponibles
 ng generate --help
 ```
 
-## Building
+### Compilación
 
-To build the project run:
+Para compilar el proyecto y generar los artefactos de construcción:
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los archivos compilados se almacenan en el directorio `dist/`. La compilación de producción optimiza la aplicación para mejor rendimiento y velocidad.
 
-## Running unit tests
+```bash
+# Compilación de producción optimizada
+ng build --configuration production
+```
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## ✅ Pruebas
+
+### Pruebas unitarias
+
+Ejecutar pruebas unitarias con [Vitest](https://vitest.dev/):
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+### Pruebas end-to-end (E2E)
 
-For end-to-end (e2e) testing, run:
+Para pruebas de extremo a extremo:
 
 ```bash
 ng e2e
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+> **Nota:** Angular CLI no incluye framework de E2E por defecto. Elige el que mejor se adapte a tus necesidades (Cypress, Playwright, etc.).
 
-## Additional Resources
+## 📦 Construcción y Despliegue
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Despliegue a producción
+
+```bash
+# Compilar para producción
+ng build --configuration production
+
+# Los archivos listos para despliegue estarán en dist/
+```
+
+La aplicación está configurada para desplegar en [Google Firebase](https://integravida-appweb.web.app/).
+
+## 📚 Recursos adicionales
+
+- [Documentación oficial de Angular](https://angular.dev/)
+- [Angular CLI - Overview and Command Reference](https://angular.dev/tools/cli)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Vitest Documentation](https://vitest.dev/)
+
+## 🤝 Contribución
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto es de código abierto y está disponible bajo la licencia correspondiente.
+
+## 📞 Contacto
+
+**MTS OpenSource**
+- GitHub: [@MTS-OpenSource](https://github.com/MTS-OpenSource)
+- Sitio web: [Integravida](https://integravida-appweb.web.app/)
+
+---
+
+**Última actualización:** Junio 2026
