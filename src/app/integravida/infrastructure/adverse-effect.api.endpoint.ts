@@ -18,7 +18,7 @@ export class AdverseEffectApiEndpoint extends BaseApiEndpoint {
     return this.collectionUrl();
   }
 
-  getByPatientId(patientId: number): string {
+  getByPatientId(patientId: string | number): string {
     const params = new URLSearchParams({ patientID: String(patientId) });
     return `${this.collectionUrl()}?${params.toString()}`;
   }

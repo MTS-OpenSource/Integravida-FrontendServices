@@ -1,116 +1,318 @@
-<section class="alerts">
-  <header class="page-header">
-    <div>
-      <h1>Alertas</h1>
-      <p>Monitorea eventos críticos y administra el estado de las alertas.</p>
+<section class="alerts-page" [class.loading]="alertService.loading()">
+  <!-- Header -->
+  <header class="alerts-header">
+    <div class="header-info">
+      <h2 class="header-title">Alertas y Notificaciones</h2>
+      <p class="header-subtitle">Supervise y gestione sus notificaciones de salud críticas, recordatorios de medicación y actualizaciones del sistema en tiempo real.</p>
+    </div>
+    <div class="header-actions">
+      <div class="patient-input-group">
+        <input
+          type="text"
+          class="patient-input"
+          [ngModel]="patientId()"
+          (ngModelChange)="patientId.set($event)"
+          placeholder="Ingrese Patient UUID"
+        />
+        <button type="button" class="btn-load" (click)="loadAlerts()" [disabled]="alertService.loading()">
+          @if (alertService.loading()) {
+            <span class="spinner-sm"></span>
+          } @else {
+            Cargar
+          }
+        </button>
+      </div>
+      <button class="btn-icon" aria-label="Search">
+        <span class="material-symbols-outlined">search</span>
+      </button>
     </div>
   </header>
 
-  <section class="controls-card search-section">
-    <label>
-      <span>Patient UUID</span>
-      <input
-        type="text"
-        [ngModel]="patientId()"
-        (ngModelChange)="patientId.set($event)"
-        placeholder="30b03b5c-33e4-4c88-bb09-a10bff88f3a0"
-      />
-    </label>
-    <button type="button" class="primary" (click)="loadAlerts()">
-      Cargar alertas
-    </button>
-  </section>
+  <!-- Loading overlay -->
+  @if (alertService.loading()) {
+    <div class="loading-overlay">
+      <span class="spinner"></span>
+      <p>Cargando alertas...</p>
+    </div>
+  }
 
-  <section class="tabs-container">
-    <div class="tabs-header">
-      <nav class="tabs-nav">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="selectedTab() === 'Todas'"
-          (click)="setTab('Todas')">
-          Todas
-          <span class="badge gray">{{ alertService.alerts().length }}</span>
-        </button>
+  <!-- Error banner -->
+  @if (alertService.error()) {
+    <div class="error-banner">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ alertService.error() }}</span>
+      <button class="error-close" (click)="dismissError()">&times;</button>
+    </div>
+  }
 
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="selectedTab() === 'Activas'"
-          (click)="setTab('Activas')">
-          Activas
-          <span class="badge red">{{ alertService.activeAlerts().length }}</span>
-        </button>
-
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="selectedTab() === 'Resueltas'"
-          (click)="setTab('Resueltas')">
-          Resueltas
-          <span class="badge green">{{ alertService.resolvedAlerts().length }}</span>
-        </button>
-      </nav>
-
+  <!-- Filter & Summary Area -->
+  <div class="filter-section">
+    <div class="filter-tabs">
+      <button
+        class="filter-btn"
+        [class.active]="selectedTab() === 'Todas'"
+        (click)="setTab('Todas')"
+      >
+        Todas
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedTab() === 'Activas'"
+        (click)="setTab('Activas')"
+      >
+        Activas
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedTab() === 'Resueltas'"
+        (click)="setTab('Resueltas')"
+      >
+        Resueltas
+      </button>
+      <button class="filter-btn filter-dropdown">
+        <span class="material-symbols-outlined">filter_list</span> Filtrar
+      </button>
+    </div>
+    <div class="mark-all-row">
       <button
         *ngIf="alertService.activeAlerts().length > 0"
         type="button"
-        class="secondary mark-all-btn"
-        (click)="alertService.markAllAsRead()">
-        ✓ Marcar activas como vistas
+        class="btn-mark-all"
+        (click)="alertService.markAllAsRead()"
+      >
+        Marcar todas como leídas
       </button>
     </div>
-  </section>
+  </div>
 
-  @if (alertService.loading()) {
-    <div class="loading-state">
-      <span class="spinner"></span>
-      <p>Cargando el historial de alertas...</p>
+  <!-- Quick Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-chip">
+      <span class="stat-dot dot-muted"></span>
+      <span class="stat-label">{{ alertService.alerts().length }} Total</span>
     </div>
-  }
+    <div class="stat-chip chip-error">
+      <span class="stat-dot dot-error"></span>
+      <span class="stat-label">{{ alertService.activeAlerts().length }} Activas</span>
+    </div>
+    <div class="stat-chip chip-primary">
+      <span class="stat-dot dot-primary"></span>
+      <span class="stat-label">{{ alertService.resolvedAlerts().length }} Resueltas</span>
+    </div>
+  </div>
 
-  @if (alertService.error()) {
-    <p class="error-banner">⚠️ {{ alertService.error() }}</p>
-  }
-
-  <section class="list">
-    @for (alert of visibleAlerts(); track alert.id) {
-      <article class="card" [class.unread]="!alert.read">
-        <div class="card-header">
-          <div>
-            <h3>{{ alert.type ?? 'Alerta' }}</h3>
-            <p class="severity" [ngClass]="alert.severity?.toLowerCase() || ''">Nivel: {{ alert.severity }}</p>
+  <!-- Dashboard Grid -->
+  <div class="alerts-grid">
+    <!-- Left Column: Alerts List -->
+    <div class="alerts-list-column">
+      <!-- Alertas Activas -->
+      @if (selectedTab() !== 'Resueltas') {
+        <section class="alerts-section">
+          <div class="section-title-row">
+            <h3 class="section-title">
+              <span class="material-symbols-outlined icon-error">priority_high</span>
+              Alertas Activas
+            </h3>
           </div>
-
-          <span
-            class="status-pill"
-            [class.active]="!alert.read"
-            [class.resolved]="alert.read"
-          >
-            {{ alert.read ? 'Resuelta' : 'Requiere Atención' }}
-          </span>
-        </div>
-
-        <div class="details grid-details">
-          <p><strong>Paciente ID:</strong> {{ alert.patientId }}</p>
-          <p><strong>Valor Registrado:</strong> <span class="highlight">{{ alert.glucoseValue }} mg/dL</span></p>
-          <p><strong>Fecha y Hora:</strong> {{ alert.createdAt | date:'medium' }}</p>
-        </div>
-
-        @if (!alert.read) {
-          <div class="card-actions">
-            <button type="button" class="btn-resolve" (click)="alertService.markAsRead(alert)">
-              Marcar como resuelta
-            </button>
+          <div class="alerts-cards">
+            @for (alert of alertService.activeAlerts(); track alert.id) {
+              <article
+                class="alert-card"
+                [class.card-critical]="alert.severity === 'critical' || alert.severity === 'Critical'"
+                [class.card-warning]="alert.severity === 'warning' || alert.severity === 'Warning' || alert.severity === 'medium'"
+                [class.card-info]="alert.severity !== 'critical' && alert.severity !== 'Critical' && alert.severity !== 'warning' && alert.severity !== 'Warning' && alert.severity !== 'medium'"
+              >
+                <div class="card-body">
+                  <div class="card-icon-wrap">
+                    @if (alert.severity === 'critical' || alert.severity === 'Critical') {
+                      <div class="icon-circle icon-critical">
+                        <span class="material-symbols-outlined">warning</span>
+                      </div>
+                    } @else {
+                      <div class="icon-circle icon-warning">
+                        <span class="material-symbols-outlined">trending_up</span>
+                      </div>
+                    }
+                  </div>
+                  <div class="card-content">
+                    <div class="card-header-row">
+                      <h4 class="card-title">{{ alert.title ?? alert.type ?? 'Alerta' }}</h4>
+                      <span class="severity-pill" [class.pill-critical]="alert.severity === 'critical' || alert.severity === 'Critical'" [class.pill-warning]="alert.severity === 'warning' || alert.severity === 'Warning' || alert.severity === 'medium'">
+                        {{ alert.severity === 'critical' || alert.severity === 'Critical' ? 'Crítica' : alert.severity === 'warning' || alert.severity === 'Warning' ? 'Advertencia' : alert.severity === 'medium' ? 'Media' : 'Info' }}
+                      </span>
+                      <span class="status-pill status-active">Activa</span>
+                    </div>
+                    <p class="card-desc">
+                      @if (alert.glucoseValue) {
+                        Su lectura actual es de <strong [class.text-error]="alert.severity === 'critical' || alert.severity === 'Critical'" [class.text-warning]="alert.severity === 'warning' || alert.severity === 'Warning'">{{ alert.glucoseValue }} mg/dL</strong>.
+                        @if (alert.desc) { {{ alert.desc }} }
+                      } @else if (alert.desc) {
+                        {{ alert.desc }}
+                      } @else {
+                        Alerta registrada requiere atención.
+                      }
+                    </p>
+                    <div class="card-time">
+                      <span class="material-symbols-outlined">schedule</span>
+                      {{ alert.createdAt | date:'short' }}
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <button class="btn-detail" (click)="alertService.markAsRead(alert)">Marcar como visto</button>
+                    <button class="btn-more">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            } @empty {
+              <div class="empty-state">
+                <span class="material-symbols-outlined empty-icon">check_circle</span>
+                <h4>Todo en orden</h4>
+                <p>No hay alertas activas en esta categoría.</p>
+              </div>
+            }
           </div>
-        }
-      </article>
-    } @empty {
-      <div class="empty-state">
-        <div class="empty-icon">✅</div>
-        <h3>Todo en orden</h3>
-        <p>No hay alertas en esta categoría.</p>
+        </section>
+      }
+
+      <!-- Alertas Resueltas -->
+      @if (selectedTab() !== 'Activas') {
+        <section class="alerts-section">
+          <div class="section-title-row">
+            <h3 class="section-title">
+              <span class="material-symbols-outlined icon-primary">check_circle</span>
+              Alertas Resueltas
+            </h3>
+          </div>
+          <div class="resolved-list">
+            @for (alert of alertService.resolvedAlerts(); track alert.id) {
+              <div class="resolved-item">
+                <div class="resolved-icon-wrap">
+                  <div class="icon-circle icon-resolved">
+                    <span class="material-symbols-outlined">check</span>
+                  </div>
+                </div>
+                <div class="resolved-content">
+                  <h4 class="resolved-title">{{ alert.title ?? alert.type ?? 'Alerta' }}</h4>
+                  <p class="resolved-desc">{{ alert.desc ?? (alert.glucoseValue ? 'Niveles estabilizados a ' + alert.glucoseValue + ' mg/dL' : 'Resuelta') }}</p>
+                </div>
+                <span class="resolved-time">{{ alert.createdAt | date:'short' }}</span>
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <span class="material-symbols-outlined empty-icon">check_circle</span>
+                <h4>Sin alertas resueltas</h4>
+                <p>No hay alertas resueltas en esta categoría.</p>
+              </div>
+            }
+          </div>
+          <button class="btn-load-history" (click)="loadAlerts()">
+            Cargar historial completo
+          </button>
+        </section>
+      }
+    </div>
+
+    <!-- Right Column: Sidebar Widgets -->
+    <div class="alerts-widgets-column">
+      <!-- Critical Action Card -->
+      @if (hasCriticalAlert()) {
+        <div class="widget widget-critical">
+          <div class="critical-bg-icon">
+            <span class="material-symbols-outlined">emergency</span>
+          </div>
+          <h3 class="widget-title">Alerta Crítica Activa</h3>
+          <p class="widget-desc">Se requiere acción inmediata para estabilizar sus niveles de glucosa. Por favor, siga su protocolo de emergencia.</p>
+          <button class="btn-act-now">
+            Actuar ahora <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
+      }
+
+      <!-- Statistics Widget -->
+      <div class="widget widget-stats">
+        <h3 class="widget-title">Estadísticas de Alertas</h3>
+        <div class="chart-container">
+          <div class="donut-chart">
+            <svg viewBox="0 0 36 36">
+              <circle class="donut-bg" cx="18" cy="18" r="16" fill="none" stroke-width="3"/>
+              <circle
+                class="donut-fill"
+                cx="18" cy="18" r="16" fill="none"
+                stroke-width="3"
+                [attr.stroke-dasharray]="resolvedPercentage() + ' ' + (100 - resolvedPercentage())"
+                stroke-linecap="round"
+                transform="rotate(-90 18 18)"
+              />
+            </svg>
+            <div class="donut-label">
+              <span class="donut-value">{{ resolvedPercentage() }}%</span>
+              <span class="donut-sub">Resueltas</span>
+            </div>
+          </div>
+        </div>
+        <div class="stats-rows">
+          <div class="stat-row">
+            <span class="stat-key">Total esta semana</span>
+            <span class="stat-value">{{ alertService.alerts().length }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-key">Tiempo prom. respuesta</span>
+            <span class="stat-value">14 min</span>
+          </div>
+        </div>
       </div>
-    }
-  </section>
+
+      <!-- Alert Settings Widget -->
+      <div class="widget widget-settings">
+        <h3 class="widget-title">Configuración de Alertas</h3>
+        <div class="settings-list">
+          <label class="setting-row">
+            <span class="setting-label">Glucosa Alta (&gt;180)</span>
+            <div class="toggle" [class.active]="settings.highGlucose" (click)="toggleSetting('highGlucose')">
+              <div class="toggle-knob"></div>
+            </div>
+          </label>
+          <label class="setting-row">
+            <span class="setting-label">Glucosa Baja (&lt;70)</span>
+            <div class="toggle" [class.active]="settings.lowGlucose" (click)="toggleSetting('lowGlucose')">
+              <div class="toggle-knob"></div>
+            </div>
+          </label>
+          <label class="setting-row">
+            <span class="setting-label">Recordatorios de Medición</span>
+            <div class="toggle" [class.active]="settings.measurementReminders" (click)="toggleSetting('measurementReminders')">
+              <div class="toggle-knob"></div>
+            </div>
+          </label>
+          <label class="setting-row">
+            <span class="setting-label">Recordatorios de Medicación</span>
+            <div class="toggle" [class.active]="settings.medicationReminders" (click)="toggleSetting('medicationReminders')">
+              <div class="toggle-knob"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Quick Actions Widget -->
+      <div class="widget widget-actions">
+        <h3 class="widget-title">Acciones Rápidas</h3>
+        <div class="actions-list">
+          <button class="action-btn">
+            <span class="material-symbols-outlined action-icon">add_alert</span>
+            Crear alerta personalizada
+          </button>
+          <button class="action-btn">
+            <span class="material-symbols-outlined action-icon">download</span>
+            Exportar historial
+          </button>
+          <button class="action-btn action-btn-primary">
+            <span class="material-symbols-outlined">medical_services</span>
+            Notificar a mi médico ahora
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

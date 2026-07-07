@@ -14,73 +14,47 @@ export class GlucoseLog {
   protected readonly glucoseService = inject(GlucoseService);
 
   protected readonly patientId = signal('');
-  protected readonly rangePatientId = signal('');
   protected readonly glucoseLevel = signal<number | null>(null);
   protected readonly recordedAt = signal(this.toDateTimeLocalValue(new Date()));
   protected readonly notes = signal('');
-
-  protected readonly minRange = signal(this.glucoseService.range().min);
-  protected readonly maxRange = signal(this.glucoseService.range().max);
-  protected readonly rangeError = signal<string | null>(null);
-  protected readonly currentRange = computed(() => this.glucoseService.range());
+  protected readonly patientState = signal('Antes de comer');
 
   protected readonly status = computed(() => {
     const value = this.glucoseLevel();
     if (value === null || Number.isNaN(value)) return null;
-    return this.glucoseService.evaluateRange(value, this.currentRange());
+    return this.glucoseService.evaluateRange(value);
   });
 
-  protected saveRange(): void {
-    const patientId = this.rangePatientId().trim();
-    const min = Number(this.minRange());
-    const max = Number(this.maxRange());
+  protected readonly recordedAtDate = computed(() => this.recordedAt().slice(0, 10));
 
-    if (!patientId) {
-      this.rangeError.set('Debes ingresar un Patient UUID para guardar el rango.');
-      return;
-    }
+  protected readonly recordedAtTime = computed(() => this.recordedAt().slice(11, 16));
 
-    if (!this.glucoseService.isValidRange(min, max)) {
-      this.rangeError.set('El rango debe tener un mínimo mayor a 0 y un máximo mayor al mínimo.');
-      return;
-    }
+  protected readonly currentDateLabel = computed(() => {
+    const now = new Date();
+    const weekdays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const wd = weekdays[now.getDay()];
+    const d = now.getDate();
+    const m = months[now.getMonth()];
+    const y = now.getFullYear();
+    return `${wd}, ${d} de ${m} de ${y}`;
+  });
 
-    this.glucoseService.updateRange(patientId, min, max).subscribe({
-      next: (range) => {
-        if (!range || range.minimumValue === null || range.maximumValue === null) return;
-
-        this.minRange.set(range.minimumValue);
-        this.maxRange.set(range.maximumValue);
-
-        this.rangeError.set(null);
-      },
-    });
+  protected onDateChange(value: string): void {
+    const time = this.recordedAtTime();
+    this.recordedAt.set(`${value}T${time}`);
   }
 
-  protected loadRange(): void {
-    const patientId = this.rangePatientId().trim();
-
-    if (!patientId) {
-      this.rangeError.set('Debes ingresar un Patient UUID para cargar el rango.');
-      return;
-    }
-
-    this.glucoseService.loadRange(patientId).subscribe({
-      next: (range) => {
-        if (!range || range.minimumValue === null || range.maximumValue === null) return;
-
-        this.minRange.set(range.minimumValue);
-        this.maxRange.set(range.maximumValue);
-        this.rangeError.set(null);
-      },
-    });
+  protected onTimeChange(value: string): void {
+    const date = this.recordedAtDate();
+    this.recordedAt.set(`${date}T${value}`);
   }
 
-  protected resetRange(): void {
-    this.glucoseService.resetRange();
-    this.minRange.set(this.glucoseService.range().min);
-    this.maxRange.set(this.glucoseService.range().max);
-    this.rangeError.set(null);
+  protected resetForm(): void {
+    this.glucoseLevel.set(null);
+    this.notes.set('');
+    this.patientState.set('Antes de comer');
+    this.recordedAt.set(this.toDateTimeLocalValue(new Date()));
   }
 
   protected save(): void {
@@ -101,6 +75,7 @@ export class GlucoseLog {
         patientId,
         glucoseValue: value,
         measuredAt: recordedAt,
+        patientState: this.patientState(),
       },
       notes || null,
     );
@@ -109,6 +84,7 @@ export class GlucoseLog {
 
     this.glucoseLevel.set(null);
     this.notes.set('');
+    this.patientState.set('Antes de comer');
     this.recordedAt.set(this.toDateTimeLocalValue(new Date()));
   }
 

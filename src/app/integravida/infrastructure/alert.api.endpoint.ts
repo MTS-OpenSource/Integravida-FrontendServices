@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 
+import { environment } from '../../../environments/environment';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base.api.endpoint';
-
-const ALERTS_RESOURCE_PATH = '/alerts';
-const LOCAL_MONITORING_API_BASE_URL = '/api/v1';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AlertApiEndpoint extends BaseApiEndpoint {
   constructor() {
-    super(LOCAL_MONITORING_API_BASE_URL, ALERTS_RESOURCE_PATH);
+    super(
+      environment.integravidaProviderApiBaseUrl,
+      environment.integravidaProviderAlertsEndpointPath,
+    );
   }
 
   getAll(): string {

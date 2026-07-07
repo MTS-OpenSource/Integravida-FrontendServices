@@ -1,141 +1,207 @@
-<section class="glucose-log">
-  <header class="page-header">
+<section class="glucose-page">
+  <!-- TopNavBar -->
+  <header class="glucose-header">
     <div>
-      <p class="eyebrow">Glucose Monitoring</p>
-      <h1>Registrar glucosa</h1>
-      <p class="subtitle">Ingresa una nueva lectura para mantener actualizado tu seguimiento.</p>
+      <div class="breadcrumb">
+        <span>Dashboard</span>
+        <span class="material-symbols-outlined breadcrumb-chevron">chevron_right</span>
+        <span class="breadcrumb-current">Registro de Glucosa</span>
+      </div>
+      <h2 class="page-title">Registro de Glucosa</h2>
+      <p class="page-date">{{ currentDateLabel() }}</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-outline" type="button">
+        <span class="material-symbols-outlined">calendar_today</span>
+        Este Mes
+      </button>
+      <div class="avatar">
+        <span class="material-symbols-outlined">person</span>
+      </div>
     </div>
   </header>
 
-  <section class="card range-config">
-    <div class="card-header">
-      <div class="icon-box">🎯</div>
-      <div>
-        <h2>Rango objetivo de glucosa</h2>
-        <p>Configura los valores mínimo y máximo para evaluar las lecturas del paciente.</p>
-      </div>
+  <!-- Page Content -->
+  <div class="page-content">
+    <div class="content-grid">
+      <!-- Main Form Card -->
+      <section class="form-card">
+        <div class="form-card-header">
+          <div class="form-card-header-left">
+            <div class="form-card-icon">
+              <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_chart</span>
+            </div>
+            <div>
+              <h3 class="form-card-title">Nueva Lectura de Glucosa</h3>
+              <p class="form-card-subtitle">Complete los detalles de su medición actual.</p>
+            </div>
+          </div>
+        </div>
+
+        <form class="form-body" (ngSubmit)="save()" #glucoseForm="ngForm">
+          <!-- Patient UUID (hidden utility field) -->
+          <div class="field-group">
+            <label class="field-label">Patient UUID</label>
+            <input
+              class="field-input"
+              type="text"
+              [ngModel]="patientId()"
+              (ngModelChange)="patientId.set($event)"
+              name="patientId"
+              placeholder="30b03b5c-33e4-4c88-bb09-a10bff88f3a0"
+              required
+            />
+          </div>
+
+          <!-- Glucose Level Input -->
+          <div class="field-group">
+            <label class="field-label">Nivel de Glucosa</label>
+            <div class="glucose-row">
+              <div class="glucose-input-wrap">
+                <input
+                  class="glucose-input"
+                  type="number"
+                  [ngModel]="glucoseLevel()"
+                  (ngModelChange)="glucoseLevel.set($event)"
+                  name="glucoseLevel"
+                  placeholder="000"
+                  required
+                />
+                <span class="glucose-unit">mg/dL</span>
+              </div>
+              <div class="status-badge" [class.status-normal]="status() === 'Normal'" [class.status-low]="status() === 'Bajo'" [class.status-high]="status() === 'Alto'">
+                <span class="status-label">Estado</span>
+                <span class="status-value">{{ status() ?? '—' }}</span>
+              </div>
+            </div>
+            <!-- Range Indicator -->
+            <div class="range-indicator">
+              <div class="range-item range-low">
+                <span class="range-dot dot-low"></span>
+                <span>Bajo &lt;{{ glucoseService.range().min }}</span>
+              </div>
+              <div class="range-item range-normal">
+                <span class="range-dot dot-normal"></span>
+                <span class="range-text-bold">{{ glucoseService.range().min }}–{{ glucoseService.range().max }}</span>
+              </div>
+              <div class="range-item range-high">
+                <span class="range-dot dot-high"></span>
+                <span>Alto &gt;{{ glucoseService.range().max }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date & Time + Patient State -->
+          <div class="form-row-2">
+            <div class="field-group">
+              <label class="field-label">Fecha y Hora</label>
+              <div class="datetime-row">
+                <div class="datetime-input-wrap">
+                  <span class="material-symbols-outlined datetime-icon">calendar_today</span>
+                  <input
+                    class="field-input datetime-input"
+                    type="date"
+                    [ngModel]="recordedAtDate()"
+                    (ngModelChange)="onDateChange($event)"
+                    name="recordedDate"
+                  />
+                </div>
+                <div class="datetime-input-wrap">
+                  <span class="material-symbols-outlined datetime-icon">schedule</span>
+                  <input
+                    class="field-input datetime-input"
+                    type="time"
+                    [ngModel]="recordedAtTime()"
+                    (ngModelChange)="onTimeChange($event)"
+                    name="recordedTime"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Estado del Paciente</label>
+              <div class="chip-group">
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip-active]="patientState() === 'En ayunas'"
+                  (click)="patientState.set('En ayunas')"
+                >En ayunas</button>
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip-active]="patientState() === 'Antes de comer'"
+                  (click)="patientState.set('Antes de comer')"
+                >Antes de comer</button>
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip-active]="patientState() === 'Después de comer'"
+                  (click)="patientState.set('Después de comer')"
+                >Después de comer</button>
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip-active]="patientState() === 'Antes de dormir'"
+                  (click)="patientState.set('Antes de dormir')"
+                >Antes de dormir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comments -->
+          <div class="field-group">
+            <label class="field-label">Comentarios (Opcional)</label>
+            <textarea
+              class="field-textarea"
+              [ngModel]="notes()"
+              (ngModelChange)="notes.set($event)"
+              name="notes"
+              placeholder="Agregue cualquier nota relevante sobre su estado de salud, actividad física o dieta reciente..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-row">
+            <button
+              class="btn-primary"
+              type="submit"
+              [disabled]="glucoseService.loading()"
+            >
+              @if (glucoseService.loading()) {
+                <span class="spinner-sm"></span>
+              } @else {
+                <span class="material-symbols-outlined">save</span>
+              }
+              Guardar Registro
+            </button>
+            <button class="btn-cancel" type="button" (click)="resetForm()">Cancelar</button>
+          </div>
+
+          <!-- Loading / Error feedback -->
+          @if (glucoseService.loading()) {
+            <div class="feedback-info">
+              <span class="spinner-sm"></span> Guardando lectura...
+            </div>
+          }
+          @if (glucoseService.error()) {
+            <div class="feedback-error">
+              <span class="material-symbols-outlined">error</span>
+              {{ glucoseService.error() }}
+            </div>
+          }
+        </form>
+
+        <!-- Health Tip -->
+        <div class="health-tip">
+          <span class="material-symbols-outlined tip-icon">lightbulb</span>
+          <p class="tip-text">
+            <span class="tip-bold">Consejo de salud:</span> Registrar tu glucosa consistentemente nos ayuda a detectar patrones y ajustar tu tratamiento de manera más precisa para tu bienestar.
+          </p>
+        </div>
+      </section>
     </div>
-
-    <div class="form">
-      <label class="full">
-        <span>Patient UUID</span>
-        <input
-          type="text"
-          [ngModel]="rangePatientId()"
-          (ngModelChange)="rangePatientId.set($event)"
-          placeholder="30b03b5c-33e4-4c88-bb09-a10bff88f3a0"
-        />
-      </label>
-
-      <label>
-        <span>Mínimo mg/dL</span>
-        <input
-          type="number"
-          [ngModel]="minRange()"
-          (ngModelChange)="minRange.set(+$event)"
-          placeholder="Ej: 70"
-        />
-      </label>
-
-      <label>
-        <span>Máximo mg/dL</span>
-        <input
-          type="number"
-          [ngModel]="maxRange()"
-          (ngModelChange)="maxRange.set(+$event)"
-          placeholder="Ej: 180"
-        />
-      </label>
-
-      <div class="range-preview">
-        <span>Rango actual</span>
-        <strong>{{ currentRange().min }} - {{ currentRange().max }} mg/dL</strong>
-      </div>
-
-      @if (rangeError()) {
-        <p class="range-error">{{ rangeError() }}</p>
-      }
-
-      <div class="range-actions">
-        <button type="button" class="secondary" (click)="resetRange()">Restablecer</button>
-        <button type="button" class="secondary" (click)="loadRange()">Cargar rango</button>
-        <button type="button" class="primary compact" (click)="saveRange()">Guardar rango</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="card-header">
-      <div class="icon-box">💧</div>
-      <div>
-        <h2>Nueva lectura</h2>
-        <p>Registra el nivel de glucosa del paciente.</p>
-      </div>
-    </div>
-
-    <div class="form">
-      <label>
-        <span>Patient UUID</span>
-        <input
-          type="text"
-          [ngModel]="patientId()"
-          (ngModelChange)="patientId.set($event)"
-          placeholder="62a9e0f6-00e9-46bd-9ee8-f53b64a96030"
-        />
-      </label>
-
-      <label>
-        <span>Nivel de glucosa mg/dL</span>
-        <input
-          class="glucose-input"
-          type="number"
-          [ngModel]="glucoseLevel()"
-          (ngModelChange)="glucoseLevel.set(+$event)"
-          placeholder="Ej: 120"
-        />
-      </label>
-
-      @if (status()) {
-      <div
-        class="status-card"
-        [class.low]="status() === 'Bajo'"
-        [class.normal]="status() === 'Normal'"
-        [class.high]="status() === 'Alto'"
-      >
-        <span>Estado actual</span>
-        <strong>{{ status() }}</strong>
-      </div>
-      }
-
-      <label>
-        <span>Fecha y hora</span>
-        <input
-          type="datetime-local"
-          [ngModel]="recordedAt()"
-          (ngModelChange)="recordedAt.set($event)"
-        />
-      </label>
-
-      <label class="full">
-        <span>Notas</span>
-        <textarea
-          [ngModel]="notes()"
-          (ngModelChange)="notes.set($event)"
-          placeholder="Ej: Después del almuerzo"
-        ></textarea>
-      </label>
-
-      <button type="button" class="primary" (click)="save()" [disabled]="glucoseService.loading()">
-        Guardar lectura
-      </button>
-    </div>
-
-    @if (glucoseService.loading()) {
-    <p class="info">Guardando lectura...</p>
-    }
-
-    @if (glucoseService.error()) {
-    <p class="error">{{ glucoseService.error() }}</p>
-    }
-  </section>
+  </div>
 </section>

@@ -1,113 +1,138 @@
-<section class="dashboard-wrapper">
-  <header class="page-header">
-    <div class="header-info">
-      <span class="eyebrow">PATIENT DASHBOARD</span>
-      <h1>Health Summary</h1>
-      <p class="timestamp">
-        {{ currentDate() }} • Last updated: {{ lastUpdateText() }}
-      </p>
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div>
+      <h2 class="header-title">Health Summary</h2>
+      <p class="header-subtitle">Welcome back, {{ userName() }}</p>
     </div>
     <div class="header-actions">
-      <button class="btn-secondary">📅 This Week</button>
-      <button class="btn-primary">+ Log Reading</button>
+      <button class="btn-icon" title="Search">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+      <button class="btn-icon" title="Calendar">
+        <span class="material-symbols-outlined">calendar_today</span>
+      </button>
+      <div class="header-divider"></div>
+      <button class="btn-primary" (click)="openLogReading()">
+        <span class="material-symbols-outlined">add</span>
+        Log Reading
+      </button>
+      <div class="avatar">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt4f0R59JHhnvdtEW74aIZxntQxCnaB6sGY26zxr5RY__ygt5F4anoZxhqWHjWnW1lEpgrFxgDSFyaFIAWj9hV0_PPHU-TXF9rMgu3Dl_Tox2wyvfC75A6BVmjwCeFtxZk9S1J0pdsIvGG_BuppCcgSlY70egVv_2w48gjOoQk_9YXtJgt-DoZYhclKWYTYhCyRw973YbGVvHnhAkQ7kwaYQRNYvqicjw0MWdT06KKSiiXl94YkKAS2g" alt="Patient photo"/>
+      </div>
     </div>
   </header>
 
   <div class="metrics-grid">
     <article class="metric-card">
-      <div class="card-icon glucose-icon">💧</div>
-      <span class="label">CURRENT GLUCOSE</span>
-      <div class="value-row">
-        <strong>{{ dashboardService.summary()?.latestGlucoseRecord?.glucoseLevel ?? '--' }}</strong>
-        <span class="unit">mg/dL</span>
-        <span class="status-badge success">● Normal</span>
+      <div class="metric-header">
+        <span class="metric-label">Current Glucose</span>
+        <span class="badge badge-success">Normal</span>
       </div>
-      <p class="target-info">Target range: 80-130 mg/dL</p>
+      <div class="metric-value">
+        <span class="value-number">{{ dashboardService.summary()?.latestGlucoseRecord?.glucoseLevel ?? '--' }}</span>
+        <span class="value-unit">mg/dL</span>
+      </div>
+      <p class="metric-footer">Target range: 80–130 mg/dL</p>
     </article>
 
     <article class="metric-card">
-      <div class="card-icon status-icon">🧡</div>
-      <span class="label">TREATMENT STATUS</span>
-      <div class="value-row">
-        <strong>{{ dashboardService.summary()?.activeMedicationsCount ?? 0 }}</strong>
-        <span class="unit">Active meds</span>
-        <span class="status-badge warning">On Track</span>
+      <div class="metric-header">
+        <span class="metric-label">Treatment Status</span>
+        <span class="badge badge-warning">On Track</span>
       </div>
-      <div class="progress-bar"><div class="progress" style="width: 86%;"></div></div>
+      <div class="metric-value">
+        <span class="value-number">{{ dashboardService.summary()?.activeMedicationsCount ?? 0 }}%</span>
+      </div>
+      <p class="metric-footer">Adherence this month</p>
     </article>
 
     <article class="metric-card">
-      <div class="card-icon readings-icon">📊</div>
-      <span class="label">READINGS TODAY</span>
-      <div class="value-row">
-        <strong>{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }}</strong>
-        <span class="unit">of 5</span>
+      <div class="metric-header">
+        <span class="metric-label">Readings Today</span>
+        <span class="badge badge-info">Today</span>
       </div>
-      <div class="dot-indicator">
-        <span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot"></span>
+      <div class="metric-value">
+        <span class="value-number">{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }} of 5</span>
       </div>
+      <div class="dots">
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot"></span>
+      </div>
+      <p class="metric-footer">Next check: 6:00 PM</p>
     </article>
 
-    <article class="metric-card dark-card">
-      <div class="card-icon hba1c-icon">🧪</div>
-      <span class="label">HbA1C LEVEL</span>
-      <div class="value-row">
-        <strong>6.2</strong><span class="unit">%</span>
-        <span class="status-badge success-alt">Excellent</span>
+    <article class="metric-card metric-card-accent">
+      <div class="metric-header">
+        <span class="metric-label accent">HbA1c Level</span>
+        <span class="badge badge-accent">Excellent</span>
       </div>
-      <p class="test-date">Last tested: Jun 28, 2025</p>
+      <div class="metric-value">
+        <span class="value-number">6.2</span>
+        <span class="value-unit accent">%</span>
+      </div>
+      <p class="metric-footer accent">Last tested: Jun 28, 2025</p>
+      <span class="accent-icon material-symbols-outlined">biotech</span>
     </article>
   </div>
 
   <div class="content-grid">
-    <section class="card chart-area">
-      <div class="section-header">
-        <h2>Glucose Trends</h2>
-        <span class="subtext">Last 7 days • mg/dL readings</span>
+    <section class="card chart-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Glucose Trends</h3>
+          <p class="card-subtitle">Last 7 days &middot; mg/dL readings</p>
+        </div>
+        <button class="btn-ghost">
+          <span class="material-symbols-outlined">download</span>
+          Export
+        </button>
       </div>
-      <div class="canvas-wrapper">
+      <div class="chart-container">
         <canvas #trendsChart></canvas>
       </div>
     </section>
 
-    <aside class="card doses-area">
-      <div class="section-header">
-        <h3>Upcoming Doses</h3>
-        <span class="subtext">Today's medication schedule</span>
-      </div>
+    <aside class="card doses-card">
+      <h3 class="card-title">Upcoming Doses</h3>
       <div class="doses-list">
         @for (med of dashboardService.summary()?.activeMedications; track med.id) {
           <div
             class="dose-item"
-            [class.done]="dashboardService.isMedicationConfirmed(med.id) || med.status === 'done'"
-            [class.next]="!dashboardService.isMedicationConfirmed(med.id) && med.status === 'next'"
+            [class.dose-done]="dashboardService.isMedicationConfirmed(med.id) || med.status === 'done'"
+            [class.dose-next]="!dashboardService.isMedicationConfirmed(med.id) && med.status === 'next'"
           >
-            <div class="check-box">
-              @if (dashboardService.isMedicationConfirmed(med.id) || med.status === 'done') { ✓ }
+            <div class="dose-icon" [class.dose-icon-done]="dashboardService.isMedicationConfirmed(med.id) || med.status === 'done'" [class.dose-icon-next]="!dashboardService.isMedicationConfirmed(med.id) && med.status === 'next'">
+              @if (dashboardService.isMedicationConfirmed(med.id) || med.status === 'done') {
+                <span class="material-symbols-outlined">check_circle</span>
+              } @else if (med.status === 'next') {
+                <span class="material-symbols-outlined">schedule</span>
+              } @else {
+                <span class="material-symbols-outlined">hourglass_empty</span>
+              }
             </div>
-            <div class="dose-content">
-              <h4>{{ med.name }} {{ med.dose }}</h4>
-              <p>{{ med.scheduleTime }} • {{ med.frequency }}</p>
+            <div class="dose-info">
+              <p class="dose-name">{{ med.name }} {{ med.dose }}</p>
+              <p class="dose-time">{{ med.scheduleTime }}</p>
             </div>
-            <div class="dose-actions">
-  <span class="status-tag">
-    {{ dashboardService.isMedicationConfirmed(med.id) ? 'Done' : (med.status | titlecase) }}
-  </span>
-
-              <button
-                type="button"
-                class="dose-confirm"
-                [disabled]="dashboardService.isMedicationConfirmed(med.id) || dashboardService.isMedicationIntakeLoading(med.id)"
-                (click)="dashboardService.confirmMedicationIntake(med)"
-              >
-                @if (dashboardService.isMedicationIntakeLoading(med.id)) {
-                  Guardando...
-                } @else if (dashboardService.isMedicationConfirmed(med.id)) {
-                  Confirmada
-                } @else {
+            <div class="dose-status">
+              @if (dashboardService.isMedicationConfirmed(med.id) || med.status === 'done') {
+                <span class="status-done">Done</span>
+              } @else if (med.status === 'next') {
+                <span class="status-next">Next</span>
+              } @else {
+                <span class="status-later">Later</span>
+              }
+              @if (!dashboardService.isMedicationConfirmed(med.id) && !dashboardService.isMedicationIntakeLoading(med.id)) {
+                <button class="btn-confirm" (click)="dashboardService.confirmMedicationIntake(med)">
                   Confirmar toma
-                }
-              </button>
+                </button>
+              }
+              @if (dashboardService.isMedicationIntakeLoading(med.id)) {
+                <span class="loading-text">Guardando...</span>
+              }
             </div>
           </div>
         }
@@ -116,39 +141,85 @@
     </aside>
   </div>
 
-  <div class="bottom-grid">
-    <section class="card alerts-area">
-      <div class="section-header">
-        <h2>Recent Alerts</h2>
-        <a href="#" class="view-all">View All ></a>
+  <div class="content-grid bottom-grid">
+    <section class="card alerts-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Recent Alerts</h3>
+          <p class="card-subtitle">Last 48 hours &middot; 3 new alerts</p>
+        </div>
       </div>
       <div class="alerts-list">
         @for (alert of dashboardService.summary()?.recentAlerts; track alert.id) {
-          <div class="alert-row">
-            <div class="alert-icon" [class]="alert.type">⚠️</div>
-
-            <div class="alert-main">
-              <strong>{{ alert.title }}</strong>
-              <p>{{ alert.desc }}</p>
+          <div class="alert-item">
+            <div class="alert-icon" [class.alert-error]="alert.type === 'high' || alert.severity === 'high'" [class.alert-warning]="alert.type === 'missed' || alert.type === 'medication'" [class.alert-info]="alert.type === 'appointment' || alert.type === 'info'">
+              <span class="material-symbols-outlined">
+                @if (alert.type === 'high' || alert.severity === 'high') { warning }
+                @else if (alert.type === 'medication' || alert.type === 'missed') { medication }
+                @else { calendar_today }
+              </span>
             </div>
-
-            <div class="alert-meta">
-              <span class="time">{{ alert.time }}</span>
-              <span class="tag" [class]="alert.type">{{ alert.type | uppercase }}</span>
+            <div class="alert-content">
+              <p class="alert-title">{{ alert.title }}</p>
+              <p class="alert-desc">{{ alert.desc }}</p>
             </div>
+            <span class="alert-time">{{ alert.time }}</span>
           </div>
         }
       </div>
+      <a class="view-all" href="#">View All</a>
     </section>
 
-    <section class="card summary-area">
-      <h3>Weekly Summary</h3>
-      <ul class="summary-stats">
-        <li><span>Avg. Glucose</span> <strong>{{ dashboardService.summary()?.averageGlucoseLevel }} mg/dL</strong></li>
-        <li><span>In Range</span> <strong>78%</strong></li>
-        <li><span>High Episodes</span> <strong class="text-danger">{{ dashboardService.summary()?.unresolvedAlertsCount }}</strong></li>
-        <li><span>Medication Score</span> <strong>86%</strong></li>
-      </ul>
-    </section>
+    <div class="sidebar-cards">
+      <section class="card summary-card">
+        <h4 class="card-label-accent">Weekly Summary</h4>
+        <div class="summary-stats">
+          <div class="stat-row">
+            <span class="stat-label">Avg Glucose</span>
+            <span class="stat-value">{{ dashboardService.summary()?.averageGlucoseLevel ?? '--' }} mg/dL</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">In Range</span>
+            <span class="stat-value stat-primary">78%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">High Episodes</span>
+            <span class="stat-value stat-secondary">{{ dashboardService.summary()?.unresolvedAlertsCount ?? 0 }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Low Episodes</span>
+            <span class="stat-value stat-error">1</span>
+          </div>
+          <div class="stat-row stat-divider">
+            <span class="stat-label">Medication Score</span>
+            <span class="stat-value">86%</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card visit-card">
+        <div class="visit-header">
+          <div>
+            <p class="visit-eyebrow">Next Visit</p>
+            <h4 class="visit-doctor">Dr. Elena Ruiz</h4>
+          </div>
+          <div class="visit-date-box">
+            <span class="visit-month">Jul</span>
+            <span class="visit-day">18</span>
+          </div>
+        </div>
+        <div class="visit-details">
+          <div class="visit-detail">
+            <span class="material-symbols-outlined">schedule</span>
+            <span>Friday &middot; 10:00 AM</span>
+          </div>
+          <div class="visit-detail">
+            <span class="material-symbols-outlined">videocam</span>
+            <span>Telehealth</span>
+          </div>
+        </div>
+        <button class="btn-join">Join Session</button>
+      </section>
+    </div>
   </div>
-</section>
+</div>

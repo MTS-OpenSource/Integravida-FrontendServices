@@ -8,7 +8,7 @@ import { AdverseEffectAssembler } from './adverse-effect.assembler';
 import { AdverseEffectResponse } from './adverse-effect.response';
 
 export interface CreateAdverseEffectPayload {
-  patientId: number;
+  patientId: string | number;
   medicationId: number;
   description: string;
   severity: string;
@@ -27,7 +27,7 @@ export class AdverseEffectApi extends BaseApi<AdverseEffectEntity, AdverseEffect
     return this.getAllFrom(this.adverseEffectEndpoint.getAll());
   }
 
-  getByPatientId(patientId: number): Observable<AdverseEffectEntity[]> {
+  getByPatientId(patientId: string | number): Observable<AdverseEffectEntity[]> {
     return this.http
       .get<AdverseEffectResponse[]>(this.adverseEffectEndpoint.getByPatientId(patientId))
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));

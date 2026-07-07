@@ -24,7 +24,7 @@ export class AdverseEffectService {
 
   constructor(private readonly adverseEffectApi: AdverseEffectApi) {}
 
-  getByPatientId(patientId: number): void {
+  getByPatientId(patientId: string | number): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 

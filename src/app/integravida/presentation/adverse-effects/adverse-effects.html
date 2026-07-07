@@ -1,135 +1,169 @@
-<section class="adverse-effects">
-  <header class="page-header">
+<section class="medication-page">
+  <!-- Header -->
+  <header class="med-header">
     <div>
-      <h1>Efectos adversos</h1>
-      <p>Registra y consulta los efectos adversos relacionados con la medicación del paciente.</p>
+      <h2 class="med-title">Gesti&oacute;n de Medicaci&oacute;n</h2>
+      <div class="patient-row">
+        <input
+          class="patient-input"
+          type="text"
+          [ngModel]="patientId()"
+          (ngModelChange)="patientId.set($event)"
+          placeholder="Patient UUID"
+        />
+        <button class="btn-load" (click)="loadData()">Cargar</button>
+      </div>
+    </div>
+    <div class="med-header-actions">
+      <div class="week-badge">
+        <span class="material-symbols-outlined">calendar_today</span>
+        Esta Semana
+      </div>
+      <button class="btn-icon"><span class="material-symbols-outlined">search</span></button>
+      <button class="btn-primary-sm">Log Reading</button>
+      <div class="avatar"><span class="material-symbols-outlined">person</span></div>
     </div>
   </header>
 
-  <section class="form-card">
-    <div class="card-header">
-      <div class="icon-box">⚕️</div>
-      <div>
-        <h2>Registrar efecto adverso</h2>
-        <p>Completa la información para guardar el reporte en el historial.</p>
-      </div>
-    </div>
+  <!-- Loading / Error -->
+  @if (adverseEffectService.loading()) {
+    <div class="feedback-loading"><span class="spinner"></span> Cargando...</div>
+  }
+  @if (adverseEffectService.error()) {
+    <div class="feedback-error">{{ adverseEffectService.error() }}</div>
+  }
 
-    <div class="form-grid">
-      <label>
-        <span>Patient ID</span>
-        <input
-          type="number"
-          [ngModel]="patientId()"
-          (ngModelChange)="patientId.set(+$event)"
-        />
-      </label>
-
-      <label>
-        <span>Medication ID</span>
-        <input
-          type="number"
-          [ngModel]="medicationId()"
-          (ngModelChange)="medicationId.set(+$event)"
-          placeholder="Ej: 1"
-        />
-      </label>
-
-      <label>
-        <span>Severidad</span>
-        <select [ngModel]="severity()" (ngModelChange)="severity.set($event)">
-          @for (option of severityOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-          }
-        </select>
-      </label>
-
-      <label>
-        <span>Fecha y hora</span>
-        <input
-          type="datetime-local"
-          [ngModel]="occurredAt()"
-          (ngModelChange)="occurredAt.set($event)"
-        />
-      </label>
-
-      <label class="full">
-        <span>Descripción del efecto adverso</span>
-        <textarea
-          rows="4"
-          [ngModel]="description()"
-          (ngModelChange)="description.set($event)"
-          placeholder="Ej: náuseas, mareos o dolor después de tomar la medicación"
-        ></textarea>
-      </label>
-
-      @if (formError()) {
-        <p class="error full">{{ formError() }}</p>
-      }
-
-      @if (adverseEffectService.error()) {
-        <p class="error full">{{ adverseEffectService.error() }}</p>
-      }
-
-      <div class="actions full">
-        <button type="button" class="secondary" (click)="loadHistory()">
-          Cargar historial
-        </button>
-
-        <button
-          type="button"
-          class="primary"
-          [disabled]="adverseEffectService.loading()"
-          (click)="registerAdverseEffect()"
-        >
-          @if (adverseEffectService.loading()) {
-            Guardando...
-          } @else {
-            Registrar efecto adverso
-          }
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <section class="history-card">
-    <div class="card-header">
-      <div class="icon-box">📋</div>
-      <div>
-        <h2>Historial de efectos adversos</h2>
-        <p>Consulta los efectos adversos registrados para el paciente seleccionado.</p>
-      </div>
-    </div>
-
-    @if (adverseEffectService.loading()) {
-      <p class="info">Cargando información...</p>
-    }
-
-    <div class="history-list">
-      @for (effect of adverseEffectService.adverseEffects(); track effect.id) {
-        <article class="history-item">
-          <div class="history-header">
-            <div>
-              <h3>{{ effect.description ?? 'Efecto adverso registrado' }}</h3>
-              <p>Medication ID: {{ effect.medicationId ?? 'No registrado' }}</p>
-            </div>
-
-            <span class="severity" [class]="effect.severity ?? 'mild'">
-            {{ effect.severity ?? 'reported' }}
-          </span>
-          </div>
-
-          <div class="details">
-            <p><strong>Paciente:</strong> {{ effect.patientId }}</p>
-            <p><strong>Fecha:</strong> {{ effect.occurredAt ?? 'Sin fecha' }}</p>
-            <p><strong>Estado:</strong> {{ effect.status ?? 'reported' }}</p>
-          </div>
-        </article>
-      } @empty {
-        <div class="empty-state">
-          No hay efectos adversos registrados para este paciente.
+  <!-- Main Grid -->
+  <div class="med-grid">
+    <!-- Left Column -->
+    <div class="med-left">
+      <!-- Schedule Header -->
+      <div class="schedule-header">
+        <div class="schedule-header-left">
+          <h3 class="schedule-title">Hoy</h3>
+          <span class="schedule-date">{{ currentDateLabel() }}</span>
         </div>
-      }
+        <div class="schedule-nav">
+          <button class="btn-nav"><span class="material-symbols-outlined">chevron_left</span></button>
+          <button class="btn-nav"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+      </div>
+
+      <!-- Medication Schedule -->
+      <div class="med-timeline">
+        @for (med of medications(); track med.id) {
+          <div class="med-card" [class.med-card-next]="med.isNext" [class.med-card-done]="med.done" [class.med-card-pending]="!med.isNext && !med.done">
+            <div class="med-bar" [class.med-bar-primary]="!med.done" [class.med-bar-muted]="med.done"></div>
+            <div class="med-time">
+              <span class="med-time-value">{{ med.time }}</span>
+              <span class="med-time-ampm">{{ med.ampm }}</span>
+            </div>
+            <div class="med-info">
+              <h4 class="med-name">{{ med.name }}</h4>
+              <p class="med-dose">{{ med.dose }} &bull; {{ med.instruction }}</p>
+            </div>
+            <div class="med-status">
+              @if (med.done) {
+                <span class="status-badge status-completed">Completado</span>
+                <span class="material-symbols-outlined icon-check">check_circle</span>
+              } @else if (med.isNext) {
+                <span class="status-badge status-next">Siguiente Toma</span>
+                <button class="btn-register">Registrar</button>
+              } @else {
+                <span class="status-badge status-scheduled">Programado</span>
+                <span class="material-symbols-outlined icon-clock">schedule</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Adverse Effects Section -->
+      <div class="adverse-section">
+        <div class="adverse-header">
+          <h3 class="adverse-title">Efectos adversos</h3>
+          <span class="material-symbols-outlined adverse-icon">report</span>
+          <button class="btn-add-adverse" (click)="showForm.set(true)">+ Nuevo</button>
+        </div>
+
+        <!-- Registration Form -->
+        @if (showForm()) {
+          <div class="adverse-form">
+            <div class="form-row">
+              <label class="form-label">Medication ID
+                <input class="form-input" type="number" [ngModel]="medicationId()" (ngModelChange)="medicationId.set($event)" placeholder="Ej: 1" />
+              </label>
+              <label class="form-label">Severidad
+                <select class="form-input" [ngModel]="severity()" (ngModelChange)="severity.set($event)">
+                  @for (opt of severityOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Fecha y hora
+                <input class="form-input" type="datetime-local" [ngModel]="occurredAt()" (ngModelChange)="occurredAt.set($event)" />
+              </label>
+            </div>
+            <label class="form-label">Descripci&oacute;n
+              <textarea class="form-textarea" [ngModel]="description()" (ngModelChange)="description.set($event)" placeholder="Ej: n&aacute;useas, mareos o dolor despu&eacute;s de tomar la medicaci&oacute;n" rows="3"></textarea>
+            </label>
+            @if (formError()) {
+              <p class="form-error">{{ formError() }}</p>
+            }
+            <div class="form-actions">
+              <button class="btn-cancel-form" (click)="showForm.set(false)">Cancelar</button>
+              <button class="btn-save" [disabled]="adverseEffectService.loading()" (click)="registerAdverseEffect()">
+                @if (adverseEffectService.loading()) { Guardando... } @else { Registrar efecto adverso }
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Adverse Effects List -->
+        <div class="adverse-list">
+          @for (effect of adverseEffectService.adverseEffects(); track effect.id) {
+            <div class="adverse-card">
+              <div class="adverse-bar"></div>
+              <div class="adverse-body">
+                <div class="adverse-body-header">
+                  <h4 class="adverse-med-name">Medication #{{ effect.medicationId ?? '—' }}</h4>
+                  <span class="adverse-date">{{ effect.occurredAt | date:'d MMM, y' }}</span>
+                </div>
+                <p class="adverse-desc">&ldquo;{{ effect.description ?? 'Efecto adverso registrado' }}&rdquo;</p>
+                <span class="severity-tag" [class.sev-mild]="effect.severity === 'mild'" [class.sev-moderate]="effect.severity === 'moderate'" [class.sev-severe]="effect.severity === 'severe'">{{ effect.severity ?? 'reportado' }}</span>
+              </div>
+            </div>
+          } @empty {
+            <div class="adverse-empty">No hay efectos adversos registrados para este paciente.</div>
+          }
+        </div>
+      </div>
     </div>
-  </section>
+
+    <!-- Right Column -->
+    <div class="med-right">
+      <!-- Adherence Widget -->
+      <div class="widget widget-adherence">
+        <div class="widget-header">
+          <div>
+            <h3 class="widget-title">Adherencia Semanal</h3>
+            <p class="widget-target">Objetivo: 95%</p>
+          </div>
+          <span class="material-symbols-outlined widget-icon">analytics</span>
+        </div>
+        <div class="widget-chart">
+          <div class="circular-progress" [style.--percentage]="adherencePercentage()">
+            <div class="circular-label">
+              <span class="circular-value">{{ adherencePercentage() }}%</span>
+              <span class="circular-status">Excelente</span>
+            </div>
+          </div>
+        </div>
+        <p class="widget-summary">Has completado {{ completedDoses() }} de {{ totalDoses() }} tomas programadas esta semana.</p>
+        <button class="btn-export">Exportar Informe de Adherencia</button>
+      </div>
+    </div>
+  </div>
 </section>
