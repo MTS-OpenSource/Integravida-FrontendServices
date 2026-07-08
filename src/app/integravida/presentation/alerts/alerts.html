@@ -6,22 +6,6 @@
       <p class="header-subtitle">Supervise y gestione sus notificaciones de salud críticas, recordatorios de medicación y actualizaciones del sistema en tiempo real.</p>
     </div>
     <div class="header-actions">
-      <div class="patient-input-group">
-        <input
-          type="text"
-          class="patient-input"
-          [ngModel]="patientId()"
-          (ngModelChange)="patientId.set($event)"
-          placeholder="Ingrese Patient UUID"
-        />
-        <button type="button" class="btn-load" (click)="loadAlerts()" [disabled]="alertService.loading()">
-          @if (alertService.loading()) {
-            <span class="spinner-sm"></span>
-          } @else {
-            Cargar
-          }
-        </button>
-      </div>
       <button class="btn-icon" aria-label="Search">
         <span class="material-symbols-outlined">search</span>
       </button>
@@ -215,104 +199,5 @@
     </div>
 
     <!-- Right Column: Sidebar Widgets -->
-    <div class="alerts-widgets-column">
-      <!-- Critical Action Card -->
-      @if (hasCriticalAlert()) {
-        <div class="widget widget-critical">
-          <div class="critical-bg-icon">
-            <span class="material-symbols-outlined">emergency</span>
-          </div>
-          <h3 class="widget-title">Alerta Crítica Activa</h3>
-          <p class="widget-desc">Se requiere acción inmediata para estabilizar sus niveles de glucosa. Por favor, siga su protocolo de emergencia.</p>
-          <button class="btn-act-now">
-            Actuar ahora <span class="material-symbols-outlined">arrow_forward</span>
-          </button>
-        </div>
-      }
-
-      <!-- Statistics Widget -->
-      <div class="widget widget-stats">
-        <h3 class="widget-title">Estadísticas de Alertas</h3>
-        <div class="chart-container">
-          <div class="donut-chart">
-            <svg viewBox="0 0 36 36">
-              <circle class="donut-bg" cx="18" cy="18" r="16" fill="none" stroke-width="3"/>
-              <circle
-                class="donut-fill"
-                cx="18" cy="18" r="16" fill="none"
-                stroke-width="3"
-                [attr.stroke-dasharray]="resolvedPercentage() + ' ' + (100 - resolvedPercentage())"
-                stroke-linecap="round"
-                transform="rotate(-90 18 18)"
-              />
-            </svg>
-            <div class="donut-label">
-              <span class="donut-value">{{ resolvedPercentage() }}%</span>
-              <span class="donut-sub">Resueltas</span>
-            </div>
-          </div>
-        </div>
-        <div class="stats-rows">
-          <div class="stat-row">
-            <span class="stat-key">Total esta semana</span>
-            <span class="stat-value">{{ alertService.alerts().length }}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-key">Tiempo prom. respuesta</span>
-            <span class="stat-value">14 min</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Alert Settings Widget -->
-      <div class="widget widget-settings">
-        <h3 class="widget-title">Configuración de Alertas</h3>
-        <div class="settings-list">
-          <label class="setting-row">
-            <span class="setting-label">Glucosa Alta (&gt;180)</span>
-            <div class="toggle" [class.active]="settings.highGlucose" (click)="toggleSetting('highGlucose')">
-              <div class="toggle-knob"></div>
-            </div>
-          </label>
-          <label class="setting-row">
-            <span class="setting-label">Glucosa Baja (&lt;70)</span>
-            <div class="toggle" [class.active]="settings.lowGlucose" (click)="toggleSetting('lowGlucose')">
-              <div class="toggle-knob"></div>
-            </div>
-          </label>
-          <label class="setting-row">
-            <span class="setting-label">Recordatorios de Medición</span>
-            <div class="toggle" [class.active]="settings.measurementReminders" (click)="toggleSetting('measurementReminders')">
-              <div class="toggle-knob"></div>
-            </div>
-          </label>
-          <label class="setting-row">
-            <span class="setting-label">Recordatorios de Medicación</span>
-            <div class="toggle" [class.active]="settings.medicationReminders" (click)="toggleSetting('medicationReminders')">
-              <div class="toggle-knob"></div>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      <!-- Quick Actions Widget -->
-      <div class="widget widget-actions">
-        <h3 class="widget-title">Acciones Rápidas</h3>
-        <div class="actions-list">
-          <button class="action-btn">
-            <span class="material-symbols-outlined action-icon">add_alert</span>
-            Crear alerta personalizada
-          </button>
-          <button class="action-btn">
-            <span class="material-symbols-outlined action-icon">download</span>
-            Exportar historial
-          </button>
-          <button class="action-btn action-btn-primary">
-            <span class="material-symbols-outlined">medical_services</span>
-            Notificar a mi médico ahora
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </section>

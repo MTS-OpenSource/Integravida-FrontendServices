@@ -7,10 +7,16 @@ export interface DashboardSummary {
   latestGlucoseRecord: GlucoseRecordEntity | null;
   medicationsCount: number;
   activeMedicationsCount: number;
+  treatmentsCount: number;
+  activeTreatmentsCount: number;
   alertsCount: number;
   unresolvedAlertsCount: number;
   criticalAlertsCount: number;
   averageGlucoseLevel: number | null;
+  chartLabels: string[];
+  chartValues: number[];
+  inRangePercentage: number;
+  lowEpisodes: number;
   recentAlerts: AlertEntity[];
   activeMedications: MedicationEntity[];
 }

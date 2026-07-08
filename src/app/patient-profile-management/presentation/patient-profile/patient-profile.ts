@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 
+import { AuthStore } from '../../../account-management/application/auth.store';
 import { ProfileService } from '../../application/profile.service';
 import { UpdateProfileRequest } from '../../infrastructure/profile.response';
 
@@ -13,7 +13,7 @@ import { UpdateProfileRequest } from '../../infrastructure/profile.response';
 })
 export class PatientProfile implements OnInit {
   protected readonly profileService = inject(ProfileService);
-  private readonly route = inject(ActivatedRoute);
+  private readonly authStore = inject(AuthStore);
 
   protected readonly editing = signal(false);
   protected readonly firstName = signal('');
@@ -23,12 +23,8 @@ export class PatientProfile implements OnInit {
   protected readonly saveMessage = signal<string | null>(null);
 
   ngOnInit(): void {
-    const profileId = this.route.snapshot.paramMap.get('profileId')
-      ?? this.route.snapshot.paramMap.get('patientId')
-      ?? '';
-
-    if (profileId) {
-      this.profileService.loadById(profileId);
+    if (this.authStore.token()) {
+      this.profileService.loadMyProfile();
     }
   }
 
@@ -50,9 +46,6 @@ export class PatientProfile implements OnInit {
   }
 
   protected saveProfile(): void {
-    const profile = this.profileService.profile();
-    if (!profile) return;
-
     const request: UpdateProfileRequest = {
       firstName: this.firstName().trim(),
       lastName: this.lastName().trim(),
@@ -60,7 +53,7 @@ export class PatientProfile implements OnInit {
       dateOfBirth: this.dateOfBirth(),
     };
 
-    this.profileService.update(profile.id, request).subscribe({
+    this.profileService.updateMyProfile(request).subscribe({
       next: () => {
         this.editing.set(false);
         this.saveMessage.set('Perfil actualizado correctamente');

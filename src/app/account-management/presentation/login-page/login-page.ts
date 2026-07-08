@@ -26,6 +26,10 @@ export class LoginPage {
   // Register specific signals
   protected readonly role = signal<UserRole>('Patient');
   protected readonly username = signal('');
+  protected readonly firstName = signal('');
+  protected readonly lastName = signal('');
+  protected readonly phoneNumber = signal('');
+  protected readonly dateOfBirth = signal('');
   protected readonly confirmPassword = signal('');
   protected readonly formError = signal<string | null>(null);
 
@@ -51,9 +55,13 @@ export class LoginPage {
     }
 
     this.authStore.register({
-      email: this.email().trim(),
       username: this.username().trim(),
       password: this.password(),
+      email: this.email().trim(),
+      firstName: this.firstName().trim(),
+      lastName: this.lastName().trim(),
+      phoneNumber: this.phoneNumber().trim(),
+      dateOfBirth: this.dateOfBirth(),
       role: this.role(),
     });
   }

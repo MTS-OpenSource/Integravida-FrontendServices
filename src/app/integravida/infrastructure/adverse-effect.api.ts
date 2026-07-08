@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
@@ -8,11 +9,9 @@ import { AdverseEffectAssembler } from './adverse-effect.assembler';
 import { AdverseEffectResponse } from './adverse-effect.response';
 
 export interface CreateAdverseEffectPayload {
-  patientId: string | number;
-  medicationId: number;
-  description: string;
-  severity: string;
-  occurredAt: string;
+  medicationId: string;
+  takenAt: string;
+  notes: string;
 }
 
 @Injectable({
@@ -23,37 +22,37 @@ export class AdverseEffectApi extends BaseApi<AdverseEffectEntity, AdverseEffect
     super(adverseEffectEndpoint, new AdverseEffectAssembler());
   }
 
-  getAll(): Observable<AdverseEffectEntity[]> {
-    return this.getAllFrom(this.adverseEffectEndpoint.getAll());
+  private authHeaders(token: string): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
-  getByPatientId(patientId: string | number): Observable<AdverseEffectEntity[]> {
+  getAll(token: string): Observable<AdverseEffectEntity[]> {
     return this.http
-      .get<AdverseEffectResponse[]>(this.adverseEffectEndpoint.getByPatientId(patientId))
+      .get<AdverseEffectResponse[]>(this.adverseEffectEndpoint.getAll(), {
+        headers: this.authHeaders(token),
+      })
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 
-  create(payload: CreateAdverseEffectPayload): Observable<AdverseEffectEntity> {
-    const now = new Date().toISOString();
+  getByPatientId(token: string): Observable<AdverseEffectEntity[]> {
+    return this.http
+      .get<AdverseEffectResponse[]>(this.adverseEffectEndpoint.getByPatientId(), {
+        headers: this.authHeaders(token),
+      })
+      .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
+  }
 
+  create(token: string, payload: CreateAdverseEffectPayload): Observable<AdverseEffectEntity> {
     const request = {
-      patient_id: payload.patientId,
-      patientID: payload.patientId,
-      patientId: payload.patientId,
-      medication_id: payload.medicationId,
-      medicationID: payload.medicationId,
       medicationId: payload.medicationId,
-      description: payload.description,
-      severity: payload.severity,
-      occurred_at: payload.occurredAt,
-      occurredAt: payload.occurredAt,
-      reported_at: now,
-      reportedAt: now,
-      status: 'reported',
+      takenAt: payload.takenAt,
+      notes: payload.notes,
     };
 
     return this.http
-      .post<AdverseEffectResponse>(this.adverseEffectEndpoint.getAll(), request)
+      .post<AdverseEffectResponse>(this.adverseEffectEndpoint.getAll(), request, {
+        headers: this.authHeaders(token),
+      })
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
   }
 }

@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
+import { AuthStore } from '../../account-management/application/auth.store';
 import { ProfileApi } from '../infrastructure/profile.api';
 import { ProfileResponse, UpdateProfileRequest } from '../infrastructure/profile.response';
 
@@ -8,6 +9,7 @@ import { ProfileResponse, UpdateProfileRequest } from '../infrastructure/profile
   providedIn: 'root',
 })
 export class ProfileService {
+  private readonly authStore = inject(AuthStore);
   private readonly profileSignal = signal<ProfileResponse | null>(null);
   readonly profile = this.profileSignal.asReadonly();
 
@@ -18,6 +20,29 @@ export class ProfileService {
   readonly error = this.errorSignal.asReadonly();
 
   constructor(private readonly profileApi: ProfileApi) {}
+
+  private get token(): string | null {
+    return this.authStore.token();
+  }
+
+  loadMyProfile(): void {
+    const token = this.token;
+    if (!token) return;
+
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.profileApi.getMe(token).subscribe({
+      next: (profile) => {
+        this.profileSignal.set(profile);
+        this.loadingSignal.set(false);
+      },
+      error: (err: unknown) => {
+        this.errorSignal.set(this.formatError(err, 'No se pudo cargar el perfil'));
+        this.loadingSignal.set(false);
+      },
+    });
+  }
 
   loadById(profileId: string): void {
     this.loadingSignal.set(true);
@@ -51,11 +76,14 @@ export class ProfileService {
     });
   }
 
-  update(profileId: string, request: UpdateProfileRequest): Observable<ProfileResponse> {
+  updateMyProfile(request: UpdateProfileRequest): Observable<ProfileResponse> {
+    const token = this.token;
+    if (!token) throw new Error('No token');
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.profileApi.update(profileId, request).pipe(
+    return this.profileApi.updateMe(token, request).pipe(
       tap({
         next: (updated) => {
           this.profileSignal.set(updated);

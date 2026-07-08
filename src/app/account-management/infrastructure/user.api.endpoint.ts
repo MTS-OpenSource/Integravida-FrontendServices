@@ -18,6 +18,10 @@ export class UserApiEndpoint extends BaseApiEndpoint {
     return `${this.collectionUrl()}/sign-in`;
   }
 
+  signUp(): string {
+    return `${this.collectionUrl()}/sign-up`;
+  }
+
   getAll(): string {
     return this.collectionUrl();
   }

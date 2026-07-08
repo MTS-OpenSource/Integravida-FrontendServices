@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { GlucoseHistory } from './glucose-history/glucose-history';
+import { GlucoseLog } from './glucose-log/glucose-log';
 
 export const GLUCOSE_MONITORING_ROUTES: Routes = [
   {
     path: '',
-    component: GlucoseHistory,
+    component: GlucoseLog,
   },
 ];

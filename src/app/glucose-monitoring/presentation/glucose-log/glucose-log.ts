@@ -1,6 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { AuthStore } from '../../../account-management/application/auth.store';
 import { GlucoseService } from '../../application/glucose.service';
 import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
 
@@ -12,12 +13,19 @@ import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
 })
 export class GlucoseLog {
   protected readonly glucoseService = inject(GlucoseService);
+  protected readonly authStore = inject(AuthStore);
 
-  protected readonly patientId = signal('');
   protected readonly glucoseLevel = signal<number | null>(null);
   protected readonly recordedAt = signal(this.toDateTimeLocalValue(new Date()));
-  protected readonly notes = signal('');
-  protected readonly patientState = signal('Antes de comer');
+
+  constructor() {
+    effect(() => {
+      const token = this.authStore.token();
+      if (token) {
+        this.glucoseService.loadRange(token);
+      }
+    });
+  }
 
   protected readonly status = computed(() => {
     const value = this.glucoseLevel();
@@ -52,19 +60,16 @@ export class GlucoseLog {
 
   protected resetForm(): void {
     this.glucoseLevel.set(null);
-    this.notes.set('');
-    this.patientState.set('Antes de comer');
     this.recordedAt.set(this.toDateTimeLocalValue(new Date()));
   }
 
   protected save(): void {
     const value = this.glucoseLevel();
-    const patientId = this.patientId().trim();
+    const patientId = this.authStore.currentUser()?.patientId;
 
     if (!patientId || value === null || Number.isNaN(value)) return;
 
     const recordedAt = this.normalizeDateTimeForApi(this.recordedAt());
-    const notes = this.notes().trim();
 
     const record = new GlucoseRecordEntity(
       '',
@@ -72,19 +77,14 @@ export class GlucoseLog {
       value,
       recordedAt,
       {
-        patientId,
         glucoseValue: value,
         measuredAt: recordedAt,
-        patientState: this.patientState(),
       },
-      notes || null,
     );
 
     this.glucoseService.saveReading(record);
 
     this.glucoseLevel.set(null);
-    this.notes.set('');
-    this.patientState.set('Antes de comer');
     this.recordedAt.set(this.toDateTimeLocalValue(new Date()));
   }
 

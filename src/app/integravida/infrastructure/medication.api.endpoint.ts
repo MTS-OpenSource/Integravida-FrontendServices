@@ -17,4 +17,8 @@ export class MedicationApiEndpoint extends BaseApiEndpoint {
   getAll(): string {
     return this.collectionUrl();
   }
+
+  getByTreatmentId(treatmentId: string): string {
+    return `${this.collectionUrl()}?treatmentId=${encodeURIComponent(treatmentId)}`;
+  }
 }

@@ -8,7 +8,6 @@ export class UserAssembler extends BaseAssembler<userEntity, UserResponse> {
       response.id,
       response.emil,
       response.username,
-      response.password,
       response.role,
     );
   }

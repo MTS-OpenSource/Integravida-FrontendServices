@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 
-import { BaseApi } from '../../shared/infrastructure/base.api';
 import { TreatmentEntity } from '../domain/model/treatment.entity';
 import { TreatmentApiEndpoint } from './treatment.api.endpoint';
 import { TreatmentAssembler } from './treatment.assembler';
@@ -10,12 +11,21 @@ import { TreatmentResponse } from './treatment.response';
 @Injectable({
   providedIn: 'root',
 })
-export class TreatmentApi extends BaseApi<TreatmentEntity, TreatmentResponse> {
-  constructor(private readonly treatmentEndpoint: TreatmentApiEndpoint) {
-    super(treatmentEndpoint, new TreatmentAssembler());
+export class TreatmentApi {
+  private readonly http = inject(HttpClient);
+  private readonly assembler = new TreatmentAssembler();
+
+  constructor(private readonly endpoint: TreatmentApiEndpoint) {}
+
+  private authHeaders(token: string): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
-  getAll(): Observable<TreatmentEntity[]> {
-    return this.getAllFrom(this.treatmentEndpoint.getAll());
+  getAll(token: string): Observable<TreatmentEntity[]> {
+    return this.http
+      .get<TreatmentResponse[]>(this.endpoint.getAll(), {
+        headers: this.authHeaders(token),
+      })
+      .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 }

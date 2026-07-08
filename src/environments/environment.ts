@@ -14,7 +14,7 @@ export const environment = {
   integravidaProviderTreatmentsEndpointPath: '/api/v1/treatments',
   integravidaProviderMedicationsEndpointPath: '/api/v1/medications',
   integravidaProviderMedicationIntakesEndpointPath: '/api/v1/medication-intakes',
-  integravidaProviderAdverseEffectsEndpointPath: '/api/v1/adverse_effects',
+  integravidaProviderAdverseEffectsEndpointPath: '/api/v1/medication-intakes',
   integravidaProviderAlertsEndpointPath: '/api/v1/alerts',
   integravidaProviderGlucoseRangesEndpointPath: '/api/v1/glucose-ranges',
   integravidaProviderClinicalObservationsEndpointPath: '/api/v1/clinical-observations',

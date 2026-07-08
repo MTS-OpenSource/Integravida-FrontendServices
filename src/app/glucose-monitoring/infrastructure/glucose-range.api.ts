@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
@@ -16,9 +16,10 @@ export class GlucoseRangeApi {
 
   constructor(private readonly glucoseRangeEndpoint: GlucoseRangeApiEndpoint) {}
 
-  getByPatientId(patientId: string | number): Observable<GlucoseRangeEntity | null> {
+  getAll(token: string): Observable<GlucoseRangeEntity | null> {
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     return this.http
-      .get<GlucoseRangeResponse | null>(this.glucoseRangeEndpoint.getByPatientId(patientId))
+      .get<GlucoseRangeResponse | null>(this.glucoseRangeEndpoint.getAll(), { headers })
       .pipe(map((response) => (response ? this.assembler.toEntityFrom(response) : null)));
   }
 

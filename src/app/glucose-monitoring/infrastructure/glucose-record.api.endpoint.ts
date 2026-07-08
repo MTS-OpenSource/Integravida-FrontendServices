@@ -22,8 +22,8 @@ export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
     return this.resourceUrl(id);
   }
 
-  getByPatientId(patientId: string | number, from?: string, to?: string): string {
-    const params = new URLSearchParams({ patientId: String(patientId) });
+  getByPatientId(from?: string, to?: string): string {
+    const params = new URLSearchParams();
 
     if (from) {
       params.set('from', from);
@@ -33,6 +33,7 @@ export class GlucoseRecordApiEndpoint extends BaseApiEndpoint {
       params.set('to', to);
     }
 
-    return `${this.collectionUrl()}?${params.toString()}`;
+    const qs = params.toString();
+    return qs ? `${this.collectionUrl()}?${qs}` : this.collectionUrl();
   }
 }

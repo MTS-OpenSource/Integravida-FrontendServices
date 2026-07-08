@@ -2,6 +2,7 @@ import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, finalize, of, tap } from 'rxjs';
 import { AlertApi } from '../../integravida/infrastructure/alert.api';
+import { AuthStore } from '../../account-management/application/auth.store';
 
 import { GlucoseRecordApi } from '../infrastructure/glucose-record.api';
 import { GlucoseRecordEntity } from '../domain/model/glucose-record.entity';
@@ -35,26 +36,27 @@ export class GlucoseService {
   private readonly rangeSignal = signal<GlucoseRange>(DEFAULT_RANGE);
   readonly range = this.rangeSignal.asReadonly();
 
+  private readonly authStore = inject(AuthStore);
+
   constructor(
     private readonly glucoseRecordApi: GlucoseRecordApi,
     private readonly glucoseRangeApi: GlucoseRangeApi,
     private readonly alertApi: AlertApi,
   ) {}
 
-  getReadings(patientId: string | number): void {
-    const normalizedPatientId = String(patientId).trim();
+  private get token(): string | null {
+    return this.authStore.token();
+  }
 
-    if (!normalizedPatientId) {
-      this.recordsSignal.set([]);
-      this.errorSignal.set('Debes ingresar un patientId UUID para consultar lecturas.');
-      return;
-    }
+  getReadings(): void {
+    const token = this.token;
+    if (!token) return;
 
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.glucoseRecordApi
-      .getByPatientId(normalizedPatientId)
+      .getByPatientId(token)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (records) => {
@@ -68,14 +70,9 @@ export class GlucoseService {
       });
   }
 
-  getReadingsByDateRange(patientId: string | number, from: Date, to: Date): void {
-    const normalizedPatientId = String(patientId).trim();
-
-    if (!normalizedPatientId) {
-      this.recordsSignal.set([]);
-      this.errorSignal.set('Debes ingresar un patientId UUID para filtrar lecturas.');
-      return;
-    }
+  getReadingsByDateRange(from: Date, to: Date): void {
+    const token = this.token;
+    if (!token) return;
 
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
@@ -84,7 +81,7 @@ export class GlucoseService {
     const toParam = this.formatDateTimeForApi(to, true);
 
     this.glucoseRecordApi
-      .getByPatientId(normalizedPatientId, fromParam, toParam)
+      .getByPatientId(token, fromParam, toParam)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (records) => {
@@ -99,11 +96,14 @@ export class GlucoseService {
   }
 
   saveReading(record: GlucoseRecordEntity): void {
+    const token = this.token;
+    if (!token) return;
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.glucoseRecordApi
-      .create(record)
+      .create(token, record)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (createdRecord) => {
@@ -118,11 +118,14 @@ export class GlucoseService {
   }
 
   updateReading(id: string | number, record: GlucoseRecordEntity): void {
+    const token = this.token;
+    if (!token) return;
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.glucoseRecordApi
-      .update(id, record)
+      .update(token, id, record)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedRecord) => {
@@ -144,11 +147,14 @@ export class GlucoseService {
   }
 
   deleteReading(id: string | number): void {
+    const token = this.token;
+    if (!token) return;
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.glucoseRecordApi
-      .delete(id)
+      .delete(token, id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -163,39 +169,35 @@ export class GlucoseService {
       });
   }
 
-  loadRange(patientId: string | number) {
-    const normalizedPatientId = String(patientId).trim();
-
-    if (!normalizedPatientId) {
-      this.errorSignal.set('Debes ingresar un patientId UUID para cargar el rango.');
-      return of(null);
+  loadRange(token: string): void {
+    if (!token) {
+      this.rangeSignal.set(DEFAULT_RANGE);
+      return;
     }
 
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.glucoseRangeApi
-      .getByPatientId(normalizedPatientId)
-      .pipe(
-        tap((range) => {
+    this.glucoseRangeApi
+      .getAll(token)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (range) => {
           if (!range || range.minimumValue === null || range.maximumValue === null) {
             this.rangeSignal.set(DEFAULT_RANGE);
-            return;
+          } else {
+            this.rangeSignal.set({
+              min: range.minimumValue,
+              max: range.maximumValue,
+            });
           }
-
-          this.rangeSignal.set({
-            min: range.minimumValue,
-            max: range.maximumValue,
-          });
-        }),
-        finalize(() => {
           this.loadingSignal.set(false);
-        }),
-        catchError((error: unknown) => {
+        },
+        error: (error: unknown) => {
           this.errorSignal.set(this.formatError(error, 'Failed to load glucose range'));
-          return of(null);
-        }),
-      );
+          this.loadingSignal.set(false);
+        },
+      });
   }
 
   updateRange(patientId: string | number, min: number, max: number) {
@@ -250,7 +252,9 @@ export class GlucoseService {
   }
 
   private createAlertFromReading(record: GlucoseRecordEntity, status: GlucoseStatus): void {
-    this.alertApi.create({
+    const token = this.token;
+    if (!token) return;
+    this.alertApi.create(token, {
       patientID: record.patientId,
       type: status === 'Alto' ? 'Glucosa alta' : 'Glucosa baja',
       glucoseValue: record.glucoseValue,

@@ -20,10 +20,10 @@
     @if (activeTab() === 'login') {
     <div class="form">
       <div class="field">
-        <label>Email</label>
+        <label>Username</label>
         <input
           type="email"
-          placeholder="you@example.com"
+          placeholder="username"
           [ngModel]="email()"
           (ngModelChange)="email.set($event)"
         />
@@ -71,19 +71,19 @@
       <div class="field">
         <label>Role</label>
         <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
-          <button 
-            type="button" 
-            class="tab" 
-            [class.active]="role() === 'Patient'" 
+          <button
+            type="button"
+            class="tab"
+            [class.active]="role() === 'Patient'"
             (click)="selectRole('Patient')"
             style="border-radius: 10px 0 0 10px; border: 1px solid #e5e7eb;"
           >
             Patient
           </button>
-          <button 
-            type="button" 
-            class="tab" 
-            [class.active]="role() === 'Doctor'" 
+          <button
+            type="button"
+            class="tab"
+            [class.active]="role() === 'Doctor'"
             (click)="selectRole('Doctor')"
             style="border-radius: 0 10px 10px 0; border: 1px solid #e5e7eb; border-left: none;"
           >
@@ -109,6 +109,45 @@
           placeholder="username"
           [ngModel]="username()"
           (ngModelChange)="username.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label>First Name</label>
+        <input
+          type="text"
+          placeholder="John"
+          [ngModel]="firstName()"
+          (ngModelChange)="firstName.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Last Name</label>
+        <input
+          type="text"
+          placeholder="Doe"
+          [ngModel]="lastName()"
+          (ngModelChange)="lastName.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Phone Number</label>
+        <input
+          type="tel"
+          placeholder="+1234567890"
+          [ngModel]="phoneNumber()"
+          (ngModelChange)="phoneNumber.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label>Date of Birth</label>
+        <input
+          type="date"
+          [ngModel]="dateOfBirth()"
+          (ngModelChange)="dateOfBirth.set($event)"
         />
       </div>
 

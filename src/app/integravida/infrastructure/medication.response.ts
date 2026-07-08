@@ -1,12 +1,14 @@
-import { BaseResponse } from '../../shared/infrastructure/base.response';
-
-export interface MedicationResponse extends BaseResponse {
-  treatment_id?: number | null;
-  treatmentId?: number | null;
-  name?: string | null;
-  dose?: string | null;
-  frequency?: string | null;
-  schedule_time?: string | null;
-  scheduleTime?: string | null;
-  [key: string]: unknown;
+export interface MedicationResponse {
+  id: string;
+  patientId: string;
+  treatmentId: string;
+  name: string;
+  dosage: string;
+  daysOfWeek: string[];
+  doseTimes: string[];
+  instructions: string | null;
+  active: boolean;
+  discontinuedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

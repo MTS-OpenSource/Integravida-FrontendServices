@@ -5,19 +5,13 @@ import { forkJoin } from 'rxjs';
 import { AlertEntity } from '../domain/model/alert.entity';
 import { AuthSession } from '../../account-management/domain/model/auth-session.model';
 import { DashboardSummary } from '../domain/model/dashboard-summary.model';
-import { DoctorEntity } from '../domain/model/doctor.entity';
 import { GlucoseRecordEntity } from '../../glucose-monitoring/domain/model/glucose-record.entity';
 import { MedicationEntity } from '../domain/model/medication.entity';
-import { PatientEntity } from '../domain/model/patient.entity';
 import { TreatmentEntity } from '../domain/model/treatment.entity';
 import { AuthStore } from '../../account-management/application/auth.store';
 import { AlertApi } from '../infrastructure/alert.api';
-import { DoctorApi } from '../infrastructure/doctor.api';
 import { GlucoseRecordApi } from '../../glucose-monitoring/infrastructure/glucose-record.api';
 import { MedicationApi } from '../infrastructure/medication.api';
-import { PatientApi } from '../infrastructure/patient.api';
-import { PatientDoctorApi } from '../infrastructure/patient-doctor.api';
-import { PatientDoctorResponse } from '../infrastructure/patient-doctor.response';
 import { TreatmentApi } from '../infrastructure/treatment.api';
 
 import { MedicationIntakeApi } from '../infrastructure/medication-intake.api';
@@ -28,18 +22,7 @@ import { MedicationIntakeApi } from '../infrastructure/medication-intake.api';
 export class DashboardService {
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly summarySignal = signal<DashboardSummary | null>({
-    glucoseRecordsCount: 15,
-    latestGlucoseRecord: { glucoseLevel: 98 } as any,
-    medicationsCount: 6,
-    activeMedicationsCount: 4,
-    alertsCount: 3,
-    unresolvedAlertsCount: 3,
-    criticalAlertsCount: 1,
-    averageGlucoseLevel: 112,
-    recentAlerts: [],
-    activeMedications: [],
-  });
+  private readonly summarySignal = signal<DashboardSummary | null>(null);
   readonly summary = this.summarySignal.asReadonly();
 
   private readonly loadingSignal = signal<boolean>(false);
@@ -50,18 +33,21 @@ export class DashboardService {
 
   readonly hasSummary = computed(() => this.summary() !== null);
 
-  private readonly confirmedMedicationIdsSignal = signal<Set<number>>(new Set());
-  private readonly medicationIntakeLoadingIdsSignal = signal<Set<number>>(new Set());
+  private readonly confirmedMedicationIdsSignal = signal<Set<string>>(new Set());
+  private readonly medicationIntakeLoadingIdsSignal = signal<Set<string>>(new Set());
 
-  isMedicationConfirmed(medicationId: number): boolean {
+  isMedicationConfirmed(medicationId: string): boolean {
     return this.confirmedMedicationIdsSignal().has(medicationId);
   }
 
-  isMedicationIntakeLoading(medicationId: number): boolean {
+  isMedicationIntakeLoading(medicationId: string): boolean {
     return this.medicationIntakeLoadingIdsSignal().has(medicationId);
   }
 
   confirmMedicationIntake(medication: MedicationEntity): void {
+    const token = this.authStore.token();
+    if (!token) return;
+
     if (this.isMedicationConfirmed(medication.id) || this.isMedicationIntakeLoading(medication.id)) {
       return;
     }
@@ -70,7 +56,7 @@ export class DashboardService {
     this.errorSignal.set(null);
 
     this.medicationIntakeApi
-      .confirmDose(medication)
+      .confirmDose(token, medication.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -89,7 +75,7 @@ export class DashboardService {
       });
   }
 
-  private addMedicationIntakeLoadingId(medicationId: number): void {
+  private addMedicationIntakeLoadingId(medicationId: string): void {
     this.medicationIntakeLoadingIdsSignal.update((ids) => {
       const updatedIds = new Set(ids);
       updatedIds.add(medicationId);
@@ -97,7 +83,7 @@ export class DashboardService {
     });
   }
 
-  private removeMedicationIntakeLoadingId(medicationId: number): void {
+  private removeMedicationIntakeLoadingId(medicationId: string): void {
     this.medicationIntakeLoadingIdsSignal.update((ids) => {
       const updatedIds = new Set(ids);
       updatedIds.delete(medicationId);
@@ -107,9 +93,6 @@ export class DashboardService {
 
   constructor(
     private readonly authStore: AuthStore,
-    private readonly patientApi: PatientApi,
-    private readonly doctorApi: DoctorApi,
-    private readonly patientDoctorApi: PatientDoctorApi,
     private readonly treatmentApi: TreatmentApi,
     private readonly glucoseRecordApi: GlucoseRecordApi,
     private readonly medicationApi: MedicationApi,
@@ -148,48 +131,16 @@ export class DashboardService {
     this.errorSignal.set(null);
 
     forkJoin({
-      patients: this.patientApi.getAll(),
-      doctors: this.doctorApi.getAll(),
-      patientDoctorLinks: this.patientDoctorApi.getAll(),
-      treatments: this.treatmentApi.getAll(),
-      glucoseRecords: this.glucoseRecordApi.getAll(),
-      medications: this.medicationApi.getAll(),
-      alerts: this.alertApi.getAll(),
+      treatments: this.treatmentApi.getAll(session.token),
+      glucoseRecords: this.glucoseRecordApi.getAll(session.token),
+      medications: this.medicationApi.getAll(session.token),
+      alerts: this.alertApi.getAll(session.token),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({
-          patients,
-          doctors,
-          patientDoctorLinks,
-          treatments,
-          glucoseRecords,
-          medications,
-          alerts,
-        }) => {
-          const patientIds = this.resolvePatientIdsForSession(
-            session,
-            patients,
-            doctors,
-            patientDoctorLinks,
-          );
-          const doctorIds = this.resolveDoctorIdsForSession(session, doctors);
-          const scopedTreatments = this.filterTreatments(treatments, patientIds, doctorIds);
-          const scopedMedications = this.filterMedications(medications, scopedTreatments);
-          const scopedGlucoseRecords = glucoseRecords.filter(
-            (record) => record.patientId !== null && patientIds.has(record.patientId),
-          );
-          const scopedAlerts = alerts.filter(
-            (alert) => alert.patientId !== null && patientIds.has(alert.patientId),
-          );
-
+        next: ({ treatments, glucoseRecords, medications, alerts }) => {
           this.summarySignal.set(
-            this.buildSummary(
-              scopedGlucoseRecords,
-              scopedMedications,
-              scopedAlerts,
-              scopedTreatments,
-            ),
+            this.buildSummary(glucoseRecords, medications, alerts, treatments),
           );
           this.loadingSignal.set(false);
         },
@@ -198,62 +149,6 @@ export class DashboardService {
           this.loadingSignal.set(false);
         },
       });
-  }
-
-  private resolvePatientIdsForSession(
-    session: AuthSession,
-    patients: PatientEntity[],
-    doctors: DoctorEntity[],
-    patientDoctorLinks: PatientDoctorResponse[],
-  ): Set<string | number> {
-    if (session.user.role === 'Patient') {
-      const patient = patients.find((item) => item.userId === session.user.id);
-      return patient ? new Set([patient.id]) : new Set<string | number>();
-    }
-
-    const doctor = doctors.find((item) => item.userId === session.user.id);
-
-    if (!doctor) {
-      return new Set<string | number>();
-    }
-
-    return new Set<string | number>(
-      patientDoctorLinks
-        .filter((link) => this.readDoctorId(link) === doctor.id)
-        .map((link) => this.readPatientId(link))
-        .filter((patientId): patientId is number => patientId !== null),
-    );
-  }
-
-  private resolveDoctorIdsForSession(session: AuthSession, doctors: DoctorEntity[]): Set<number> {
-    if (session.user.role !== 'Doctor') {
-      return new Set<number>();
-    }
-
-    const doctor = doctors.find((item) => item.userId === session.user.id);
-    return doctor ? new Set([doctor.id]) : new Set<number>();
-  }
-
-  private filterTreatments(
-    treatments: TreatmentEntity[],
-    patientIds: Set<string | number>,
-    doctorIds: Set<number>,
-  ): TreatmentEntity[] {
-    return treatments.filter((treatment) => {
-      const matchesPatient = treatment.patientId !== null && patientIds.has(treatment.patientId);
-      const matchesDoctor = treatment.doctorId !== null && doctorIds.has(treatment.doctorId);
-      return matchesPatient || matchesDoctor;
-    });
-  }
-
-  private filterMedications(
-    medications: MedicationEntity[],
-    treatments: TreatmentEntity[],
-  ): MedicationEntity[] {
-    const treatmentIds = new Set(treatments.map((treatment) => treatment.id));
-    return medications.filter(
-      (medication) => medication.treatmentId !== null && treatmentIds.has(medication.treatmentId),
-    );
   }
 
   private buildSummary(
@@ -275,7 +170,7 @@ export class DashboardService {
       .slice(0, 5);
     const unresolvedAlerts = alerts.filter((alert) => !alert.read);
     const criticalAlerts = unresolvedAlerts.filter((alert) => this.isAlertCritical(alert));
-    const recentAlerts = [...alerts]
+    const recentAlerts = [...unresolvedAlerts]
       .sort((left, right) => this.compareDatesDesc(left.createdAt, right.createdAt))
       .slice(0, 5);
     const latestGlucoseRecord =
@@ -283,29 +178,64 @@ export class DashboardService {
         this.compareDatesDesc(left.recordedAt, right.recordedAt),
       )[0] ?? null;
     const averageGlucoseLevel = this.calculateAverageGlucose(glucoseRecords);
+    const { chartLabels, chartValues } = this.buildGlucoseChartData(glucoseRecords);
+    const { inRangePercentage, lowEpisodes } =
+      this.calculateGlucoseRanges(glucoseRecords);
 
     return {
       glucoseRecordsCount: glucoseRecords.length,
       latestGlucoseRecord,
       medicationsCount: medications.length,
       activeMedicationsCount: activeMedications.length,
+      treatmentsCount: treatments.length,
+      activeTreatmentsCount: activeTreatmentIds.size,
       alertsCount: alerts.length,
       unresolvedAlertsCount: unresolvedAlerts.length,
       criticalAlertsCount: criticalAlerts.length,
       averageGlucoseLevel,
+      chartLabels,
+      chartValues,
+      inRangePercentage,
+      lowEpisodes,
       recentAlerts,
       activeMedications,
     };
   }
 
-  private readPatientId(link: PatientDoctorResponse): number | null {
-    const value = link.patientID ?? link.patientId ?? link.patient_id;
-    return typeof value === 'number' ? value : null;
-  }
+  private buildGlucoseChartData(
+    glucoseRecords: GlucoseRecordEntity[],
+  ): { chartLabels: string[]; chartValues: number[] } {
+    const now = new Date();
+    const labels: string[] = [];
+    const values: number[] = [];
 
-  private readDoctorId(link: PatientDoctorResponse): number | null {
-    const value = link.doctorID ?? link.doctorId ?? link.doctor_id;
-    return typeof value === 'number' ? value : null;
+    for (let i = 6; i >= 0; i--) {
+      const day = new Date(now);
+      day.setDate(day.getDate() - i);
+      const dateStr = day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      labels.push(dateStr);
+
+      const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
+      const dayEnd = dayStart + 86_400_000;
+
+      const dayRecords = glucoseRecords.filter((r) => {
+        const ts = this.toTimestamp(r.recordedAt);
+        return ts >= dayStart && ts < dayEnd;
+      });
+
+      const levels = dayRecords
+        .map((r) => r.glucoseLevel)
+        .filter((v): v is number => v !== null);
+
+      const avg =
+        levels.length > 0
+          ? Number((levels.reduce((a, b) => a + b, 0) / levels.length).toFixed(1))
+          : 0;
+
+      values.push(avg);
+    }
+
+    return { chartLabels: labels, chartValues: values };
   }
 
   private isTreatmentActive(treatment: TreatmentEntity): boolean {
@@ -343,6 +273,24 @@ export class DashboardService {
 
     const total = values.reduce((sum, value) => sum + value, 0);
     return Number((total / values.length).toFixed(2));
+  }
+
+  private calculateGlucoseRanges(
+    glucoseRecords: GlucoseRecordEntity[],
+  ): { inRangePercentage: number; lowEpisodes: number } {
+    const levels = glucoseRecords
+      .map((r) => r.glucoseLevel)
+      .filter((v): v is number => v !== null);
+
+    if (levels.length === 0) {
+      return { inRangePercentage: 0, lowEpisodes: 0 };
+    }
+
+    const lowEpisodes = levels.filter((v) => v < 70).length;
+    const inRangeCount = levels.filter((v) => v >= 70 && v <= 180).length;
+    const inRangePercentage = Number(((inRangeCount / levels.length) * 100).toFixed(1));
+
+    return { inRangePercentage, lowEpisodes };
   }
 
   private compareDatesDesc(left: string | null, right: string | null): number {

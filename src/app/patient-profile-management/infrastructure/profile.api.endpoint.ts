@@ -14,6 +14,10 @@ export class ProfileApiEndpoint extends BaseApiEndpoint {
     );
   }
 
+  getMe(): string {
+    return `${this.collectionUrl()}/me`;
+  }
+
   getById(profileId: string): string {
     return this.resourceUrl(profileId);
   }

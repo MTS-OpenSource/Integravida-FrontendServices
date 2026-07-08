@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
@@ -15,29 +16,45 @@ export class GlucoseRecordApi extends BaseApi<GlucoseRecordEntity, GlucoseRecord
     super(glucoseRecordEndpoint, new GlucoseRecordAssembler());
   }
 
-  getAll(): Observable<GlucoseRecordEntity[]> {
-    return this.getAllFrom(this.glucoseRecordEndpoint.getAll());
+  private authHeaders(token: string): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
-  getByPatientId(patientId: string | number, from?: string, to?: string): Observable<GlucoseRecordEntity[]> {
+  getAll(token: string): Observable<GlucoseRecordEntity[]> {
     return this.http
-      .get<GlucoseRecordResponse[]>(this.glucoseRecordEndpoint.getByPatientId(patientId, from, to))
+      .get<GlucoseRecordResponse[]>(this.glucoseRecordEndpoint.getAll(), {
+        headers: this.authHeaders(token),
+      })
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 
-  create(record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
+  getByPatientId(token: string, from?: string, to?: string): Observable<GlucoseRecordEntity[]> {
     return this.http
-      .post<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getAll(), record.raw)
+      .get<GlucoseRecordResponse[]>(this.glucoseRecordEndpoint.getByPatientId(from, to), {
+        headers: this.authHeaders(token),
+      })
+      .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
+  }
+
+  create(token: string, record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
+    return this.http
+      .post<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getAll(), record.raw, {
+        headers: this.authHeaders(token),
+      })
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
   }
 
-  update(id: string | number, record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
+  update(token: string, id: string | number, record: GlucoseRecordEntity): Observable<GlucoseRecordEntity> {
     return this.http
-      .put<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getById(id), record.raw)
+      .put<GlucoseRecordResponse>(this.glucoseRecordEndpoint.getById(id), record.raw, {
+        headers: this.authHeaders(token),
+      })
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
   }
 
-  delete(id: string | number): Observable<void> {
-    return this.http.delete<void>(this.glucoseRecordEndpoint.getById(id));
+  delete(token: string, id: string | number): Observable<void> {
+    return this.http.delete<void>(this.glucoseRecordEndpoint.getById(id), {
+      headers: this.authHeaders(token),
+    });
   }
 }

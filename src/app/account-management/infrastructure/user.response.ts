@@ -7,3 +7,7 @@ export interface UserResponse extends BaseResponse {
   password: string;
   role: UserRole;
 }
+
+export interface AuthTokenResponse {
+  token: string;
+}

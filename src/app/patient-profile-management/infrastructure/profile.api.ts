@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -13,6 +14,22 @@ export class ProfileApi {
     private readonly http: HttpClient,
     private readonly endpoint: ProfileApiEndpoint,
   ) {}
+
+  private authHeaders(token: string): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
+  }
+
+  getMe(token: string): Observable<ProfileResponse> {
+    return this.http.get<ProfileResponse>(this.endpoint.getMe(), {
+      headers: this.authHeaders(token),
+    });
+  }
+
+  updateMe(token: string, request: UpdateProfileRequest): Observable<ProfileResponse> {
+    return this.http.put<ProfileResponse>(this.endpoint.getMe(), request, {
+      headers: this.authHeaders(token),
+    });
+  }
 
   getById(profileId: string): Observable<ProfileResponse> {
     return this.http.get<ProfileResponse>(this.endpoint.getById(profileId));

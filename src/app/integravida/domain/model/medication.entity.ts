@@ -1,16 +1,12 @@
-import { BaseEntity } from '../../../shared/infrastructure/base.entity';
-
-export class MedicationEntity extends BaseEntity {
+export class MedicationEntity {
   constructor(
-    id: number,
-    public readonly treatmentId: number | null,
-    public readonly name: string | null,
-    public readonly dose: string | null,
-    public readonly frequency: string | null,
-    public readonly scheduleTime: string | null,
-    public readonly status: string | null,
-    public readonly raw: Record<string, unknown>,
-  ) {
-    super(id);
-  }
+    public readonly id: string,
+    public readonly treatmentId: string,
+    public readonly name: string,
+    public readonly dosage: string,
+    public readonly daysOfWeek: string[],
+    public readonly doseTimes: string[],
+    public readonly instructions: string | null,
+    public readonly active: boolean,
+  ) {}
 }

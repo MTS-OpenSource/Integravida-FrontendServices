@@ -13,8 +13,8 @@ export class GlucoseRangeApiEndpoint extends BaseApiEndpoint {
     );
   }
 
-  getByPatientId(patientId: string | number): string {
-    return this.resourceUrl(patientId);
+  getAll(): string {
+    return this.collectionUrl();
   }
 
   updateByPatientId(patientId: string | number): string {

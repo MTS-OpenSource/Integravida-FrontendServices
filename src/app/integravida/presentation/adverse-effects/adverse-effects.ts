@@ -1,20 +1,14 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { AuthStore } from '../../../account-management/application/auth.store';
+import { TreatmentApi } from '../../infrastructure/treatment.api';
+import { MedicationApi } from '../../infrastructure/medication.api';
+import { TreatmentEntity } from '../../domain/model/treatment.entity';
+import { MedicationEntity } from '../../domain/model/medication.entity';
 import { AdverseEffectService } from '../../application/adverse-effect.service';
 import { CreateAdverseEffectPayload } from '../../infrastructure/adverse-effect.api';
-
-interface MedicationItem {
-  id: number;
-  time: string;
-  ampm: string;
-  name: string;
-  dose: string;
-  instruction: string;
-  done: boolean;
-  isNext: boolean;
-}
 
 @Component({
   selector: 'app-adverse-effects',
@@ -24,90 +18,80 @@ interface MedicationItem {
 })
 export class AdverseEffects implements OnInit {
   protected readonly adverseEffectService = inject(AdverseEffectService);
+  private readonly authStore = inject(AuthStore);
+  private readonly treatmentApi = inject(TreatmentApi);
+  private readonly medicationApi = inject(MedicationApi);
 
-  protected readonly patientId = signal('');
-  protected readonly medicationId = signal<number | null>(null);
-  protected readonly description = signal('');
-  protected readonly severity = signal('mild');
-  protected readonly occurredAt = signal(new Date().toISOString().slice(0, 16));
+  protected readonly treatment = signal<TreatmentEntity | null>(null);
+  protected readonly medications = signal<MedicationEntity[]>([]);
+  protected readonly loadingData = signal(false);
+
+  protected readonly medicationId = signal('');
+  protected readonly notes = signal('');
+  protected readonly takenAt = signal(new Date().toISOString().slice(0, 16));
   protected readonly formError = signal<string | null>(null);
   protected readonly showForm = signal(false);
 
-  protected readonly severityOptions = [
-    { value: 'mild', label: 'Leve' },
-    { value: 'moderate', label: 'Moderado' },
-    { value: 'severe', label: 'Severo' },
-  ];
-
-  protected readonly totalDoses = signal(26);
-  protected readonly completedDoses = signal(24);
-
-  protected readonly adherencePercentage = computed(() =>
-    this.totalDoses() > 0 ? Math.round((this.completedDoses() / this.totalDoses()) * 100) : 0,
-  );
-
-  protected readonly currentDateLabel = computed(() => {
-    const weekdays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    const now = new Date();
-    return `${weekdays[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}`;
-  });
-
-  protected readonly medications = signal<MedicationItem[]>([
-    { id: 1, time: '08:00', ampm: 'AM', name: 'Metformina', dose: '500mg', instruction: 'Con el desayuno', done: true, isNext: false },
-    { id: 2, time: '12:00', ampm: 'PM', name: 'Glipizida', dose: '5mg', instruction: '30 min antes de comer', done: true, isNext: false },
-    { id: 3, time: '18:00', ampm: 'PM', name: 'Metformina', dose: '500mg', instruction: 'Con la cena', done: false, isNext: true },
-    { id: 4, time: '21:00', ampm: 'PM', name: 'Sitagliptina', dose: '100mg', instruction: 'Antes de dormir', done: false, isNext: false },
-  ]);
-
   ngOnInit(): void {
-    this.loadData();
+    const token = this.authStore.token();
+    if (!token) return;
+
+    this.loadingData.set(true);
+    this.treatmentApi.getAll(token).subscribe({
+      next: (treatments) => {
+        if (treatments.length > 0) {
+          const activeTreatment = treatments.find((t) => t.status === 'ACTIVE') ?? treatments[0];
+          this.treatment.set(activeTreatment);
+          this.loadMedications(activeTreatment.id, token);
+        } else {
+          this.loadingData.set(false);
+        }
+      },
+      error: () => {
+        this.loadingData.set(false);
+      },
+    });
+
+    this.adverseEffectService.getByPatientId();
   }
 
-  protected loadData(): void {
-    const pid = this.patientId().trim();
-    if (pid) {
-      this.adverseEffectService.getByPatientId(pid);
-    }
+  private loadMedications(treatmentId: string, token: string): void {
+    this.medicationApi.getByTreatmentId(treatmentId, token).subscribe({
+      next: (medications) => {
+        this.medications.set(medications);
+        this.loadingData.set(false);
+      },
+      error: () => {
+        this.loadingData.set(false);
+      },
+    });
   }
 
   protected registerAdverseEffect(): void {
-    const patientId = Number(this.patientId());
-    const medicationId = Number(this.medicationId());
-    const description = this.description().trim();
-    const occurredAt = this.occurredAt();
+    const medicationId = this.medicationId().trim();
+    const notes = this.notes().trim();
+    const takenAt = this.takenAt();
 
-    if (!patientId) {
-      this.formError.set('Ingresa un Patient ID válido.');
-      return;
-    }
-    if (!Number.isFinite(medicationId) || medicationId <= 0) {
+    if (!medicationId) {
       this.formError.set('Ingresa un Medication ID válido.');
       return;
     }
-    if (!description) {
-      this.formError.set('Describe el efecto adverso registrado.');
-      return;
-    }
-    if (!occurredAt) {
-      this.formError.set('Selecciona la fecha y hora del efecto adverso.');
+    if (!takenAt) {
+      this.formError.set('Selecciona la fecha y hora de la toma.');
       return;
     }
 
     const payload: CreateAdverseEffectPayload = {
-      patientId,
       medicationId,
-      description,
-      severity: this.severity(),
-      occurredAt: new Date(occurredAt).toISOString(),
+      takenAt: new Date(takenAt).toISOString(),
+      notes,
     };
 
     this.formError.set(null);
     this.adverseEffectService.create(payload);
-    this.description.set('');
-    this.severity.set('mild');
-    this.occurredAt.set(new Date().toISOString().slice(0, 16));
-    this.medicationId.set(null);
+    this.notes.set('');
+    this.takenAt.set(new Date().toISOString().slice(0, 16));
+    this.medicationId.set('');
     this.showForm.set(false);
   }
 }

@@ -24,11 +24,20 @@ export class AuthSessionStorage {
     }
 
     try {
-      const user = JSON.parse(storedUser) as userEntity;
+      const data = JSON.parse(storedUser) as {
+        id: number; email: string; username: string; role: string;
+        profileId?: string | null; patientId?: string | null; doctorId?: string | null;
+      };
 
       return {
         token,
-        user: new userEntity(user.id, user.email, user.username, user.password, user.role),
+        user: new userEntity(
+          data.id, data.email, data.username,
+          data.role as 'Patient' | 'Doctor',
+          data.profileId ?? null,
+          data.patientId ?? null,
+          data.doctorId ?? null,
+        ),
       };
     } catch {
       this.clear();

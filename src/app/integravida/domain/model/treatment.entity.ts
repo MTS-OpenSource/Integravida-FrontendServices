@@ -1,14 +1,11 @@
-import { BaseEntity } from '../../../shared/infrastructure/base.entity';
-
-export class TreatmentEntity extends BaseEntity {
+export class TreatmentEntity {
   constructor(
-    id: number,
-    public readonly patientId: number | null,
-    public readonly doctorId: number | null,
-    public readonly startDate: string | null,
+    public readonly id: string,
+    public readonly patientId: string,
+    public readonly name: string,
+    public readonly description: string | null,
+    public readonly startDate: string,
     public readonly endDate: string | null,
-    public readonly status: string | null,
-  ) {
-    super(id);
-  }
+    public readonly status: string,
+  ) {}
 }

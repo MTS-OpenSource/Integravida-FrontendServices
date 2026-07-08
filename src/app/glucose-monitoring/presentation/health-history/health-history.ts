@@ -26,7 +26,7 @@ export class HealthHistory {
   protected readonly records = computed(() => this.glucoseService.records());
 
   protected loadRecords(): void {
-    this.glucoseService.getReadings(this.patientId());
+    this.glucoseService.getReadings();
   }
 
   protected filterByDateRange(): void {
@@ -35,7 +35,7 @@ export class HealthHistory {
     const from = new Date(this.fromDate());
     const to = new Date(this.toDate());
 
-    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+    this.glucoseService.getReadingsByDateRange(from, to);
   }
 
   protected filterToday(): void {
@@ -46,7 +46,7 @@ export class HealthHistory {
     const to = new Date(today);
     to.setHours(23, 59, 59, 999);
 
-    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+    this.glucoseService.getReadingsByDateRange(from, to);
   }
 
   protected filterLast7Days(): void {
@@ -54,7 +54,7 @@ export class HealthHistory {
     const from = new Date();
     from.setDate(to.getDate() - 7);
 
-    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+    this.glucoseService.getReadingsByDateRange(from, to);
   }
 
   protected filterLastMonth(): void {
@@ -62,7 +62,7 @@ export class HealthHistory {
     const from = new Date();
     from.setMonth(to.getMonth() - 1);
 
-    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+    this.glucoseService.getReadingsByDateRange(from, to);
   }
 
   protected filterLast3Months(): void {
@@ -70,7 +70,7 @@ export class HealthHistory {
     const from = new Date();
     from.setMonth(to.getMonth() - 3);
 
-    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+    this.glucoseService.getReadingsByDateRange(from, to);
   }
 
   protected filterLast6Months(): void {
@@ -78,7 +78,7 @@ export class HealthHistory {
     const from = new Date();
     from.setMonth(to.getMonth() - 6);
 
-    this.glucoseService.getReadingsByDateRange(this.patientId(), from, to);
+    this.glucoseService.getReadingsByDateRange(from, to);
   }
 
   protected startEdit(record: GlucoseRecordEntity): void {

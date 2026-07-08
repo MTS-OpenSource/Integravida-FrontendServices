@@ -5,17 +5,7 @@
       <p class="header-subtitle">Welcome back, {{ userName() }}</p>
     </div>
     <div class="header-actions">
-      <button class="btn-icon" title="Search">
-        <span class="material-symbols-outlined">search</span>
-      </button>
-      <button class="btn-icon" title="Calendar">
-        <span class="material-symbols-outlined">calendar_today</span>
-      </button>
-      <div class="header-divider"></div>
-      <button class="btn-primary" (click)="openLogReading()">
-        <span class="material-symbols-outlined">add</span>
-        Log Reading
-      </button>
+
       <div class="avatar">
         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt4f0R59JHhnvdtEW74aIZxntQxCnaB6sGY26zxr5RY__ygt5F4anoZxhqWHjWnW1lEpgrFxgDSFyaFIAWj9hV0_PPHU-TXF9rMgu3Dl_Tox2wyvfC75A6BVmjwCeFtxZk9S1J0pdsIvGG_BuppCcgSlY70egVv_2w48gjOoQk_9YXtJgt-DoZYhclKWYTYhCyRw973YbGVvHnhAkQ7kwaYQRNYvqicjw0MWdT06KKSiiXl94YkKAS2g" alt="Patient photo"/>
       </div>
@@ -38,12 +28,13 @@
     <article class="metric-card">
       <div class="metric-header">
         <span class="metric-label">Treatment Status</span>
-        <span class="badge badge-warning">On Track</span>
+        <span class="badge badge-warning">Active</span>
       </div>
       <div class="metric-value">
-        <span class="value-number">{{ dashboardService.summary()?.activeMedicationsCount ?? 0 }}%</span>
+        <span class="value-number">{{ dashboardService.summary()?.activeTreatmentsCount ?? 0 }}</span>
+        <span class="value-unit">of {{ dashboardService.summary()?.treatmentsCount ?? 0 }} active</span>
       </div>
-      <p class="metric-footer">Adherence this month</p>
+      <p class="metric-footer">Current treatments</p>
     </article>
 
     <article class="metric-card">
@@ -52,29 +43,9 @@
         <span class="badge badge-info">Today</span>
       </div>
       <div class="metric-value">
-        <span class="value-number">{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }} of 5</span>
+        <span class="value-number">{{ dashboardService.summary()?.glucoseRecordsCount ?? 0 }}</span>
       </div>
-      <div class="dots">
-        <span class="dot filled"></span>
-        <span class="dot filled"></span>
-        <span class="dot filled"></span>
-        <span class="dot filled"></span>
-        <span class="dot"></span>
-      </div>
-      <p class="metric-footer">Next check: 6:00 PM</p>
-    </article>
-
-    <article class="metric-card metric-card-accent">
-      <div class="metric-header">
-        <span class="metric-label accent">HbA1c Level</span>
-        <span class="badge badge-accent">Excellent</span>
-      </div>
-      <div class="metric-value">
-        <span class="value-number">6.2</span>
-        <span class="value-unit accent">%</span>
-      </div>
-      <p class="metric-footer accent">Last tested: Jun 28, 2025</p>
-      <span class="accent-icon material-symbols-outlined">biotech</span>
+      <p class="metric-footer">Total glucose readings</p>
     </article>
   </div>
 
@@ -101,26 +72,26 @@
         @for (med of dashboardService.summary()?.activeMedications; track med.id) {
           <div
             class="dose-item"
-            [class.dose-done]="dashboardService.isMedicationConfirmed(med.id) || med.status === 'done'"
-            [class.dose-next]="!dashboardService.isMedicationConfirmed(med.id) && med.status === 'next'"
+            [class.dose-done]="dashboardService.isMedicationConfirmed(med.id)"
+            [class.dose-next]="!dashboardService.isMedicationConfirmed(med.id) && med.active"
           >
-            <div class="dose-icon" [class.dose-icon-done]="dashboardService.isMedicationConfirmed(med.id) || med.status === 'done'" [class.dose-icon-next]="!dashboardService.isMedicationConfirmed(med.id) && med.status === 'next'">
-              @if (dashboardService.isMedicationConfirmed(med.id) || med.status === 'done') {
+            <div class="dose-icon" [class.dose-icon-done]="dashboardService.isMedicationConfirmed(med.id)" [class.dose-icon-next]="!dashboardService.isMedicationConfirmed(med.id) && med.active">
+              @if (dashboardService.isMedicationConfirmed(med.id)) {
                 <span class="material-symbols-outlined">check_circle</span>
-              } @else if (med.status === 'next') {
+              } @else if (med.active) {
                 <span class="material-symbols-outlined">schedule</span>
               } @else {
                 <span class="material-symbols-outlined">hourglass_empty</span>
               }
             </div>
             <div class="dose-info">
-              <p class="dose-name">{{ med.name }} {{ med.dose }}</p>
-              <p class="dose-time">{{ med.scheduleTime }}</p>
+              <p class="dose-name">{{ med.name }} {{ med.dosage }}</p>
+              <p class="dose-time">{{ med.doseTimes.join(' - ') }}</p>
             </div>
             <div class="dose-status">
-              @if (dashboardService.isMedicationConfirmed(med.id) || med.status === 'done') {
+              @if (dashboardService.isMedicationConfirmed(med.id)) {
                 <span class="status-done">Done</span>
-              } @else if (med.status === 'next') {
+              } @else if (med.active) {
                 <span class="status-next">Next</span>
               } @else {
                 <span class="status-later">Later</span>
@@ -137,7 +108,7 @@
           </div>
         }
       </div>
-      <button class="btn-full">View Full Schedule</button>
+      <a class="btn-full" routerLink="/adverse-effects">View Full Schedule</a>
     </aside>
   </div>
 
@@ -146,7 +117,7 @@
       <div class="card-header">
         <div>
           <h3 class="card-title">Recent Alerts</h3>
-          <p class="card-subtitle">Last 48 hours &middot; 3 new alerts</p>
+          <p class="card-subtitle">Unresolved &middot; {{ dashboardService.summary()?.unresolvedAlertsCount ?? 0 }} alerts</p>
         </div>
       </div>
       <div class="alerts-list">
@@ -167,7 +138,7 @@
           </div>
         }
       </div>
-      <a class="view-all" href="#">View All</a>
+      <a class="view-all" routerLink="/alerts">View All</a>
     </section>
 
     <div class="sidebar-cards">
@@ -180,19 +151,19 @@
           </div>
           <div class="stat-row">
             <span class="stat-label">In Range</span>
-            <span class="stat-value stat-primary">78%</span>
+            <span class="stat-value stat-primary">{{ dashboardService.summary()?.inRangePercentage ?? 0 }}%</span>
           </div>
           <div class="stat-row">
-            <span class="stat-label">High Episodes</span>
+            <span class="stat-label">Unresolved Alerts</span>
             <span class="stat-value stat-secondary">{{ dashboardService.summary()?.unresolvedAlertsCount ?? 0 }}</span>
           </div>
           <div class="stat-row">
             <span class="stat-label">Low Episodes</span>
-            <span class="stat-value stat-error">1</span>
+            <span class="stat-value stat-error">{{ dashboardService.summary()?.lowEpisodes ?? 0 }}</span>
           </div>
           <div class="stat-row stat-divider">
             <span class="stat-label">Medication Score</span>
-            <span class="stat-value">86%</span>
+            <span class="stat-value">{{ dashboardService.summary()?.medicationsCount != null && dashboardService.summary()!.medicationsCount > 0 ? (dashboardService.summary()!.activeMedicationsCount / dashboardService.summary()!.medicationsCount * 100).toFixed(1) : 0 }}%</span>
           </div>
         </div>
       </section>

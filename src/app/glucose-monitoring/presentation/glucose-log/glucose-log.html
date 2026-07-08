@@ -11,10 +11,6 @@
       <p class="page-date">{{ currentDateLabel() }}</p>
     </div>
     <div class="header-actions">
-      <button class="btn-outline" type="button">
-        <span class="material-symbols-outlined">calendar_today</span>
-        Este Mes
-      </button>
       <div class="avatar">
         <span class="material-symbols-outlined">person</span>
       </div>
@@ -39,20 +35,6 @@
         </div>
 
         <form class="form-body" (ngSubmit)="save()" #glucoseForm="ngForm">
-          <!-- Patient UUID (hidden utility field) -->
-          <div class="field-group">
-            <label class="field-label">Patient UUID</label>
-            <input
-              class="field-input"
-              type="text"
-              [ngModel]="patientId()"
-              (ngModelChange)="patientId.set($event)"
-              name="patientId"
-              placeholder="30b03b5c-33e4-4c88-bb09-a10bff88f3a0"
-              required
-            />
-          </div>
-
           <!-- Glucose Level Input -->
           <div class="field-group">
             <label class="field-label">Nivel de Glucosa</label>
@@ -91,76 +73,31 @@
             </div>
           </div>
 
-          <!-- Date & Time + Patient State -->
-          <div class="form-row-2">
-            <div class="field-group">
-              <label class="field-label">Fecha y Hora</label>
-              <div class="datetime-row">
-                <div class="datetime-input-wrap">
-                  <span class="material-symbols-outlined datetime-icon">calendar_today</span>
-                  <input
-                    class="field-input datetime-input"
-                    type="date"
-                    [ngModel]="recordedAtDate()"
-                    (ngModelChange)="onDateChange($event)"
-                    name="recordedDate"
-                  />
-                </div>
-                <div class="datetime-input-wrap">
-                  <span class="material-symbols-outlined datetime-icon">schedule</span>
-                  <input
-                    class="field-input datetime-input"
-                    type="time"
-                    [ngModel]="recordedAtTime()"
-                    (ngModelChange)="onTimeChange($event)"
-                    name="recordedTime"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label">Estado del Paciente</label>
-              <div class="chip-group">
-                <button
-                  type="button"
-                  class="chip"
-                  [class.chip-active]="patientState() === 'En ayunas'"
-                  (click)="patientState.set('En ayunas')"
-                >En ayunas</button>
-                <button
-                  type="button"
-                  class="chip"
-                  [class.chip-active]="patientState() === 'Antes de comer'"
-                  (click)="patientState.set('Antes de comer')"
-                >Antes de comer</button>
-                <button
-                  type="button"
-                  class="chip"
-                  [class.chip-active]="patientState() === 'Después de comer'"
-                  (click)="patientState.set('Después de comer')"
-                >Después de comer</button>
-                <button
-                  type="button"
-                  class="chip"
-                  [class.chip-active]="patientState() === 'Antes de dormir'"
-                  (click)="patientState.set('Antes de dormir')"
-                >Antes de dormir</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Comments -->
+          <!-- Date & Time -->
           <div class="field-group">
-            <label class="field-label">Comentarios (Opcional)</label>
-            <textarea
-              class="field-textarea"
-              [ngModel]="notes()"
-              (ngModelChange)="notes.set($event)"
-              name="notes"
-              placeholder="Agregue cualquier nota relevante sobre su estado de salud, actividad física o dieta reciente..."
-              rows="3"
-            ></textarea>
+            <label class="field-label">Fecha y Hora</label>
+            <div class="datetime-row">
+              <div class="datetime-input-wrap">
+                <span class="material-symbols-outlined datetime-icon">calendar_today</span>
+                <input
+                  class="field-input datetime-input"
+                  type="date"
+                  [ngModel]="recordedAtDate()"
+                  (ngModelChange)="onDateChange($event)"
+                  name="recordedDate"
+                />
+              </div>
+              <div class="datetime-input-wrap">
+                <span class="material-symbols-outlined datetime-icon">schedule</span>
+                <input
+                  class="field-input datetime-input"
+                  type="time"
+                  [ngModel]="recordedAtTime()"
+                  (ngModelChange)="onTimeChange($event)"
+                  name="recordedTime"
+                />
+              </div>
+            </div>
           </div>
 
           <!-- Action Buttons -->

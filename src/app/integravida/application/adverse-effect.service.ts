@@ -1,6 +1,7 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { AuthStore } from '../../account-management/application/auth.store';
 import { AdverseEffectEntity } from '../domain/model/adverse-effect.entity';
 import {
   AdverseEffectApi,
@@ -12,6 +13,7 @@ import {
 })
 export class AdverseEffectService {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authStore = inject(AuthStore);
 
   private readonly adverseEffectsSignal = signal<AdverseEffectEntity[]>([]);
   readonly adverseEffects = this.adverseEffectsSignal.asReadonly();
@@ -24,12 +26,19 @@ export class AdverseEffectService {
 
   constructor(private readonly adverseEffectApi: AdverseEffectApi) {}
 
-  getByPatientId(patientId: string | number): void {
+  private get token(): string | null {
+    return this.authStore.token();
+  }
+
+  getByPatientId(): void {
+    const token = this.token;
+    if (!token) return;
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.adverseEffectApi
-      .getByPatientId(patientId)
+      .getByPatientId(token)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (adverseEffects) => {
@@ -44,11 +53,14 @@ export class AdverseEffectService {
   }
 
   create(payload: CreateAdverseEffectPayload): void {
+    const token = this.token;
+    if (!token) return;
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.adverseEffectApi
-      .create(payload)
+      .create(token, payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (createdAdverseEffect) => {
@@ -66,8 +78,8 @@ export class AdverseEffectService {
 
   private sortByDateDesc(adverseEffects: AdverseEffectEntity[]): AdverseEffectEntity[] {
     return [...adverseEffects].sort((left, right) => {
-      const leftDate = left.occurredAt ? new Date(left.occurredAt).getTime() : 0;
-      const rightDate = right.occurredAt ? new Date(right.occurredAt).getTime() : 0;
+      const leftDate = left.takenAt ? new Date(left.takenAt).getTime() : 0;
+      const rightDate = right.takenAt ? new Date(right.takenAt).getTime() : 0;
       return rightDate - leftDate;
     });
   }

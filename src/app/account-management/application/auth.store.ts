@@ -32,8 +32,18 @@ export class AuthStore {
   ) {
     const storedSession = this.authSessionStorage.load();
 
-    this.currentUserSignal.set(storedSession?.user ?? null);
-    this.tokenSignal.set(storedSession?.token ?? null);
+    if (storedSession && !this.isValidJwt(storedSession.token)) {
+      this.authSessionStorage.clear();
+      this.currentUserSignal.set(null);
+      this.tokenSignal.set(null);
+    } else {
+      this.currentUserSignal.set(storedSession?.user ?? null);
+      this.tokenSignal.set(storedSession?.token ?? null);
+    }
+  }
+
+  private isValidJwt(token: string): boolean {
+    return /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token);
   }
 
   signIn(identifier: string, password: string): void {
@@ -44,15 +54,23 @@ export class AuthStore {
       .signIn(identifier, password)
       .pipe(retry(2), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (user) => {
-          if (!user) {
+        next: (token) => {
+          if (!token) {
             this.clearSession();
             this.errorSignal.set('Invalid credentials');
             this.loadingSignal.set(false);
             return;
           }
 
-          const session = this.createSession(user);
+          const user = userEntity.fromJwt(token);
+          if (!user) {
+            this.clearSession();
+            this.errorSignal.set('Invalid token');
+            this.loadingSignal.set(false);
+            return;
+          }
+
+          const session: AuthSession = { token, user };
           this.authSessionStorage.save(session);
           this.currentUserSignal.set(session.user);
           this.tokenSignal.set(session.token);
@@ -73,8 +91,15 @@ export class AuthStore {
       .register(request)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (user) => {
-          const session = this.createSession(user);
+        next: (token) => {
+          const user = userEntity.fromJwt(token);
+          if (!user) {
+            this.errorSignal.set('Failed to decode token');
+            this.loadingSignal.set(false);
+            return;
+          }
+
+          const session: AuthSession = { token, user };
           this.authSessionStorage.save(session);
           this.currentUserSignal.set(session.user);
           this.tokenSignal.set(session.token);
@@ -101,13 +126,6 @@ export class AuthStore {
     }
 
     return { token, user };
-  }
-
-  private createSession(user: userEntity): AuthSession {
-    return {
-      token: btoa(`${user.id}:${user.username}:${user.role}:${Date.now()}`),
-      user,
-    };
   }
 
   private clearSession(): void {

@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AlertApi } from '../infrastructure/alert.api';
 import { AlertEntity } from '../domain/model/alert.entity';
+import { AuthStore } from '../../account-management/application/auth.store';
 
 import { forkJoin } from 'rxjs';
 
@@ -14,6 +15,7 @@ export type AlertTab = 'Todas' | 'Activas' | 'Resueltas';
 export class AlertService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly alertApi = inject(AlertApi);
+  private readonly authStore = inject(AuthStore);
 
   private readonly alertsSignal = signal<AlertEntity[]>([]);
   readonly alerts = this.alertsSignal.asReadonly();
@@ -32,20 +34,14 @@ export class AlertService {
 
   readonly hasUnreadAlerts = computed(() => this.unreadCount() > 0);
 
-  getAlerts(patientId: string | number, unreadOnly = false): void {
-    const normalizedPatientId = String(patientId).trim();
-
-    if (!normalizedPatientId) {
-      this.alertsSignal.set([]);
-      this.errorSignal.set('Debes ingresar un patientId UUID para consultar alertas.');
-      return;
-    }
+  getAlerts(token: string, unreadOnly = false): void {
+    if (!token) return;
 
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.alertApi
-      .getByPatientId(normalizedPatientId, unreadOnly)
+      .getByPatientId(token, unreadOnly)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (alerts) => {
@@ -59,14 +55,20 @@ export class AlertService {
       });
   }
 
+  private get token(): string | null {
+    return this.authStore.token();
+  }
+
   markAsRead(alert: AlertEntity): void {
     if (alert.read) return;
+    const token = this.token;
+    if (!token) return;
 
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.alertApi
-      .markAsRead(alert.id)
+      .markAsRead(token, alert.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedAlert) => {
@@ -86,13 +88,14 @@ export class AlertService {
 
   markAllAsRead(): void {
     const unreadAlerts = this.alertsSignal().filter((alert) => !alert.read);
+    const token = this.token;
 
-    if (unreadAlerts.length === 0) return;
+    if (unreadAlerts.length === 0 || !token) return;
 
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    forkJoin(unreadAlerts.map((alert) => this.alertApi.markAsRead(alert.id)))
+    forkJoin(unreadAlerts.map((alert) => this.alertApi.markAsRead(token, alert.id)))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedAlerts) => {
