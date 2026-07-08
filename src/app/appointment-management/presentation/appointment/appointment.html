@@ -1,180 +1,242 @@
-<section class="appointment-page">
-  <header class="appointment-header">
+<section class="appointments-page">
+  <header class="appointments-header">
     <div>
       <p class="eyebrow">GlucoSmart</p>
-      <h1>Appointment Management</h1>
+      <h1>Gestión de Citas Médicas</h1>
       <p class="description">
-        Gestiona las citas médicas del paciente, visualiza su estado y registra nuevas
-        solicitudes de atención.
+        Solicita, modifica y revisa tus citas médicas. El paciente se identifica automáticamente con JWT.
       </p>
     </div>
 
-    <div class="summary-card">
-      <span class="summary-label">Citas registradas</span>
-      <strong>{{ totalAppointments() }}</strong>
-    </div>
+    <button class="secondary-button" type="button" (click)="loadAppointments()" [disabled]="loading()">
+      <span class="material-symbols-outlined">refresh</span>
+      Recargar
+    </button>
   </header>
 
-  <main class="appointment-grid">
-    <section class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Agenda de citas</h2>
-          <p>Consulta las citas registradas por paciente.</p>
+  <section class="summary-grid">
+    <article class="summary-card primary-summary">
+      <span class="material-symbols-outlined">event</span>
+      <div>
+        <p>Total de citas</p>
+        <strong>{{ totalAppointments() }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="material-symbols-outlined">upcoming</span>
+      <div>
+        <p>Próximas</p>
+        <strong>{{ upcomingAppointments().length }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="material-symbols-outlined">history</span>
+      <div>
+        <p>Pasadas</p>
+        <strong>{{ pastAppointments().length }}</strong>
+      </div>
+    </article>
+  </section>
+
+  @if (loading()) {
+    <p class="info-message">Cargando citas médicas...</p>
+  }
+
+  @if (error()) {
+    <p class="error-message">{{ error() }}</p>
+  }
+
+  @if (success()) {
+    <p class="success-message">{{ success() }}</p>
+  }
+
+  <main class="appointments-layout">
+    <section class="appointments-column">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Próximas citas</h2>
+            <p>Citas programadas desde hoy en adelante.</p>
+          </div>
         </div>
 
-        <button class="secondary-button" type="button" (click)="loadAppointments()">
-          Recargar
-        </button>
-      </div>
+        <div class="appointment-list">
+          @for (appointment of upcomingAppointments(); track appointment.backendId) {
+            <article class="appointment-card">
+              <div class="appointment-main">
+                <span class="status-badge {{ statusClass(appointment.status) }}">
+                  {{ formatStatus(appointment.status) }}
+                </span>
 
-      <label class="form-label" for="patient-filter">Patient ID</label>
-      <div class="filter-row">
-        <input
-          id="patient-filter"
-          class="form-control"
-          type="text"
-          [ngModel]="patientId()"
-          (ngModelChange)="updatePatientId($event)"
-        />
+                <h3>Cita médica #{{ shortId(appointment) }}</h3>
+                <p>{{ appointment.notes || 'Sin motivo registrado' }}</p>
 
-        <button class="primary-button" type="button" (click)="loadAppointments()">
-          Buscar citas
-        </button>
-      </div>
+                <div class="appointment-date">
+                  <span class="material-symbols-outlined">schedule</span>
+                  {{ formatDateTime(appointment.scheduledAt) }}
+                </div>
+              </div>
 
-      @if (loading()) {
-      <p class="state-message">Cargando citas médicas...</p>
-      }
+              <div class="appointment-actions">
+                <button class="edit-button" type="button" (click)="editAppointment(appointment)">
+                  <span class="material-symbols-outlined">edit</span>
+                  Modificar
+                </button>
 
-      @if (error()) {
-      <p class="error-message">{{ error() }}</p>
-      }
+                <button class="delete-button" type="button" (click)="requestDeleteAppointment(appointment)">
+                  <span class="material-symbols-outlined">delete</span>
+                  Eliminar
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <div class="empty-state">
+              <span class="material-symbols-outlined">event_available</span>
+              <h3>No tienes próximas citas</h3>
+              <p>Solicita una cita desde el formulario.</p>
+            </div>
+          }
+        </div>
+      </section>
 
-      <div class="appointment-list">
-        @for (appointment of appointments(); track appointment.id) {
-        <article class="appointment-card">
+      <section class="panel">
+        <div class="panel-header">
           <div>
-            <span class="status-badge">{{ appointment.status || 'pending' }}</span>
-            <h3>Cita médica #{{ appointment.backendId }}</h3>
-            <p>{{ appointment.notes || 'Sin notas registradas' }}</p>
+            <h2>Citas pasadas</h2>
+            <p>Historial de citas anteriores.</p>
           </div>
+        </div>
 
-          <div class="appointment-meta">
-            <span>Patient ID: {{ appointment.patientId }}</span>
-            <span>Doctor ID: {{ appointment.doctorId }}</span>
-            <span>{{ appointment.scheduledAt || 'Fecha no registrada' }}</span>
-          </div>
-        </article>
-        } @empty {
-        <p class="state-message">No hay citas registradas para este paciente.</p>
-        }
-      </div>
+        <div class="appointment-list">
+          @for (appointment of pastAppointments(); track appointment.backendId) {
+            <article class="appointment-card past-card">
+              <div class="appointment-main">
+                <span class="status-badge {{ statusClass(appointment.status) }}">
+                  {{ formatStatus(appointment.status) }}
+                </span>
+
+                <h3>Cita médica #{{ shortId(appointment) }}</h3>
+                <p>{{ appointment.notes || 'Sin motivo registrado' }}</p>
+
+                <div class="appointment-date">
+                  <span class="material-symbols-outlined">history</span>
+                  {{ formatDateTime(appointment.scheduledAt) }}
+                </div>
+              </div>
+
+              <div class="appointment-actions">
+                <button class="edit-button" type="button" (click)="editAppointment(appointment)">
+                  <span class="material-symbols-outlined">edit</span>
+                  Modificar
+                </button>
+
+                <button class="delete-button" type="button" (click)="requestDeleteAppointment(appointment)">
+                  <span class="material-symbols-outlined">delete</span>
+                  Eliminar
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <div class="empty-state">
+              <span class="material-symbols-outlined">history</span>
+              <h3>Aún no hay citas pasadas</h3>
+              <p>Cuando una cita termine, aparecerá aquí.</p>
+            </div>
+          }
+        </div>
+      </section>
     </section>
 
     <aside class="side-column">
-      <section class="panel">
-        <h2>Crear cita</h2>
+      <section class="panel form-panel">
+        <h2>{{ formTitle() }}</h2>
         <p class="panel-description">
-          Registra una nueva cita médica indicando paciente, doctor, fecha y motivo.
+          No ingreses patientId ni doctorId. El backend los obtiene desde el JWT del usuario autenticado.
         </p>
 
-        <form class="appointment-form" (ngSubmit)="createAppointment()">
-          <label class="form-label" for="patient-id">Patient ID</label>
-          <input
-            id="patient-id"
-            class="form-control"
-            type="text"
-            [ngModel]="patientId()"
-            (ngModelChange)="updatePatientId($event)"
-            name="patientId"
-          />
+        <form class="appointment-form" (ngSubmit)="saveAppointment()">
+          <div class="date-row">
+            <label>
+              <span>Fecha</span>
+              <input
+                type="date"
+                [ngModel]="selectedDate()"
+                (ngModelChange)="selectedDate.set($event)"
+                name="selectedDate"
+                required
+              />
+            </label>
 
-          <label class="form-label" for="doctor-id">Doctor ID</label>
-          <input
-            id="doctor-id"
-            class="form-control"
-            type="text"
-            [ngModel]="doctorId()"
-            (ngModelChange)="updateDoctorId($event)"
-            name="doctorId"
-          />
+            <label>
+              <span>Hora</span>
+              <input
+                type="time"
+                [ngModel]="selectedTime()"
+                (ngModelChange)="selectedTime.set($event)"
+                name="selectedTime"
+                required
+              />
+            </label>
+          </div>
 
-          <label class="form-label" for="scheduled-at">Fecha y hora</label>
-          <input
-            id="scheduled-at"
-            class="form-control"
-            type="datetime-local"
-            [ngModel]="scheduledAt()"
-            (ngModelChange)="scheduledAt.set($event)"
-            name="scheduledAt"
-            placeholder="2026-06-20T10:30"
-          />
+          <div class="date-preview">
+            <span class="material-symbols-outlined">event_note</span>
+            <div>
+              <strong>Fecha seleccionada</strong>
+              <p>{{ selectedDatePreview() }}</p>
+            </div>
+          </div>
 
-          <label class="form-label" for="notes">Notas</label>
-          <textarea
-            id="notes"
-            class="form-control"
-            rows="4"
-            [ngModel]="notes()"
-            (ngModelChange)="notes.set($event)"
-            name="notes"
-          ></textarea>
+          <label>
+            <span>Motivo de la cita</span>
+            <textarea
+              rows="5"
+              [ngModel]="reason()"
+              (ngModelChange)="reason.set($event)"
+              name="reason"
+              placeholder="Ejemplo: Revisión médica de control"
+              required
+            ></textarea>
+          </label>
 
-          <button class="primary-button full-width" type="submit">
-            Crear cita
+          <button class="primary-button full-width" type="submit" [disabled]="!canSubmit()">
+            <span class="material-symbols-outlined">{{ isEditing() ? 'save' : 'event_available' }}</span>
+            {{ submitLabel() }}
           </button>
+
+          @if (isEditing()) {
+            <button class="cancel-button full-width" type="button" (click)="cancelEdit()">
+              Cancelar edición
+            </button>
+          } @else {
+            <button class="cancel-button full-width" type="button" (click)="resetForm()">
+              Limpiar formulario
+            </button>
+          }
         </form>
       </section>
 
-      <section class="panel">
-        <h2>Configuración de alertas</h2>
-        <p class="panel-description">
-          Activa o desactiva recordatorios y notificaciones relacionadas con el seguimiento.
-        </p>
+      @if (appointmentToDelete(); as appointmentToDeleteItem) {
+        <section class="panel delete-confirmation">
+          <span class="material-symbols-outlined warning-icon">warning</span>
+          <h2>Eliminar cita</h2>
+          <p>
+            ¿Seguro que deseas eliminar la cita
+            <strong>#{{ shortId(appointmentToDeleteItem) }}</strong>?
+          </p>
+          <p>{{ formatDateTime(appointmentToDeleteItem.scheduledAt) }}</p>
 
-        <div class="toggle-list">
-          <label class="toggle-item">
-            <input
-              type="checkbox"
-              [ngModel]="appointmentRemindersEnabled()"
-              (ngModelChange)="appointmentRemindersEnabled.set($event)"
-              name="appointmentReminders"
-            />
-            <span>Recordatorios de citas</span>
-          </label>
+          <button class="delete-confirm-button" type="button" (click)="confirmDeleteAppointment()">
+            Sí, eliminar
+          </button>
 
-          <label class="toggle-item">
-            <input
-              type="checkbox"
-              [ngModel]="cancellationNotificationsEnabled()"
-              (ngModelChange)="cancellationNotificationsEnabled.set($event)"
-              name="cancellationNotifications"
-            />
-            <span>Notificación por cancelación</span>
-          </label>
-
-          <label class="toggle-item">
-            <input
-              type="checkbox"
-              [ngModel]="glucoseAlertsEnabled()"
-              (ngModelChange)="glucoseAlertsEnabled.set($event)"
-              name="glucoseAlerts"
-            />
-            <span>Alertas de glucosa</span>
-          </label>
-
-          <label class="toggle-item">
-            <input
-              type="checkbox"
-              [ngModel]="medicationAlertsEnabled()"
-              (ngModelChange)="medicationAlertsEnabled.set($event)"
-              name="medicationAlerts"
-            />
-            <span>Alertas de medicación</span>
-          </label>
-        </div>
-      </section>
+          <button class="cancel-button full-width" type="button" (click)="cancelDelete()">
+            Cancelar
+          </button>
+        </section>
+      }
     </aside>
   </main>
 </section>

@@ -21,8 +21,7 @@ export class AppointmentApiEndpoint extends BaseApiEndpoint {
     return this.collectionUrl();
   }
 
-  getByPatientId(patientId: string): string {
-    const params = new URLSearchParams({ patientId });
-    return `${this.collectionUrl()}?${params.toString()}`;
+  getById(id: string | number): string {
+    return this.resourceUrl(id);
   }
 }
