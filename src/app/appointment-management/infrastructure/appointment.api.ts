@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
@@ -8,8 +8,11 @@ import { AppointmentAssembler } from './appointment.assembler';
 import { AppointmentResponse } from './appointment.response';
 
 export interface CreateAppointmentPayload {
-  patientId: string;
-  doctorId: string;
+  scheduledAt: string;
+  reason: string;
+}
+
+export interface UpdateAppointmentPayload {
   scheduledAt: string;
   reason: string;
 }
@@ -26,21 +29,41 @@ export class AppointmentApi {
 
   constructor(private readonly appointmentEndpoint: AppointmentApiEndpoint) {}
 
-  getAll(): Observable<AppointmentEntity[]> {
+  getAll(token: string): Observable<AppointmentEntity[]> {
     return this.http
-      .get<AppointmentResponse[]>(this.appointmentEndpoint.getAll())
+      .get<AppointmentResponse[]>(this.appointmentEndpoint.getAll(), {
+        headers: this.authHeaders(token),
+      })
       .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
   }
 
-  getByPatientId(patientId: string): Observable<AppointmentEntity[]> {
+  create(token: string, appointment: CreateAppointmentPayload): Observable<AppointmentEntity> {
     return this.http
-      .get<AppointmentResponse[]>(this.appointmentEndpoint.getByPatientId(patientId))
-      .pipe(map((response) => this.assembler.toEntitiesFrom(response)));
-  }
-
-  create(appointment: CreateAppointmentPayload): Observable<AppointmentEntity> {
-    return this.http
-      .post<AppointmentResponse>(this.appointmentEndpoint.getAll(), appointment)
+      .post<AppointmentResponse>(this.appointmentEndpoint.getAll(), appointment, {
+        headers: this.authHeaders(token),
+      })
       .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  }
+
+  update(
+    token: string,
+    id: string | number,
+    appointment: UpdateAppointmentPayload,
+  ): Observable<AppointmentEntity> {
+    return this.http
+      .put<AppointmentResponse>(this.appointmentEndpoint.getById(id), appointment, {
+        headers: this.authHeaders(token),
+      })
+      .pipe(map((response) => this.assembler.toEntityFrom(response)));
+  }
+
+  delete(token: string, id: string | number): Observable<void> {
+    return this.http.delete<void>(this.appointmentEndpoint.getById(id), {
+      headers: this.authHeaders(token),
+    });
+  }
+
+  private authHeaders(token: string): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 }
