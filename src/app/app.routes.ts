@@ -115,6 +115,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'admin/assignments',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Admin'] },
+    loadChildren: () =>
+      import('./admin/presentation/admin-assignments/admin-assignments.routes').then(
+        (module) => module.ADMIN_ASSIGNMENTS_ROUTES,
+      ),
+  },
+  {
     path: 'doctor/patients',
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Doctor'] },
