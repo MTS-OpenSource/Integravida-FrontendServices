@@ -2,7 +2,9 @@
   <button type="button" class="hamburger" (click)="toggleSidebar()">
     <span class="material-symbols-outlined">{{ sidebarOpen() ? 'close' : 'menu' }}</span>
   </button>
-  <a routerLink="/dashboard" class="mobile-brand">IV</a>
+  <a routerLink="/dashboard" class="mobile-brand" (click)="closeSidebar()">
+    <img src="Integravida.svg" alt="IntegraVida" class="mobile-logo" />
+  </a>
 </div>
 
 @if (sidebarOpen()) {
@@ -12,11 +14,7 @@
 <main class="app-shell">
   <aside class="sidebar" [class.open]="sidebarOpen()">
     <a routerLink="/dashboard" class="brand" (click)="closeSidebar()">
-      <span class="brand-mark">IV</span>
-      <span>
-        <strong>IntegraVida</strong>
-        <small>Patient health monitoring</small>
-      </span>
+      <img src="IntegravidaComplete.svg" alt="IntegraVida" class="brand-logo" />
     </a>
 
     <nav aria-label="Primary navigation">
