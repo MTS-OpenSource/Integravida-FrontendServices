@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { ForgetPassword } from './account-management/presentation/forget-password/forget-password';
-import { authGuard } from './account-management/auth.guard';
+import { authGuard, roleGuard } from './account-management/auth.guard';
 
 /**
  * Main application routes.
@@ -26,7 +26,8 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient', 'Doctor', 'Admin'] },
     loadChildren: () =>
       import('./integravida/presentation/dashboard/dashboard.routes').then(
         (module) => module.DASHBOARD_ROUTES,
@@ -34,7 +35,8 @@ export const routes: Routes = [
   },
   {
     path: 'patient-profile',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
     loadChildren: () =>
       import('./patient-profile-management/presentation/patient-profile-management.routes').then(
         (module) => module.PATIENT_PROFILE_MANAGEMENT_ROUTES,
@@ -42,16 +44,17 @@ export const routes: Routes = [
   },
   {
     path: 'appointments',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient', 'Doctor', 'Admin'] },
     loadChildren: () =>
       import('./appointment-management/presentation/appointment/appointment.routes').then(
         (module) => module.APPOINTMENT_ROUTES,
       ),
   },
-
   {
     path: 'glucose-log',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
     loadChildren: () =>
       import('./glucose-monitoring/presentation/glucose-log/glucose-log.routes').then(
         (module) => module.GLUCOSE_LOG_ROUTES,
@@ -59,7 +62,8 @@ export const routes: Routes = [
   },
   {
     path: 'health-history',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
     loadChildren: () =>
       import('./glucose-monitoring/presentation/health-history/health-history.routes').then(
         (module) => module.HEALTH_HISTORY_ROUTES,
@@ -67,7 +71,8 @@ export const routes: Routes = [
   },
   {
     path: 'alerts',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
     loadChildren: () =>
       import('./integravida/presentation/alerts/alerts.routes').then(
         (module) => module.ALERTS_ROUTES,
@@ -75,7 +80,8 @@ export const routes: Routes = [
   },
   {
     path: 'adverse-effects',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
     loadChildren: () =>
       import('./integravida/presentation/adverse-effects/adverse-effects.routes').then(
         (module) => module.ADVERSE_EFFECTS_ROUTES,
@@ -83,10 +89,38 @@ export const routes: Routes = [
   },
   {
     path: 'glucose-monitoring',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
     loadChildren: () =>
       import('./glucose-monitoring/presentation/glucose-monitoring.routes').then(
         (module) => module.GLUCOSE_MONITORING_ROUTES,
+      ),
+  },
+  {
+    path: 'admin/dashboard',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Admin'] },
+    loadChildren: () =>
+      import('./admin/presentation/admin-dashboard/admin-dashboard.routes').then(
+        (module) => module.ADMIN_DASHBOARD_ROUTES,
+      ),
+  },
+  {
+    path: 'admin/users',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Admin'] },
+    loadChildren: () =>
+      import('./admin/presentation/admin-users/admin-users.routes').then(
+        (module) => module.ADMIN_USERS_ROUTES,
+      ),
+  },
+  {
+    path: 'doctor/patients',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Doctor'] },
+    loadChildren: () =>
+      import('./doctor/presentation/doctor-patients/doctor-patients.routes').then(
+        (module) => module.DOCTOR_PATIENTS_ROUTES,
       ),
   },
   {

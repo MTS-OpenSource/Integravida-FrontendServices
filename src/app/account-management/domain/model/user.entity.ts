@@ -1,6 +1,6 @@
 import { BaseEntity } from '../../../shared/infrastructure/base.entity';
 
-export type UserRole = 'Patient' | 'Doctor';
+export type UserRole = 'Patient' | 'Doctor' | 'Admin';
 
 export interface JwtClaims {
   sub: string;
@@ -33,12 +33,16 @@ export class userEntity extends BaseEntity {
     return this.role === 'Doctor';
   }
 
+  get isAdmin(): boolean {
+    return this.role === 'Admin';
+  }
+
   static fromJwt(token: string): userEntity | null {
     try {
       const payload = token.split('.')[1];
       const clean = payload.replace(/-/g, '+').replace(/_/g, '/');
       const json = JSON.parse(atob(clean)) as JwtClaims;
-      const role: UserRole = json.role === 'PATIENT' ? 'Patient' : 'Doctor';
+      const role: UserRole = json.role === 'PATIENT' ? 'Patient' : json.role === 'ADMIN' ? 'Admin' : 'Doctor';
       return new userEntity(
         0,
         '',
