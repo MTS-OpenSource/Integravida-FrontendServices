@@ -2,20 +2,21 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminStore } from '../../application/admin.store';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-admin-users',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, I18nPipe],
   template: `
     <div class="page">
       <div class="header">
         <div>
-          <h1>User Management</h1>
-          <p class="subtitle">Manage doctors, admins and view all users</p>
+          <h1>{{ 'adminUsers.title' | i18n }}</h1>
+          <p class="subtitle">{{ 'adminUsers.subtitle' | i18n }}</p>
         </div>
         <div class="actions">
-          <button class="btn-primary" (click)="showCreate.set('doctor')">+ New Doctor</button>
-          <button class="btn-secondary" (click)="showCreate.set('admin')">+ New Admin</button>
+          <button class="btn-primary" (click)="showCreate.set('doctor')">{{ 'adminUsers.newDoctor' | i18n }}</button>
+          <button class="btn-secondary" (click)="showCreate.set('admin')">{{ 'adminUsers.newAdmin' | i18n }}</button>
         </div>
       </div>
 
@@ -25,53 +26,53 @@ import { AdminStore } from '../../application/admin.store';
 
       @if (showCreate() === 'doctor') {
         <div class="card">
-          <h3>Create Doctor</h3>
+          <h3>{{ 'adminUsers.createDoctor' | i18n }}</h3>
           <div class="form-grid">
-            <div class="field"><label>Username</label><input type="text" [(ngModel)]="doctorForm.username" /></div>
-            <div class="field"><label>Email</label><input type="email" [(ngModel)]="doctorForm.email" /></div>
-            <div class="field"><label>Password</label><input type="password" [(ngModel)]="doctorForm.password" /></div>
-            <div class="field"><label>First Name</label><input type="text" [(ngModel)]="doctorForm.firstName" /></div>
-            <div class="field"><label>Last Name</label><input type="text" [(ngModel)]="doctorForm.lastName" /></div>
-            <div class="field"><label>Phone</label><input type="text" [(ngModel)]="doctorForm.phoneNumber" /></div>
-            <div class="field"><label>Date of Birth</label><input type="date" [(ngModel)]="doctorForm.dateOfBirth" /></div>
-            <div class="field"><label>Record Number</label><input type="text" [(ngModel)]="doctorForm.doctorRecordNumber" /></div>
-            <div class="field full"><label>Notes</label><input type="text" [(ngModel)]="doctorForm.doctorNotes" /></div>
+            <div class="field"><label>{{ 'adminUsers.username' | i18n }}</label><input type="text" [(ngModel)]="doctorForm.username" /></div>
+            <div class="field"><label>{{ 'adminUsers.email' | i18n }}</label><input type="email" [(ngModel)]="doctorForm.email" /></div>
+            <div class="field"><label>{{ 'adminUsers.password' | i18n }}</label><input type="password" [(ngModel)]="doctorForm.password" /></div>
+            <div class="field"><label>{{ 'adminUsers.firstName' | i18n }}</label><input type="text" [(ngModel)]="doctorForm.firstName" /></div>
+            <div class="field"><label>{{ 'adminUsers.lastName' | i18n }}</label><input type="text" [(ngModel)]="doctorForm.lastName" /></div>
+            <div class="field"><label>{{ 'adminUsers.phone' | i18n }}</label><input type="text" [(ngModel)]="doctorForm.phoneNumber" /></div>
+            <div class="field"><label>{{ 'adminUsers.dateOfBirth' | i18n }}</label><input type="date" [(ngModel)]="doctorForm.dateOfBirth" /></div>
+            <div class="field"><label>{{ 'adminUsers.recordNumber' | i18n }}</label><input type="text" [(ngModel)]="doctorForm.doctorRecordNumber" /></div>
+            <div class="field full"><label>{{ 'adminUsers.notes' | i18n }}</label><input type="text" [(ngModel)]="doctorForm.doctorNotes" /></div>
           </div>
           <div class="form-actions">
-            <button class="btn-primary" (click)="createDoctor()" [disabled]="store.loading()">Save</button>
-            <button class="btn-secondary" (click)="showCreate.set(null)">Cancel</button>
+            <button class="btn-primary" (click)="createDoctor()" [disabled]="store.loading()">{{ 'adminUsers.save' | i18n }}</button>
+            <button class="btn-secondary" (click)="showCreate.set(null)">{{ 'adminUsers.cancel' | i18n }}</button>
           </div>
         </div>
       }
 
       @if (showCreate() === 'admin') {
         <div class="card">
-          <h3>Create Admin</h3>
+          <h3>{{ 'adminUsers.createAdmin' | i18n }}</h3>
           <div class="form-grid">
-            <div class="field"><label>Username</label><input type="text" [(ngModel)]="adminForm.username" /></div>
-            <div class="field"><label>Email</label><input type="email" [(ngModel)]="adminForm.email" /></div>
-            <div class="field"><label>Password</label><input type="password" [(ngModel)]="adminForm.password" /></div>
-            <div class="field"><label>First Name</label><input type="text" [(ngModel)]="adminForm.firstName" /></div>
-            <div class="field"><label>Last Name</label><input type="text" [(ngModel)]="adminForm.lastName" /></div>
-            <div class="field"><label>Phone</label><input type="text" [(ngModel)]="adminForm.phoneNumber" /></div>
-            <div class="field"><label>Date of Birth</label><input type="date" [(ngModel)]="adminForm.dateOfBirth" /></div>
+            <div class="field"><label>{{ 'adminUsers.username' | i18n }}</label><input type="text" [(ngModel)]="adminForm.username" /></div>
+            <div class="field"><label>{{ 'adminUsers.email' | i18n }}</label><input type="email" [(ngModel)]="adminForm.email" /></div>
+            <div class="field"><label>{{ 'adminUsers.password' | i18n }}</label><input type="password" [(ngModel)]="adminForm.password" /></div>
+            <div class="field"><label>{{ 'adminUsers.firstName' | i18n }}</label><input type="text" [(ngModel)]="adminForm.firstName" /></div>
+            <div class="field"><label>{{ 'adminUsers.lastName' | i18n }}</label><input type="text" [(ngModel)]="adminForm.lastName" /></div>
+            <div class="field"><label>{{ 'adminUsers.phone' | i18n }}</label><input type="text" [(ngModel)]="adminForm.phoneNumber" /></div>
+            <div class="field"><label>{{ 'adminUsers.dateOfBirth' | i18n }}</label><input type="date" [(ngModel)]="adminForm.dateOfBirth" /></div>
           </div>
           <div class="form-actions">
-            <button class="btn-primary" (click)="createAdmin()" [disabled]="store.loading()">Save</button>
-            <button class="btn-secondary" (click)="showCreate.set(null)">Cancel</button>
+            <button class="btn-primary" (click)="createAdmin()" [disabled]="store.loading()">{{ 'adminUsers.save' | i18n }}</button>
+            <button class="btn-secondary" (click)="showCreate.set(null)">{{ 'adminUsers.cancel' | i18n }}</button>
           </div>
         </div>
       }
 
       @if (store.loading() && store.users().length === 0) {
-        <p class="loading">Loading users...</p>
+        <p class="loading">{{ 'adminUsers.loading' | i18n }}</p>
       }
 
       @if (store.users().length > 0) {
         <div class="table-card">
           <table>
             <thead>
-              <tr><th>Username</th><th>Email</th><th>Role</th><th>Created</th></tr>
+              <tr><th>{{ 'adminUsers.username' | i18n }}</th><th>{{ 'adminUsers.email' | i18n }}</th><th>Role</th><th>Created</th></tr>
             </thead>
             <tbody>
               @for (user of store.users(); track user.id) {

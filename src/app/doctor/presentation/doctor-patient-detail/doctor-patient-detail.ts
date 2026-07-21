@@ -3,14 +3,15 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { DoctorStore } from '../../application/doctor.store';
 import { CreateTreatmentForm } from '../create-treatment-form/create-treatment-form';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-doctor-patient-detail',
-  imports: [DatePipe, RouterLink, CreateTreatmentForm],
+  imports: [DatePipe, RouterLink, CreateTreatmentForm, I18nPipe],
   template: `
     <div class="page">
-      <a class="back" routerLink="/doctor/patients">&larr; Back to patients</a>
-      <h1>Patient Detail</h1>
+      <a class="back" routerLink="/doctor/patients">&larr; {{ 'doctorDetail.backToPatients' | i18n }}</a>
+      <h1>{{ 'doctorDetail.patientDetail' | i18n }}</h1>
       <p class="mono subtitle">{{ patientId }}</p>
 
       @if (store.error()) {
@@ -18,34 +19,34 @@ import { CreateTreatmentForm } from '../create-treatment-form/create-treatment-f
       }
 
       @if (store.loading()) {
-        <p class="loading">Loading...</p>
+        <p class="loading">{{ 'doctorDetail.loading' | i18n }}</p>
       }
 
       @if (store.selectedPatientSummary(); as summary) {
         <div class="stats-grid">
           <div class="stat-card">
             <span class="stat-value">{{ summary.activeTreatments }}</span>
-            <span class="stat-label">Active Treatments</span>
+            <span class="stat-label">{{ 'doctorDetail.activeTreatments' | i18n }}</span>
           </div>
           <div class="stat-card">
             <span class="stat-value">{{ summary.totalTreatments }}</span>
-            <span class="stat-label">Total Treatments</span>
+            <span class="stat-label">{{ 'doctorDetail.totalTreatments' | i18n }}</span>
           </div>
           <div class="stat-card">
             <span class="stat-value">{{ summary.activeMedications }}</span>
-            <span class="stat-label">Active Medications</span>
+            <span class="stat-label">{{ 'doctorDetail.activeMedications' | i18n }}</span>
           </div>
           <div class="stat-card">
             <span class="stat-value">{{ summary.totalGlucoseRecords }}</span>
-            <span class="stat-label">Glucose Records</span>
+            <span class="stat-label">{{ 'doctorDetail.glucoseRecords' | i18n }}</span>
           </div>
         </div>
       }
 
       <div class="section-header">
-        <h2>Treatments</h2>
+        <h2>{{ 'doctorDetail.treatments' | i18n }}</h2>
         <button class="btn-primary" (click)="showTreatmentForm.set(!showTreatmentForm())">
-          {{ showTreatmentForm() ? 'Cancel' : '+ New Treatment' }}
+          {{ showTreatmentForm() ? ('doctorDetail.cancel' | i18n) : ('doctorDetail.newTreatment' | i18n) }}
         </button>
       </div>
 
@@ -57,7 +58,7 @@ import { CreateTreatmentForm } from '../create-treatment-form/create-treatment-f
         <div class="table-card">
           <table>
             <thead>
-              <tr><th>Name</th><th>Description</th><th>Start</th><th>End</th><th>Status</th></tr>
+              <tr><th>{{ 'doctorDetail.name' | i18n }}</th><th>{{ 'doctorDetail.description' | i18n }}</th><th>{{ 'doctorDetail.start' | i18n }}</th><th>{{ 'doctorDetail.end' | i18n }}</th><th>{{ 'doctorDetail.status' | i18n }}</th></tr>
             </thead>
             <tbody>
               @for (t of store.selectedPatientTreatments(); track t.id) {
@@ -74,12 +75,12 @@ import { CreateTreatmentForm } from '../create-treatment-form/create-treatment-f
         </div>
       }
 
-      <h2>Recent Glucose Records</h2>
+      <h2>{{ 'doctorDetail.recentGlucoseRecords' | i18n }}</h2>
       @if (store.selectedPatientGlucose().length > 0) {
         <div class="table-card">
           <table>
             <thead>
-              <tr><th>Value</th><th>Range</th><th>Severity</th><th>Measured At</th></tr>
+              <tr><th>{{ 'doctorDetail.value' | i18n }}</th><th>{{ 'doctorDetail.range' | i18n }}</th><th>{{ 'doctorDetail.severity' | i18n }}</th><th>{{ 'doctorDetail.measuredAt' | i18n }}</th></tr>
             </thead>
             <tbody>
               @for (g of store.selectedPatientGlucose(); track g.id) {
@@ -100,7 +101,7 @@ import { CreateTreatmentForm } from '../create-treatment-form/create-treatment-f
           </table>
         </div>
       } @else if (!store.loading()) {
-        <p class="empty">No glucose records</p>
+        <p class="empty">{{ 'doctorDetail.noGlucoseRecords' | i18n }}</p>
       }
     </div>
   `,

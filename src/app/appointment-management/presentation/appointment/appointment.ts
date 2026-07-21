@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 
 import { AppointmentService } from '../../application/appointment.service';
 import { AppointmentEntity } from '../../domain/model/appointment.entity';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-appointment',
-  imports: [FormsModule],
+  imports: [FormsModule, I18nPipe],
   templateUrl: './appointment.html',
   styleUrl: './appointment.css',
 })

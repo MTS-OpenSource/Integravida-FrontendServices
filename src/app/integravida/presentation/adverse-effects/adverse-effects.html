@@ -2,13 +2,13 @@
   <!-- Header -->
   <header class="med-header">
     <div>
-      <h2 class="med-title">Gestion de Medicacion</h2>
+      <h2 class="med-title">{{ 'medication.title' | i18n }}</h2>
     </div>
   </header>
 
   <!-- Loading / Error -->
   @if (loadingData() || adverseEffectService.loading()) {
-    <div class="feedback-loading"><span class="spinner"></span> Cargando...</div>
+    <div class="feedback-loading"><span class="spinner"></span> {{ 'medication.loading' | i18n }}</div>
   }
   @if (adverseEffectService.error()) {
     <div class="feedback-error">{{ adverseEffectService.error() }}</div>
@@ -38,7 +38,7 @@
     <!-- Medication Schedule -->
     @if (medications().length > 0) {
       <div class="schedule-header">
-        <h3 class="schedule-title">Medicamentos</h3>
+        <h3 class="schedule-title">{{ 'medication.medications' | i18n }}</h3>
       </div>
 
       <div class="med-timeline">
@@ -62,36 +62,36 @@
     <!-- Medication Intakes Section -->
     <div class="adverse-section">
       <div class="adverse-header">
-        <h3 class="adverse-title">Registro de Tomas</h3>
-        <button class="btn-add-adverse" (click)="showForm.set(true)">+ Nueva Toma</button>
+        <h3 class="adverse-title">{{ 'medication.intakeLog' | i18n }}</h3>
+        <button class="btn-add-adverse" (click)="showForm.set(true)">{{ 'medication.newIntake' | i18n }}</button>
       </div>
 
       <!-- Registration Form -->
       @if (showForm()) {
         <div class="adverse-form">
           <div class="form-row">
-            <label class="form-label">Medicamento
+            <label class="form-label">{{ 'medication.medicationLabel' | i18n }}
               <select class="form-input" [ngModel]="selectedMedicationId()" (ngModelChange)="selectedMedicationId.set($event)">
-                <option value="">Seleccionar medicamento...</option>
+                <option value="">{{ 'medication.selectMedication' | i18n }}</option>
                 @for (med of medications(); track med.id) {
                   <option [value]="med.id">{{ med.name }} - {{ med.dosage }}</option>
                 }
               </select>
             </label>
-            <label class="form-label">Fecha y hora
+            <label class="form-label">{{ 'medication.dateTime' | i18n }}
               <input class="form-input" type="datetime-local" [ngModel]="takenAt()" (ngModelChange)="takenAt.set($event)" />
             </label>
           </div>
-          <label class="form-label">Notas
-            <textarea class="form-textarea" [ngModel]="notes()" (ngModelChange)="notes.set($event)" placeholder="Ej: Tomada despues del desayuno" rows="3"></textarea>
+          <label class="form-label">{{ 'medication.notes' | i18n }}
+            <textarea class="form-textarea" [ngModel]="notes()" (ngModelChange)="notes.set($event)" [placeholder]="'medication.notesPlaceholder' | i18n" rows="3"></textarea>
           </label>
           @if (formError()) {
             <p class="form-error">{{ formError() }}</p>
           }
           <div class="form-actions">
-            <button class="btn-cancel-form" (click)="showForm.set(false)">Cancelar</button>
+            <button class="btn-cancel-form" (click)="showForm.set(false)">{{ 'medication.cancel' | i18n }}</button>
             <button class="btn-save" [disabled]="adverseEffectService.loading()" (click)="registerAdverseEffect()">
-              @if (adverseEffectService.loading()) { Guardando... } @else { Registrar toma }
+              @if (adverseEffectService.loading()) { {{ 'medication.saving' | i18n }} } @else { {{ 'medication.registerIntake' | i18n }} }
             </button>
           </div>
         </div>
@@ -113,7 +113,7 @@
             </div>
           </div>
         } @empty {
-          <div class="adverse-empty">No hay tomas registradas para este paciente.</div>
+          <div class="adverse-empty">{{ 'medication.noIntakes' | i18n }}</div>
         }
       </div>
     </div>

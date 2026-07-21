@@ -1,18 +1,24 @@
 .app-shell {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 260px 1fr;
   min-height: 100dvh;
   background: #f6f8fb;
   color: #172033;
 }
 
 .sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  width: 260px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.25rem;
   background: #ffffff;
   border-right: 1px solid #dfe5ef;
+  z-index: 10;
 }
 
 .brand {
@@ -64,6 +70,14 @@ nav a:hover,
   background: #fef3f2;
   color: #b42318;
   font-weight: 700;
+}
+
+.sidebar-actions .lang-toggle {
+  background: #f2f4f7;
+  color: #344054;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
 }
 
 .app-content {

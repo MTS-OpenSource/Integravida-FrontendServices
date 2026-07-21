@@ -5,13 +5,14 @@ import { RouterLink } from '@angular/router';
 import { Chart, registerables } from 'chart.js';
 import { DashboardService } from '../../application/dashboard.service';
 import { AuthStore } from '../../../account-management/application/auth.store';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule, RouterLink, I18nPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

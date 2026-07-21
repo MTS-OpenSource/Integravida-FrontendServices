@@ -9,10 +9,11 @@ import { TreatmentEntity } from '../../domain/model/treatment.entity';
 import { MedicationEntity } from '../../domain/model/medication.entity';
 import { AdverseEffectService } from '../../application/adverse-effect.service';
 import { CreateAdverseEffectPayload } from '../../infrastructure/adverse-effect.api';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-adverse-effects',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, I18nPipe],
   templateUrl: './adverse-effects.html',
   styleUrl: './adverse-effects.css',
 })

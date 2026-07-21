@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { AuthStore } from '../../../account-management/application/auth.store';
 import { ProfileService } from '../../application/profile.service';
 import { UpdateProfileRequest } from '../../infrastructure/profile.response';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-patient-profile',
-  imports: [FormsModule],
+  imports: [FormsModule, I18nPipe],
   templateUrl: './patient-profile.html',
   styleUrl: './patient-profile.css',
 })

@@ -3,7 +3,7 @@
   <header class="glucose-header">
     <div>
 
-      <h2 class="page-title">Registro de Glucosa</h2>
+      <h2 class="page-title">{{ 'glucoseLog.title' | i18n }}</h2>
       <p class="page-date">{{ currentDateLabel() }}</p>
     </div>
   </header>
@@ -19,8 +19,8 @@
               <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_chart</span>
             </div>
             <div>
-              <h3 class="form-card-title">Nueva Lectura de Glucosa</h3>
-              <p class="form-card-subtitle">Complete los detalles de su medición actual.</p>
+              <h3 class="form-card-title">{{ 'glucoseLog.newReading' | i18n }}</h3>
+              <p class="form-card-subtitle">{{ 'glucoseLog.completeDetails' | i18n }}</p>
             </div>
           </div>
         </div>
@@ -28,7 +28,7 @@
         <form class="form-body" (ngSubmit)="save()" #glucoseForm="ngForm">
           <!-- Glucose Level Input -->
           <div class="field-group">
-            <label class="field-label">Nivel de Glucosa</label>
+            <label class="field-label">{{ 'glucoseLog.glucoseLevel' | i18n }}</label>
             <div class="glucose-row">
               <div class="glucose-input-wrap">
                 <input
@@ -43,7 +43,7 @@
                 <span class="glucose-unit">mg/dL</span>
               </div>
               <div class="status-badge" [class.status-normal]="status() === 'Normal'" [class.status-low]="status() === 'Bajo'" [class.status-high]="status() === 'Alto'">
-                <span class="status-label">Estado</span>
+                <span class="status-label">{{ 'glucoseLog.status' | i18n }}</span>
                 <span class="status-value">{{ status() ?? '—' }}</span>
               </div>
             </div>
@@ -51,7 +51,7 @@
             <div class="range-indicator">
               <div class="range-item range-low">
                 <span class="range-dot dot-low"></span>
-                <span>Bajo &lt;{{ glucoseService.range().min }}</span>
+                <span>{{ 'glucoseLog.low' | i18n }} &lt;{{ glucoseService.range().min }}</span>
               </div>
               <div class="range-item range-normal">
                 <span class="range-dot dot-normal"></span>
@@ -59,14 +59,14 @@
               </div>
               <div class="range-item range-high">
                 <span class="range-dot dot-high"></span>
-                <span>Alto &gt;{{ glucoseService.range().max }}</span>
+                <span>{{ 'glucoseLog.high' | i18n }} &gt;{{ glucoseService.range().max }}</span>
               </div>
             </div>
           </div>
 
           <!-- Date & Time -->
           <div class="field-group">
-            <label class="field-label">Fecha y Hora</label>
+            <label class="field-label">{{ 'glucoseLog.dateTime' | i18n }}</label>
             <div class="datetime-row">
               <div class="datetime-input-wrap">
                 <span class="material-symbols-outlined datetime-icon">calendar_today</span>
@@ -103,15 +103,15 @@
               } @else {
                 <span class="material-symbols-outlined">save</span>
               }
-              Guardar Registro
+              {{ 'glucoseLog.saveReading' | i18n }}
             </button>
-            <button class="btn-cancel" type="button" (click)="resetForm()">Cancelar</button>
+            <button class="btn-cancel" type="button" (click)="resetForm()">{{ 'glucoseLog.cancel' | i18n }}</button>
           </div>
 
           <!-- Loading / Error feedback -->
           @if (glucoseService.loading()) {
             <div class="feedback-info">
-              <span class="spinner-sm"></span> Guardando lectura...
+              <span class="spinner-sm"></span> {{ 'glucoseLog.savingReading' | i18n }}
             </div>
           }
           @if (glucoseService.error()) {
@@ -126,7 +126,7 @@
         <div class="health-tip">
           <span class="material-symbols-outlined tip-icon">lightbulb</span>
           <p class="tip-text">
-            <span class="tip-bold">Consejo de salud:</span> Registrar tu glucosa consistentemente nos ayuda a detectar patrones y ajustar tu tratamiento de manera más precisa para tu bienestar.
+            <span class="tip-bold">{{ 'glucoseLog.healthTip' | i18n }}</span> {{ 'glucoseLog.healthTipText' | i18n }}
           </p>
         </div>
       </section>

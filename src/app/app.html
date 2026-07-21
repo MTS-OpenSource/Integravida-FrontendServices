@@ -20,41 +20,44 @@
     <nav aria-label="Primary navigation">
       @if (authStore.isAuthenticated()) {
 
-      <p class="nav-label">General</p>
-      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()">Dashboard</a>
+      <p class="nav-label">{{ 'nav.general' | i18n }}</p>
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.dashboard' | i18n }}</a>
 
       @if (authStore.currentUser()?.isPatient) {
-      <p class="nav-label">Glucose Monitoring</p>
-      <a routerLink="/glucose-log" routerLinkActive="active" (click)="closeSidebar()">Registrar glucosa</a>
-      <a routerLink="/health-history" routerLinkActive="active" (click)="closeSidebar()">Historial clinico</a>
-      <a routerLink="/alerts" routerLinkActive="active" (click)="closeSidebar()">Alertas</a>
-      <a routerLink="/adverse-effects" routerLinkActive="active" (click)="closeSidebar()">Gestion de Medicacion</a>
-      <p class="nav-label">Patient</p>
-      <a routerLink="/patient-profile" routerLinkActive="active" (click)="closeSidebar()">Patient Profile</a>
+      <p class="nav-label">{{ 'nav.glucoseMonitoring' | i18n }}</p>
+      <a routerLink="/glucose-log" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.logGlucose' | i18n }}</a>
+      <a routerLink="/health-history" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.healthHistory' | i18n }}</a>
+      <a routerLink="/alerts" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.alerts' | i18n }}</a>
+      <a routerLink="/adverse-effects" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.medicationManagement' | i18n }}</a>
+      <p class="nav-label">{{ 'nav.patient' | i18n }}</p>
+      <a routerLink="/patient-profile" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.patientProfile' | i18n }}</a>
       }
 
       @if (authStore.currentUser()?.isDoctor) {
-      <p class="nav-label">Doctor</p>
-      <a routerLink="/doctor/patients" routerLinkActive="active" (click)="closeSidebar()">My Patients</a>
+      <p class="nav-label">{{ 'nav.doctor' | i18n }}</p>
+      <a routerLink="/doctor/patients" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.myPatients' | i18n }}</a>
       }
 
       @if (authStore.currentUser()?.isAdmin) {
-      <p class="nav-label">Administration</p>
-      <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeSidebar()">Admin Dashboard</a>
-      <a routerLink="/admin/users" routerLinkActive="active" (click)="closeSidebar()">User Management</a>
-      <a routerLink="/admin/assignments" routerLinkActive="active" (click)="closeSidebar()">Assignments</a>
+      <p class="nav-label">{{ 'nav.administration' | i18n }}</p>
+      <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.adminDashboard' | i18n }}</a>
+      <a routerLink="/admin/users" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.userManagement' | i18n }}</a>
+      <a routerLink="/admin/assignments" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.assignments' | i18n }}</a>
       }
 
-      <p class="nav-label">Scheduling</p>
-      <a routerLink="/appointments" routerLinkActive="active" (click)="closeSidebar()">Appointments</a>
+      <p class="nav-label">{{ 'nav.scheduling' | i18n }}</p>
+      <a routerLink="/appointments" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.appointments' | i18n }}</a>
       }
     </nav>
 
     <div class="sidebar-actions">
+      <button type="button" class="lang-toggle" (click)="i18n.toggleLang()">
+        {{ i18n.currentLang() === 'es' ? 'EN' : 'ES' }}
+      </button>
       @if (authStore.isAuthenticated()) {
-      <button type="button" (click)="signOut()">Sign out</button>
+      <button type="button" (click)="signOut()">{{ 'nav.signOut' | i18n }}</button>
       } @else {
-      <a routerLink="/login" routerLinkActive="active" (click)="closeSidebar()">Login</a>
+      <a routerLink="/login" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.login' | i18n }}</a>
       }
     </div>
   </aside>

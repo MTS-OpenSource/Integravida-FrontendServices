@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 
 import { AuthStore } from '../../../account-management/application/auth.store';
 import { AlertService, AlertTab } from '../../application/alert.service';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-alerts',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, I18nPipe],
   templateUrl: './alerts.html',
   styleUrl: './alerts.css',
 })

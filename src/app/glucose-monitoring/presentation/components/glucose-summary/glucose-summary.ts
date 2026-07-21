@@ -1,11 +1,12 @@
 import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GlucoseRecordEntity } from '../../../domain/model/glucose-record.entity';
+import { I18nPipe } from '../../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-glucose-summary',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, I18nPipe],
   templateUrl: './glucose-summary.html',
   styleUrl: './glucose-summary.css',
 })

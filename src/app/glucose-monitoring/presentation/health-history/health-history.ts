@@ -6,10 +6,11 @@ import { GlucoseService } from '../../application/glucose.service';
 import { AuthStore } from '../../../account-management/application/auth.store';
 import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
 import { HistoryChartComponent } from '../../../medical-followup/presentation/components/history-chart/history-chart.component';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-health-history',
-  imports: [FormsModule, RouterLink, HistoryChartComponent, DatePipe],
+  imports: [FormsModule, RouterLink, HistoryChartComponent, DatePipe, I18nPipe],
   templateUrl: './health-history.html',
   styleUrl: './health-history.css',
 })

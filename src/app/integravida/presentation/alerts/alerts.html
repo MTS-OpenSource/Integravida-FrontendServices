@@ -2,8 +2,8 @@
   <!-- Header -->
   <header class="alerts-header">
     <div class="header-info">
-      <h2 class="header-title">Alertas y Notificaciones</h2>
-      <p class="header-subtitle">Supervise y gestione sus notificaciones de salud críticas, recordatorios de medicación y actualizaciones del sistema en tiempo real.</p>
+      <h2 class="header-title">{{ 'alerts.title' | i18n }}</h2>
+      <p class="header-subtitle">{{ 'alerts.subtitle' | i18n }}</p>
     </div>
   </header>
 
@@ -11,7 +11,7 @@
   @if (alertService.loading()) {
     <div class="loading-overlay">
       <span class="spinner"></span>
-      <p>Cargando alertas...</p>
+      <p>{{ 'alerts.loading' | i18n }}</p>
     </div>
   }
 
@@ -32,21 +32,21 @@
         [class.active]="selectedTab() === 'Todas'"
         (click)="setTab('Todas')"
       >
-        Todas
+        {{ 'alerts.all' | i18n }}
       </button>
       <button
         class="filter-btn"
         [class.active]="selectedTab() === 'Activas'"
         (click)="setTab('Activas')"
       >
-        Activas
+        {{ 'alerts.active' | i18n }}
       </button>
       <button
         class="filter-btn"
         [class.active]="selectedTab() === 'Resueltas'"
         (click)="setTab('Resueltas')"
       >
-        Resueltas
+        {{ 'alerts.resolved' | i18n }}
       </button>
     </div>
     <div class="mark-all-row">
@@ -56,7 +56,7 @@
         class="btn-mark-all"
         (click)="alertService.markAllAsRead()"
       >
-        Marcar todas como leídas
+        {{ 'alerts.markAllRead' | i18n }}
       </button>
     </div>
   </div>
@@ -65,15 +65,15 @@
   <div class="stats-bar">
     <div class="stat-chip">
       <span class="stat-dot dot-muted"></span>
-      <span class="stat-label">{{ alertService.alerts().length }} Total</span>
+      <span class="stat-label">{{ alertService.alerts().length }} {{ 'alerts.total' | i18n }}</span>
     </div>
     <div class="stat-chip chip-error">
       <span class="stat-dot dot-error"></span>
-      <span class="stat-label">{{ alertService.activeAlerts().length }} Activas</span>
+      <span class="stat-label">{{ alertService.activeAlerts().length }} {{ 'alerts.active' | i18n }}</span>
     </div>
     <div class="stat-chip chip-primary">
       <span class="stat-dot dot-primary"></span>
-      <span class="stat-label">{{ alertService.resolvedAlerts().length }} Resueltas</span>
+      <span class="stat-label">{{ alertService.resolvedAlerts().length }} {{ 'alerts.resolved' | i18n }}</span>
     </div>
   </div>
 
@@ -87,7 +87,7 @@
           <div class="section-title-row">
             <h3 class="section-title">
               <span class="material-symbols-outlined icon-error">priority_high</span>
-              Alertas Activas
+              {{ 'alerts.activeAlerts' | i18n }}
             </h3>
           </div>
           <div class="alerts-cards">
@@ -112,20 +112,20 @@
                   </div>
                   <div class="card-content">
                     <div class="card-header-row">
-                      <h4 class="card-title">{{ alert.title ?? alert.type ?? 'Alerta' }}</h4>
+                      <h4 class="card-title">{{ alert.title ?? alert.type ?? ('alerts.activeAlerts' | i18n) }}</h4>
                       <span class="severity-pill" [class.pill-critical]="alert.severity === 'critical' || alert.severity === 'Critical'" [class.pill-warning]="alert.severity === 'warning' || alert.severity === 'Warning' || alert.severity === 'medium'">
-                        {{ alert.severity === 'critical' || alert.severity === 'Critical' ? 'Crítica' : alert.severity === 'warning' || alert.severity === 'Warning' ? 'Advertencia' : alert.severity === 'medium' ? 'Media' : 'Info' }}
+                        {{ alert.severity === 'critical' || alert.severity === 'Critical' ? ('alerts.severityCritical' | i18n) : alert.severity === 'warning' || alert.severity === 'Warning' ? ('alerts.severityWarning' | i18n) : alert.severity === 'medium' ? ('alerts.severityMedium' | i18n) : ('alerts.severityInfo' | i18n) }}
                       </span>
-                      <span class="status-pill status-active">Activa</span>
+                      <span class="status-pill status-active">{{ 'alerts.statusActive' | i18n }}</span>
                     </div>
                     <p class="card-desc">
                       @if (alert.glucoseValue) {
-                        Su lectura actual es de <strong [class.text-error]="alert.severity === 'critical' || alert.severity === 'Critical'" [class.text-warning]="alert.severity === 'warning' || alert.severity === 'Warning'">{{ alert.glucoseValue }} mg/dL</strong>.
+                        {{ 'alerts.currentReadingIs' | i18n }} <strong [class.text-error]="alert.severity === 'critical' || alert.severity === 'Critical'" [class.text-warning]="alert.severity === 'warning' || alert.severity === 'Warning'">{{ alert.glucoseValue }} mg/dL</strong>.
                         @if (alert.desc) { {{ alert.desc }} }
                       } @else if (alert.desc) {
                         {{ alert.desc }}
                       } @else {
-                        Alerta registrada requiere atención.
+                        {{ 'alerts.requiresAttention' | i18n }}
                       }
                     </p>
                     <div class="card-time">
@@ -134,15 +134,15 @@
                     </div>
                   </div>
                   <div class="card-actions">
-                    <button class="btn-detail" (click)="alertService.markAsRead(alert)">Marcar como visto</button>
+                    <button class="btn-detail" (click)="alertService.markAsRead(alert)">{{ 'alerts.markAsSeen' | i18n }}</button>
                   </div>
                 </div>
               </article>
             } @empty {
               <div class="empty-state">
                 <span class="material-symbols-outlined empty-icon">check_circle</span>
-                <h4>Todo en orden</h4>
-                <p>No hay alertas activas en esta categoría.</p>
+                <h4>{{ 'alerts.allClear' | i18n }}</h4>
+                <p>{{ 'alerts.noActiveAlerts' | i18n }}</p>
               </div>
             }
           </div>
@@ -155,7 +155,7 @@
           <div class="section-title-row">
             <h3 class="section-title">
               <span class="material-symbols-outlined icon-primary">check_circle</span>
-              Alertas Resueltas
+              {{ 'alerts.resolvedAlerts' | i18n }}
             </h3>
           </div>
           <div class="resolved-list">
@@ -167,16 +167,16 @@
                   </div>
                 </div>
                 <div class="resolved-content">
-                  <h4 class="resolved-title">{{ alert.title ?? alert.type ?? 'Alerta' }}</h4>
-                  <p class="resolved-desc">{{ alert.desc ?? (alert.glucoseValue ? 'Niveles estabilizados a ' + alert.glucoseValue + ' mg/dL' : 'Resuelta') }}</p>
+                  <h4 class="resolved-title">{{ alert.title ?? alert.type ?? ('alerts.activeAlerts' | i18n) }}</h4>
+                  <p class="resolved-desc">{{ alert.desc ?? (alert.glucoseValue ? ('alerts.levelsStabilized' | i18n) + ' ' + alert.glucoseValue + ' mg/dL' : ('alerts.resolvedLower' | i18n)) }}</p>
                 </div>
                 <span class="resolved-time">{{ alert.createdAt | date:'short' }}</span>
               </div>
             } @empty {
               <div class="empty-state">
                 <span class="material-symbols-outlined empty-icon">check_circle</span>
-                <h4>Sin alertas resueltas</h4>
-                <p>No hay alertas resueltas en esta categoría.</p>
+                <h4>{{ 'alerts.noResolvedAlerts' | i18n }}</h4>
+                <p>{{ 'alerts.noResolvedInCategory' | i18n }}</p>
               </div>
             }
           </div>

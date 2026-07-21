@@ -1,11 +1,11 @@
 <div class="table-container">
   <div class="table-header">
     <div class="title-group">
-      <h2>Registros</h2>
-      <span class="count">{{ records().length }} encontrados</span>
+      <h2>{{ 'glucoseTable.records' | i18n }}</h2>
+      <span class="count">{{ records().length }} {{ 'glucoseTable.found' | i18n }}</span>
     </div>
     <div class="actions">
-      <button class="btn-export">Exportar CSV</button>
+      <button class="btn-export">{{ 'glucoseTable.exportCsv' | i18n }}</button>
     </div>
   </div>
 
@@ -13,11 +13,11 @@
     <table>
       <thead>
       <tr>
-        <th>Fecha</th>
-        <th>Hora</th>
-        <th>Valor</th>
-        <th>Estado</th>
-        <th>Acciones</th> </tr>
+        <th>{{ 'glucoseTable.date' | i18n }}</th>
+        <th>{{ 'glucoseTable.time' | i18n }}</th>
+        <th>{{ 'glucoseTable.value' | i18n }}</th>
+        <th>{{ 'glucoseTable.status' | i18n }}</th>
+        <th>{{ 'glucoseTable.actions' | i18n }}</th> </tr>
       </thead>
       <tbody>
         @for (record of records(); track record.id) {
@@ -32,10 +32,10 @@
             </td>
             <td>
               <div class="action-buttons">
-                <button class="btn-icon edit" (click)="openEditModal(record)" title="Editar">
+                <button class="btn-icon edit" (click)="openEditModal(record)" [title]="'glucoseTable.edit' | i18n">
                   ✏️
                 </button>
-                <button class="btn-icon delete" (click)="openDeleteModal(record.id)" title="Eliminar">
+                <button class="btn-icon delete" (click)="openDeleteModal(record.id)" [title]="'glucoseTable.delete' | i18n">
                   🗑️
                 </button>
               </div>
@@ -44,7 +44,7 @@
         } @empty {
           <tr>
             <td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">
-              No se encontraron registros de glucosa.
+              {{ 'glucoseTable.noRecords' | i18n }}
             </td>
           </tr>
         }
@@ -56,13 +56,13 @@
 <div class="modal-overlay" *ngIf="isEditModalOpen()">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>Editar Registro</h3>
+      <h3>{{ 'glucoseTable.editRecord' | i18n }}</h3>
       <button class="close-btn" (click)="closeEditModal()">×</button>
     </div>
 
     <div class="modal-body form-grid">
       <div class="form-group">
-        <label>Nivel de Glucosa (mg/dL)</label>
+        <label>{{ 'glucoseTable.glucoseLevel' | i18n }}</label>
         <input
           type="number"
           [ngModel]="editGlucoseValue()"
@@ -72,7 +72,7 @@
       </div>
 
       <div class="form-group">
-        <label>Fecha y Hora</label>
+        <label>{{ 'glucoseTable.dateTime' | i18n }}</label>
         <input
           type="datetime-local"
           [ngModel]="editDateValue()"
@@ -82,7 +82,7 @@
       </div>
 
       <div class="form-group full-width">
-        <label>Notas Clínicas</label>
+        <label>{{ 'glucoseTable.clinicalNotes' | i18n }}</label>
         <textarea
           [ngModel]="editNotesValue()"
           (ngModelChange)="editNotesValue.set($event)"
@@ -93,8 +93,8 @@
     </div>
 
     <div class="modal-footer">
-      <button class="btn-secondary" (click)="closeEditModal()">Cancelar</button>
-      <button class="btn-primary" (click)="confirmEdit()">Guardar Cambios</button>
+      <button class="btn-secondary" (click)="closeEditModal()">{{ 'glucoseTable.cancel' | i18n }}</button>
+      <button class="btn-primary" (click)="confirmEdit()">{{ 'glucoseTable.saveChanges' | i18n }}</button>
     </div>
   </div>
 </div>
@@ -102,19 +102,19 @@
 <div class="modal-overlay" *ngIf="isDeleteModalOpen()">
   <div class="modal-content delete-modal">
     <div class="modal-header warning-header">
-      <h3>Confirmar Eliminación</h3>
+      <h3>{{ 'glucoseTable.confirmDeletion' | i18n }}</h3>
       <button class="close-btn" (click)="closeDeleteModal()">×</button>
     </div>
 
     <div class="modal-body text-center">
       <div class="warning-icon">⚠️</div>
-      <p>¿Estás seguro de que deseas eliminar este registro de forma permanente?</p>
-      <span class="sub-text">Esta acción no se puede deshacer y afectará a las estadísticas TIR.</span>
+      <p>{{ 'glucoseTable.deleteConfirmText' | i18n }}</p>
+      <span class="sub-text">{{ 'glucoseTable.deleteWarning' | i18n }}</span>
     </div>
 
     <div class="modal-footer split">
-      <button class="btn-secondary full" (click)="closeDeleteModal()">Cancelar</button>
-      <button class="btn-danger full" (click)="confirmDelete()">Sí, Eliminar</button>
+      <button class="btn-secondary full" (click)="closeDeleteModal()">{{ 'glucoseTable.cancel' | i18n }}</button>
+      <button class="btn-danger full" (click)="confirmDelete()">{{ 'glucoseTable.yesDelete' | i18n }}</button>
     </div>
   </div>
 </div>

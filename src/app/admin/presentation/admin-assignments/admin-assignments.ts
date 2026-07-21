@@ -2,18 +2,19 @@ import { Component, inject, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminStore } from '../../application/admin.store';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-admin-assignments',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, I18nPipe],
   template: `
     <div class="page">
       <div class="header">
         <div>
-          <h1>Doctor-Patient Assignments</h1>
-          <p class="subtitle">Link doctors to patients</p>
+          <h1>{{ 'adminAssignments.title' | i18n }}</h1>
+          <p class="subtitle">{{ 'adminAssignments.subtitle' | i18n }}</p>
         </div>
-        <button class="btn-primary" (click)="showForm = !showForm">{{ showForm ? 'Cancel' : '+ New Assignment' }}</button>
+        <button class="btn-primary" (click)="showForm = !showForm">{{ showForm ? ('adminAssignments.cancel' | i18n) : ('adminAssignments.newAssignment' | i18n) }}</button>
       </div>
 
       @if (store.error()) {
@@ -22,21 +23,21 @@ import { AdminStore } from '../../application/admin.store';
 
       @if (showForm) {
         <div class="card">
-          <h3>Create Assignment</h3>
+          <h3>{{ 'adminAssignments.createAssignment' | i18n }}</h3>
           <div class="form-grid">
             <div class="field">
-              <label>Doctor</label>
+              <label>{{ 'adminAssignments.doctor' | i18n }}</label>
               <select [(ngModel)]="selectedDoctorId">
-                <option value="">Select doctor...</option>
+                <option value="">{{ 'adminAssignments.selectDoctor' | i18n }}</option>
                 @for (doctor of store.doctors(); track doctor.id) {
                   <option [value]="doctor.id">{{ doctor.doctorRecordNumber }} ({{ doctor.id }})</option>
                 }
               </select>
             </div>
             <div class="field">
-              <label>Patient</label>
+              <label>{{ 'adminAssignments.patient' | i18n }}</label>
               <select [(ngModel)]="selectedPatientId">
-                <option value="">Select patient...</option>
+                <option value="">{{ 'adminAssignments.selectPatient' | i18n }}</option>
                 @for (patient of store.patients(); track patient.id) {
                   <option [value]="patient.id">{{ patient.medicalRecordNumber }} ({{ patient.id }})</option>
                 }
@@ -44,21 +45,21 @@ import { AdminStore } from '../../application/admin.store';
             </div>
           </div>
           <div class="form-actions">
-            <button class="btn-primary" (click)="createAssignment()" [disabled]="store.loading()">Save</button>
-            <button class="btn-secondary" (click)="showForm = false">Cancel</button>
+            <button class="btn-primary" (click)="createAssignment()" [disabled]="store.loading()">{{ 'adminAssignments.save' | i18n }}</button>
+            <button class="btn-secondary" (click)="showForm = false">{{ 'adminAssignments.cancel' | i18n }}</button>
           </div>
         </div>
       }
 
       @if (store.loading() && store.assignments().length === 0) {
-        <p class="loading">Loading assignments...</p>
+        <p class="loading">{{ 'adminAssignments.loading' | i18n }}</p>
       }
 
       @if (store.assignments().length > 0) {
         <div class="table-card">
           <table>
             <thead>
-              <tr><th>Patient ID</th><th>Doctor ID</th><th>Assigned At</th><th>Actions</th></tr>
+              <tr><th>{{ 'adminAssignments.patientId' | i18n }}</th><th>{{ 'adminAssignments.doctorId' | i18n }}</th><th>{{ 'adminAssignments.assignedAt' | i18n }}</th><th>{{ 'adminAssignments.actions' | i18n }}</th></tr>
             </thead>
             <tbody>
               @for (a of store.assignments(); track a.id) {
@@ -67,7 +68,7 @@ import { AdminStore } from '../../application/admin.store';
                   <td class="mono">{{ a.doctorId }}</td>
                   <td>{{ a.assignedAt | date:'medium' }}</td>
                   <td>
-                    <button class="btn-danger-sm" (click)="store.deleteAssignment(a.id)" [disabled]="store.loading()">Remove</button>
+                    <button class="btn-danger-sm" (click)="store.deleteAssignment(a.id)" [disabled]="store.loading()">{{ 'adminAssignments.remove' | i18n }}</button>
                   </td>
                 </tr>
               }
@@ -75,7 +76,7 @@ import { AdminStore } from '../../application/admin.store';
           </table>
         </div>
       } @else if (!store.loading()) {
-        <p class="empty">No assignments yet</p>
+        <p class="empty">{{ 'adminAssignments.noAssignments' | i18n }}</p>
       }
     </div>
   `,
