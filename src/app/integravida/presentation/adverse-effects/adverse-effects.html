@@ -2,19 +2,10 @@
   <!-- Header -->
   <header class="med-header">
     <div>
-      <h2 class="med-title">Gesti&oacute;n de Medicaci&oacute;n</h2>
+      <h2 class="med-title">Gestion de Medicacion</h2>
       <div class="patient-row">
         <span class="badge-authenticated">Paciente autenticado</span>
       </div>
-    </div>
-    <div class="med-header-actions">
-      <div class="week-badge">
-        <span class="material-symbols-outlined">calendar_today</span>
-        Esta Semana
-      </div>
-      <button class="btn-icon"><span class="material-symbols-outlined">search</span></button>
-      <button class="btn-primary-sm">Log Reading</button>
-      <div class="avatar"><span class="material-symbols-outlined">person</span></div>
     </div>
   </header>
 
@@ -26,133 +17,107 @@
     <div class="feedback-error">{{ adverseEffectService.error() }}</div>
   }
 
-  <!-- Main Grid -->
-  <div class="med-grid">
-    <!-- Left Column -->
-    <div class="med-left">
-      <!-- Treatment Card -->
-      @if (treatment(); as t) {
-        <div class="card treatment-card">
-          <div class="treatment-header">
-            <h3 class="treatment-name">{{ t.name }}</h3>
-            <span class="status-pill">{{ t.status }}</span>
-          </div>
-          @if (t.description) {
-            <p class="treatment-desc">{{ t.description }}</p>
-          }
-          <div class="treatment-dates">
-            <span>Inicio: {{ t.startDate | date:'d MMM, y' }}</span>
-            @if (t.endDate) {
-              <span>Fin: {{ t.endDate | date:'d MMM, y' }}</span>
-            }
-          </div>
+  <!-- Main Content -->
+  <div class="med-content">
+    <!-- Treatment Card -->
+    @if (treatment(); as t) {
+      <div class="card treatment-card">
+        <div class="treatment-header">
+          <h3 class="treatment-name">{{ t.name }}</h3>
+          <span class="status-pill">{{ t.status }}</span>
         </div>
-      }
-
-      <!-- Medication Schedule -->
-      @if (medications().length > 0) {
-        <div class="schedule-header">
-          <div class="schedule-header-left">
-            <h3 class="schedule-title">Medicamentos</h3>
-          </div>
-        </div>
-
-        <div class="med-timeline">
-          @for (med of medications(); track med.id) {
-            <div class="med-card" [class.med-card-active]="med.active">
-              <div class="med-bar med-bar-primary"></div>
-              <div class="med-info">
-                <h4 class="med-name">{{ med.name }}</h4>
-                <p class="med-dose">{{ med.dosage }}</p>
-                <p class="med-instruction">{{ med.instructions }}</p>
-                <div class="med-schedule-detail">
-                  <span class="med-days">{{ med.daysOfWeek.join(', ') }}</span>
-                  <span class="med-times">{{ med.doseTimes.join(' - ') }}</span>
-                </div>
-                <span class="med-id-ref">ID: {{ med.id }}</span>
-              </div>
-            </div>
-          }
-        </div>
-      }
-
-      <!-- Medication Intakes Section -->
-      <div class="adverse-section">
-        <div class="adverse-header">
-          <h3 class="adverse-title">Registro de Tomas</h3>
-          <span class="material-symbols-outlined adverse-icon">medication</span>
-          <button class="btn-add-adverse" (click)="showForm.set(true)">+ Nueva Toma</button>
-        </div>
-
-        <!-- Registration Form -->
-        @if (showForm()) {
-          <div class="adverse-form">
-            <div class="form-row">
-              <label class="form-label">Medication ID
-                <input class="form-input" type="text" [ngModel]="medicationId()" (ngModelChange)="medicationId.set($event)" placeholder="Ej: 493e0207-..." />
-              </label>
-              <label class="form-label">Fecha y hora
-                <input class="form-input" type="datetime-local" [ngModel]="takenAt()" (ngModelChange)="takenAt.set($event)" />
-              </label>
-            </div>
-            <label class="form-label">Notas
-              <textarea class="form-textarea" [ngModel]="notes()" (ngModelChange)="notes.set($event)" placeholder="Ej: Tomada despu&eacute;s del desayuno" rows="3"></textarea>
-            </label>
-            @if (formError()) {
-              <p class="form-error">{{ formError() }}</p>
-            }
-            <div class="form-actions">
-              <button class="btn-cancel-form" (click)="showForm.set(false)">Cancelar</button>
-              <button class="btn-save" [disabled]="adverseEffectService.loading()" (click)="registerAdverseEffect()">
-                @if (adverseEffectService.loading()) { Guardando... } @else { Registrar toma }
-              </button>
-            </div>
-          </div>
+        @if (t.description) {
+          <p class="treatment-desc">{{ t.description }}</p>
         }
-
-        <!-- Medication Intakes List -->
-        <div class="adverse-list">
-          @for (effect of adverseEffectService.adverseEffects(); track effect.id) {
-            <div class="adverse-card">
-              <div class="adverse-bar"></div>
-              <div class="adverse-body">
-                <div class="adverse-body-header">
-                  <h4 class="adverse-med-name">Medication ID: {{ effect.medicationId }}</h4>
-                  <span class="adverse-date">{{ effect.takenAt | date:'d MMM, y HH:mm' }}</span>
-                </div>
-                @if (effect.notes) {
-                  <p class="adverse-desc">&ldquo;{{ effect.notes }}&rdquo;</p>
-                }
-              </div>
-            </div>
-          } @empty {
-            <div class="adverse-empty">No hay tomas registradas para este paciente.</div>
+        <div class="treatment-dates">
+          <span>Inicio: {{ t.startDate | date:'d MMM, y' }}</span>
+          @if (t.endDate) {
+            <span>Fin: {{ t.endDate | date:'d MMM, y' }}</span>
           }
         </div>
       </div>
-    </div>
+    }
 
-    <!-- Right Column -->
-    <div class="med-right">
-      <!-- Adherence Widget -->
-      <div class="widget widget-adherence">
-        <div class="widget-header">
-          <div>
-            <h3 class="widget-title">Adherencia Semanal</h3>
-            <p class="widget-target">Objetivo: 95%</p>
-          </div>
-          <span class="material-symbols-outlined widget-icon">analytics</span>
-        </div>
-        <div class="widget-chart">
-          <div class="circular-progress">
-            <div class="circular-label">
-              <span class="circular-value">--%</span>
-              <span class="circular-status">Sin datos</span>
+    <!-- Medication Schedule -->
+    @if (medications().length > 0) {
+      <div class="schedule-header">
+        <h3 class="schedule-title">Medicamentos</h3>
+      </div>
+
+      <div class="med-timeline">
+        @for (med of medications(); track med.id) {
+          <div class="med-card" [class.med-card-active]="med.active">
+            <div class="med-bar med-bar-primary"></div>
+            <div class="med-info">
+              <h4 class="med-name">{{ med.name }}</h4>
+              <p class="med-dose">{{ med.dosage }}</p>
+              <p class="med-instruction">{{ med.instructions }}</p>
+              <div class="med-schedule-detail">
+                <span class="med-days">{{ med.daysOfWeek.join(', ') }}</span>
+                <span class="med-times">{{ med.doseTimes.join(' - ') }}</span>
+              </div>
             </div>
           </div>
+        }
+      </div>
+    }
+
+    <!-- Medication Intakes Section -->
+    <div class="adverse-section">
+      <div class="adverse-header">
+        <h3 class="adverse-title">Registro de Tomas</h3>
+        <button class="btn-add-adverse" (click)="showForm.set(true)">+ Nueva Toma</button>
+      </div>
+
+      <!-- Registration Form -->
+      @if (showForm()) {
+        <div class="adverse-form">
+          <div class="form-row">
+            <label class="form-label">Medicamento
+              <select class="form-input" [ngModel]="selectedMedicationId()" (ngModelChange)="selectedMedicationId.set($event)">
+                <option value="">Seleccionar medicamento...</option>
+                @for (med of medications(); track med.id) {
+                  <option [value]="med.id">{{ med.name }} - {{ med.dosage }}</option>
+                }
+              </select>
+            </label>
+            <label class="form-label">Fecha y hora
+              <input class="form-input" type="datetime-local" [ngModel]="takenAt()" (ngModelChange)="takenAt.set($event)" />
+            </label>
+          </div>
+          <label class="form-label">Notas
+            <textarea class="form-textarea" [ngModel]="notes()" (ngModelChange)="notes.set($event)" placeholder="Ej: Tomada despues del desayuno" rows="3"></textarea>
+          </label>
+          @if (formError()) {
+            <p class="form-error">{{ formError() }}</p>
+          }
+          <div class="form-actions">
+            <button class="btn-cancel-form" (click)="showForm.set(false)">Cancelar</button>
+            <button class="btn-save" [disabled]="adverseEffectService.loading()" (click)="registerAdverseEffect()">
+              @if (adverseEffectService.loading()) { Guardando... } @else { Registrar toma }
+            </button>
+          </div>
         </div>
-        <p class="widget-summary">Datos de adherencia no disponibles.</p>
-        <button class="btn-export">Exportar Informe de Adherencia</button>
+      }
+
+      <!-- Medication Intakes List -->
+      <div class="adverse-list">
+        @for (effect of adverseEffectService.adverseEffects(); track effect.id) {
+          <div class="adverse-card">
+            <div class="adverse-bar"></div>
+            <div class="adverse-body">
+              <div class="adverse-body-header">
+                <h4 class="adverse-med-name">{{ getMedicationName(effect.medicationId) }}</h4>
+                <span class="adverse-date">{{ effect.takenAt | date:'d MMM, y HH:mm' }}</span>
+              </div>
+              @if (effect.notes) {
+                <p class="adverse-desc">&ldquo;{{ effect.notes }}&rdquo;</p>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="adverse-empty">No hay tomas registradas para este paciente.</div>
+        }
       </div>
     </div>
   </div>

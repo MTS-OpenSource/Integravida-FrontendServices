@@ -1,11 +1,8 @@
 <section class="health-history">
   <header class="page-header">
     <div>
-      <h1>Historial clínico</h1>
-      <p>
-        Consulta los eventos de salud registrados del paciente.
-        Actualmente se muestran lecturas de glucosa.
-      </p>
+      <h1>Historial clinico</h1>
+      <p>Tus lecturas de glucosa registradas.</p>
     </div>
   </header>
 
@@ -13,16 +10,6 @@
 
   <section class="filters-card">
     <div class="filters">
-      <label>
-        <span>Patient UUID</span>
-        <input
-          type="text"
-          [ngModel]="patientId()"
-          (ngModelChange)="patientId.set($event)"
-          placeholder="62a9e0f6-00e9-46bd-9ee8-f53b64a96030"
-        />
-      </label>
-
       <label>
         <span>Desde</span>
         <input
@@ -43,10 +30,6 @@
     </div>
 
     <div class="buttons">
-      <button type="button" class="primary" (click)="loadRecords()">
-        Cargar
-      </button>
-
       <button type="button" (click)="filterByDateRange()">
         Filtrar
       </button>
@@ -56,11 +39,11 @@
       </button>
 
       <button type="button" (click)="filterLast7Days()">
-        Últimos 7 días
+        7 dias
       </button>
 
       <button type="button" (click)="filterLastMonth()">
-        Último Mes
+        1 Mes
       </button>
 
       <button type="button" (click)="filterLast3Months()">
@@ -89,6 +72,7 @@
       </div>
     </div>
 
+    <!-- Desktop table -->
     <div class="table-wrapper">
       <table>
         <thead>
@@ -154,6 +138,35 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Mobile cards -->
+    <div class="mobile-cards">
+      @for (record of records(); track record.id) {
+        <div class="mobile-record-card">
+          <div class="record-top">
+            <strong>{{ record.glucoseLevel }} <span class="unit">mg/dL</span></strong>
+            <span
+              class="badge"
+              [class.low]="getStatus(record) === 'Bajo'"
+              [class.normal]="getStatus(record) === 'Normal'"
+              [class.high]="getStatus(record) === 'Alto'"
+            >
+              {{ getStatus(record) }}
+            </span>
+          </div>
+          <p class="record-date">{{ record.recordedAt }}</p>
+          @if (record.notes) {
+            <p class="record-notes">{{ record.notes }}</p>
+          }
+          <div class="row-actions">
+            <button type="button" class="edit" (click)="startEdit(record)">Editar</button>
+            <button type="button" class="delete" (click)="deleteRecord(record)">Eliminar</button>
+          </div>
+        </div>
+      } @empty {
+        <p class="empty-mobile">No hay lecturas de glucosa para mostrar.</p>
+      }
+    </div>
   </section>
 
   @if (editingRecord()) {
@@ -202,30 +215,27 @@
 </section>
 
 <section class="clinical-modules">
-  <article class="module-card">
+  <a class="module-card" routerLink="/alerts">
     <span class="module-icon">🚨</span>
     <div>
-      <h3>Alertas clínicas</h3>
+      <h3>Alertas clinicas</h3>
       <p>Revisa las alertas generadas por lecturas fuera de rango.</p>
-      <a routerLink="/alerts">Ver alertas</a>
     </div>
-  </article>
+  </a>
 
-  <article class="module-card muted">
+  <a class="module-card" routerLink="/adverse-effects">
     <span class="module-icon">💊</span>
     <div>
-      <h3>Medicación</h3>
+      <h3>Medicacion</h3>
       <p>Registro de tomas y seguimiento de medicamentos.</p>
-      <small>Próximamente</small>
     </div>
-  </article>
+  </a>
 
-  <article class="module-card muted">
+  <a class="module-card" routerLink="/appointments">
     <span class="module-icon">📅</span>
     <div>
-      <h3>Citas médicas</h3>
-      <p>Historial y próximas consultas del paciente.</p>
-      <small>Próximamente</small>
+      <h3>Citas medicas</h3>
+      <p>Historial y proximas consultas del paciente.</p>
     </div>
-  </article>
+  </a>
 </section>

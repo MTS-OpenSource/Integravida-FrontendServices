@@ -28,7 +28,7 @@
 
 .filters {
   display: grid;
-  grid-template-columns: 140px 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -141,6 +141,7 @@ td strong {
 .unit {
   color: #667085;
   margin-left: 0.25rem;
+  font-size: 0.85em;
 }
 
 .badge {
@@ -228,15 +229,45 @@ button.delete {
   resize: vertical;
 }
 
-@media (max-width: 760px) {
-  .filters {
-    grid-template-columns: 1fr;
-  }
-
-  .row-actions {
-    flex-direction: column;
-  }
+/* Mobile cards — hidden by default */
+.mobile-cards {
+  display: none;
 }
+
+.mobile-record-card {
+  padding: 1rem;
+  border-top: 1px solid #eef2f6;
+}
+
+.mobile-record-card:first-child {
+  border-top: none;
+}
+
+.record-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.record-date {
+  margin: 0.35rem 0 0;
+  color: #667085;
+  font-size: 0.85rem;
+}
+
+.record-notes {
+  margin: 0.35rem 0 0;
+  color: #344054;
+  font-size: 0.9rem;
+}
+
+.empty-mobile {
+  text-align: center;
+  color: #667085;
+  padding: 2rem 1rem;
+}
+
+/* Clinical Modules */
 .clinical-modules {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -253,6 +284,13 @@ button.delete {
   border: 1px solid #dfe5ef;
   border-radius: 16px;
   box-shadow: 0 12px 30px rgba(23, 32, 51, 0.05);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+
+.module-card:hover {
+  border-color: #0f766e;
 }
 
 .module-icon {
@@ -262,6 +300,7 @@ button.delete {
   height: 42px;
   border-radius: 12px;
   background: #e6f4f1;
+  font-size: 1.2rem;
 }
 
 .module-card h3 {
@@ -271,27 +310,29 @@ button.delete {
 }
 
 .module-card p {
-  margin: 0.3rem 0 0.6rem;
+  margin: 0.3rem 0 0;
   color: #667085;
   font-size: 0.9rem;
 }
 
-.module-card a {
-  color: #0f766e;
-  font-weight: 800;
-  text-decoration: none;
-}
+/* Responsive */
+@media (max-width: 760px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
 
-.module-card small {
-  color: #98a2b3;
-  font-weight: 700;
-}
+  .table-wrapper {
+    display: none;
+  }
 
-.module-card.muted {
-  opacity: 0.75;
-}
+  .mobile-cards {
+    display: block;
+  }
 
-@media (max-width: 900px) {
+  .row-actions {
+    flex-direction: column;
+  }
+
   .clinical-modules {
     grid-template-columns: 1fr;
   }

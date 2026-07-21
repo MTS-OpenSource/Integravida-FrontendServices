@@ -1,20 +1,22 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { GlucoseService } from '../../application/glucose.service';
+import { AuthStore } from '../../../account-management/application/auth.store';
 import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
 import { HistoryChartComponent } from '../../../medical-followup/presentation/components/history-chart/history-chart.component';
 
 @Component({
   selector: 'app-health-history',
-  imports: [FormsModule, RouterLink, HistoryChartComponent],
+  imports: [FormsModule, RouterLink, HistoryChartComponent, DatePipe],
   templateUrl: './health-history.html',
   styleUrl: './health-history.css',
 })
 export class HealthHistory {
   protected readonly glucoseService = inject(GlucoseService);
+  private readonly authStore = inject(AuthStore);
 
-  protected readonly patientId = signal('');
   protected readonly fromDate = signal('');
   protected readonly toDate = signal('');
 
@@ -25,8 +27,13 @@ export class HealthHistory {
 
   protected readonly records = computed(() => this.glucoseService.records());
 
-  protected loadRecords(): void {
-    this.glucoseService.getReadings();
+  constructor() {
+    effect(() => {
+      const token = this.authStore.token();
+      if (token) {
+        this.glucoseService.getReadings();
+      }
+    });
   }
 
   protected filterByDateRange(): void {
