@@ -69,30 +69,6 @@
     } @if (activeTab() === 'signup') {
     <div class="form">
       <div class="field">
-        <label>Role</label>
-        <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
-          <button
-            type="button"
-            class="tab"
-            [class.active]="role() === 'Patient'"
-            (click)="selectRole('Patient')"
-            style="border-radius: 10px 0 0 10px; border: 1px solid #e5e7eb;"
-          >
-            Patient
-          </button>
-          <button
-            type="button"
-            class="tab"
-            [class.active]="role() === 'Doctor'"
-            (click)="selectRole('Doctor')"
-            style="border-radius: 0 10px 10px 0; border: 1px solid #e5e7eb; border-left: none;"
-          >
-            Doctor
-          </button>
-        </div>
-      </div>
-
-      <div class="field">
         <label>Email</label>
         <input
           type="email"

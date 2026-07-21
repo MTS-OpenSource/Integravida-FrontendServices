@@ -4,7 +4,6 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthStore } from '../../application/auth.store';
-import { UserRole } from '../../domain/model/user.entity';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +23,6 @@ export class LoginPage {
   protected readonly showPassword = signal(false);
 
   // Register specific signals
-  protected readonly role = signal<UserRole>('Patient');
   protected readonly username = signal('');
   protected readonly firstName = signal('');
   protected readonly lastName = signal('');
@@ -62,12 +60,8 @@ export class LoginPage {
       lastName: this.lastName().trim(),
       phoneNumber: this.phoneNumber().trim(),
       dateOfBirth: this.dateOfBirth(),
-      role: this.role(),
+      role: 'Patient',
     });
-  }
-
-  protected selectRole(role: UserRole): void {
-    this.role.set(role);
   }
 
   protected navigateToForgetPassword(): void {

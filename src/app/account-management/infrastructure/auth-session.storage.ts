@@ -33,7 +33,7 @@ export class AuthSessionStorage {
         token,
         user: new userEntity(
           data.id, data.email, data.username,
-          data.role as 'Patient' | 'Doctor',
+          data.role as 'Patient' | 'Doctor' | 'Admin',
           data.profileId ?? null,
           data.patientId ?? null,
           data.doctorId ?? null,
