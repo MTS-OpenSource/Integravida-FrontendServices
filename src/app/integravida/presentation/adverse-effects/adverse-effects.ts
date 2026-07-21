@@ -26,7 +26,7 @@ export class AdverseEffects implements OnInit {
   protected readonly medications = signal<MedicationEntity[]>([]);
   protected readonly loadingData = signal(false);
 
-  protected readonly medicationId = signal('');
+  protected readonly selectedMedicationId = signal('');
   protected readonly notes = signal('');
   protected readonly takenAt = signal(new Date().toISOString().slice(0, 16));
   protected readonly formError = signal<string | null>(null);
@@ -67,13 +67,18 @@ export class AdverseEffects implements OnInit {
     });
   }
 
+  protected getMedicationName(medicationId: string): string {
+    const med = this.medications().find(m => m.id === medicationId);
+    return med ? `${med.name} ${med.dosage}` : medicationId;
+  }
+
   protected registerAdverseEffect(): void {
-    const medicationId = this.medicationId().trim();
+    const medicationId = this.selectedMedicationId().trim();
     const notes = this.notes().trim();
     const takenAt = this.takenAt();
 
     if (!medicationId) {
-      this.formError.set('Ingresa un Medication ID válido.');
+      this.formError.set('Selecciona un medicamento.');
       return;
     }
     if (!takenAt) {
@@ -91,7 +96,7 @@ export class AdverseEffects implements OnInit {
     this.adverseEffectService.create(payload);
     this.notes.set('');
     this.takenAt.set(new Date().toISOString().slice(0, 16));
-    this.medicationId.set('');
+    this.selectedMedicationId.set('');
     this.showForm.set(false);
   }
 }

@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
-  integravidaProviderApiBaseUrl: 'https://integravida-backendservices.onrender.com',
-  integravidaBackendApiBaseUrl: 'https://integravida-backendservices.onrender.com',
+  integravidaProviderApiBaseUrl: 'https://7fjimjht3a.execute-api.us-east-1.amazonaws.com',
+  integravidaBackendApiBaseUrl: 'https://7fjimjht3a.execute-api.us-east-1.amazonaws.com',
   integravidaBackendProfilesEndpointPath: '/api/v1/profiles',
   integravidaBackendAppointmentsEndpointPath: '/api/v1/appointments',
   integravidaProviderUsersEndpointPath: '/api/v1/authentication',

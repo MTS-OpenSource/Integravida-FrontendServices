@@ -1,10 +1,9 @@
 <section class="appointments-page">
   <header class="appointments-header">
     <div>
-      <p class="eyebrow">GlucoSmart</p>
-      <h1>Gestión de Citas Médicas</h1>
+      <h1>Mis Citas Medicas</h1>
       <p class="description">
-        Solicita, modifica y revisa tus citas médicas. El paciente se identifica automáticamente con JWT.
+        Solicita, modifica y revisa tus citas medicas.
       </p>
     </div>
 
@@ -153,7 +152,7 @@
       <section class="panel form-panel">
         <h2>{{ formTitle() }}</h2>
         <p class="panel-description">
-          No ingreses patientId ni doctorId. El backend los obtiene desde el JWT del usuario autenticado.
+          Completa los campos para solicitar o modificar una cita.
         </p>
 
         <form class="appointment-form" (ngSubmit)="saveAppointment()">
