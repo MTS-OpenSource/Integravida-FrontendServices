@@ -22,4 +22,5 @@ export const environment = {
   integravidaProviderClinicalReportsEndpointPath: '/api/v1/clinical-reports',
   integravidaProviderAppointmentsEndpointPath: '/api/v1/appointments',
   integravidaBackendAdminEndpointPath: '/api/v1/admin',
+  integravidaBackendDoctorEndpointPath: '/api/v1/doctors/me/patients',
 };
