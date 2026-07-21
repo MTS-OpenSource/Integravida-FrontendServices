@@ -133,6 +133,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'doctor/patients/:patientId',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Doctor'] },
+    loadChildren: () =>
+      import('./doctor/presentation/doctor-patient-detail/doctor-patient-detail.routes').then(
+        (module) => module.DOCTOR_PATIENT_DETAIL_ROUTES,
+      ),
+  },
+  {
     path: '**',
     redirectTo: 'login',
   },
