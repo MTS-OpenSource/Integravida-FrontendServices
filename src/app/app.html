@@ -1,6 +1,17 @@
+<div class="mobile-header">
+  <button type="button" class="hamburger" (click)="toggleSidebar()">
+    <span class="material-symbols-outlined">{{ sidebarOpen() ? 'close' : 'menu' }}</span>
+  </button>
+  <a routerLink="/dashboard" class="mobile-brand">IV</a>
+</div>
+
+@if (sidebarOpen()) {
+  <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+}
+
 <main class="app-shell">
-  <aside class="sidebar">
-    <a routerLink="/dashboard" class="brand">
+  <aside class="sidebar" [class.open]="sidebarOpen()">
+    <a routerLink="/dashboard" class="brand" (click)="closeSidebar()">
       <span class="brand-mark">IV</span>
       <span>
         <strong>IntegraVida</strong>
@@ -12,32 +23,32 @@
       @if (authStore.isAuthenticated()) {
 
       <p class="nav-label">General</p>
-      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()">Dashboard</a>
 
       @if (authStore.currentUser()?.isPatient) {
       <p class="nav-label">Glucose Monitoring</p>
-      <a routerLink="/glucose-log" routerLinkActive="active">Registrar glucosa</a>
-      <a routerLink="/health-history" routerLinkActive="active">Historial clinico</a>
-      <a routerLink="/alerts" routerLinkActive="active">Alertas</a>
-      <a routerLink="/adverse-effects" routerLinkActive="active">Gestion de Medicacion</a>
+      <a routerLink="/glucose-log" routerLinkActive="active" (click)="closeSidebar()">Registrar glucosa</a>
+      <a routerLink="/health-history" routerLinkActive="active" (click)="closeSidebar()">Historial clinico</a>
+      <a routerLink="/alerts" routerLinkActive="active" (click)="closeSidebar()">Alertas</a>
+      <a routerLink="/adverse-effects" routerLinkActive="active" (click)="closeSidebar()">Gestion de Medicacion</a>
       <p class="nav-label">Patient</p>
-      <a routerLink="/patient-profile" routerLinkActive="active">Patient Profile</a>
+      <a routerLink="/patient-profile" routerLinkActive="active" (click)="closeSidebar()">Patient Profile</a>
       }
 
       @if (authStore.currentUser()?.isDoctor) {
       <p class="nav-label">Doctor</p>
-      <a routerLink="/doctor/patients" routerLinkActive="active">My Patients</a>
+      <a routerLink="/doctor/patients" routerLinkActive="active" (click)="closeSidebar()">My Patients</a>
       }
 
       @if (authStore.currentUser()?.isAdmin) {
       <p class="nav-label">Administration</p>
-      <a routerLink="/admin/dashboard" routerLinkActive="active">Admin Dashboard</a>
-      <a routerLink="/admin/users" routerLinkActive="active">User Management</a>
-      <a routerLink="/admin/assignments" routerLinkActive="active">Assignments</a>
+      <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeSidebar()">Admin Dashboard</a>
+      <a routerLink="/admin/users" routerLinkActive="active" (click)="closeSidebar()">User Management</a>
+      <a routerLink="/admin/assignments" routerLinkActive="active" (click)="closeSidebar()">Assignments</a>
       }
 
       <p class="nav-label">Scheduling</p>
-      <a routerLink="/appointments" routerLinkActive="active">Appointments</a>
+      <a routerLink="/appointments" routerLinkActive="active" (click)="closeSidebar()">Appointments</a>
       }
     </nav>
 
@@ -45,7 +56,7 @@
       @if (authStore.isAuthenticated()) {
       <button type="button" (click)="signOut()">Sign out</button>
       } @else {
-      <a routerLink="/login" routerLinkActive="active">Login</a>
+      <a routerLink="/login" routerLinkActive="active" (click)="closeSidebar()">Login</a>
       }
     </div>
   </aside>

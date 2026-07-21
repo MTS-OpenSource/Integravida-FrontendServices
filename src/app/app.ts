@@ -11,6 +11,15 @@ import { AuthStore } from './account-management/application/auth.store';
 export class App {
   protected readonly title = signal('Integravida-FrontendServices');
   protected readonly authStore = inject(AuthStore);
+  protected readonly sidebarOpen = signal(false);
+
+  protected toggleSidebar(): void {
+    this.sidebarOpen.update(v => !v);
+  }
+
+  protected closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
 
   protected signOut(): void {
     this.authStore.signOut();

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="100%" height="100%">
+    <defs>
+        <!-- Tipografía Poppins -->
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&amp;display=swap');
+            .text-integra { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 88px; fill: #202124; }
+            .text-vida { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 88px; fill: #1A73E8; }
+        </style>
+    </defs>
+
+    <!-- Símbolo del Corazón con Pulso -->
+    <g transform="translate(20, 30) scale(5.5)" fill="none" stroke="#1A73E8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Contorno del Corazón -->
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+        <!-- Línea de Pulso (ECG) -->
+        <path d="M2 10h4l2.5-4 3.5 9 3-7 2 2h5" />
+    </g>
+
+    <!-- Texto de la Marca -->
+    <text x="180" y="132">
+        <tspan class="text-integra">Integra</tspan><tspan class="text-vida">Vida</tspan>
+    </text>
+</svg>
