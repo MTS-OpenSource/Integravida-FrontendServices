@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GlucoseRecordEntity } from '../../../domain/model/glucose-record.entity';
 import { GlucoseService } from '../../../application/glucose.service';
+import { I18nPipe } from '../../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-glucose-table',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, I18nPipe],
   templateUrl: './glucose-table.html',
   styleUrl: './glucose-table.css',
 })

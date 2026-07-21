@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { I18nPipe } from '../../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-glucose-filters',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, I18nPipe],
   templateUrl: './glucose-filters.html',
   styleUrl: './glucose-filters.css',
 })

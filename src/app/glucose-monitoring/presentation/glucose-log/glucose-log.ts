@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { AuthStore } from '../../../account-management/application/auth.store';
 import { GlucoseService } from '../../application/glucose.service';
 import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-glucose-log',
-  imports: [FormsModule],
+  imports: [FormsModule, I18nPipe],
   templateUrl: './glucose-log.html',
   styleUrl: './glucose-log.css',
 })

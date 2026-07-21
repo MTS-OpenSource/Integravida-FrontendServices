@@ -1,15 +1,15 @@
 <section class="appointments-page">
   <header class="appointments-header">
     <div>
-      <h1>Mis Citas Medicas</h1>
+      <h1>{{ 'appointments.title' | i18n }}</h1>
       <p class="description">
-        Solicita, modifica y revisa tus citas medicas.
+        {{ 'appointments.subtitle' | i18n }}
       </p>
     </div>
 
     <button class="secondary-button" type="button" (click)="loadAppointments()" [disabled]="loading()">
       <span class="material-symbols-outlined">refresh</span>
-      Recargar
+      {{ 'appointments.reload' | i18n }}
     </button>
   </header>
 
@@ -17,7 +17,7 @@
     <article class="summary-card primary-summary">
       <span class="material-symbols-outlined">event</span>
       <div>
-        <p>Total de citas</p>
+        <p>{{ 'appointments.totalAppointments' | i18n }}</p>
         <strong>{{ totalAppointments() }}</strong>
       </div>
     </article>
@@ -25,7 +25,7 @@
     <article class="summary-card">
       <span class="material-symbols-outlined">upcoming</span>
       <div>
-        <p>Próximas</p>
+        <p>{{ 'appointments.upcoming' | i18n }}</p>
         <strong>{{ upcomingAppointments().length }}</strong>
       </div>
     </article>
@@ -33,14 +33,14 @@
     <article class="summary-card">
       <span class="material-symbols-outlined">history</span>
       <div>
-        <p>Pasadas</p>
+        <p>{{ 'appointments.past' | i18n }}</p>
         <strong>{{ pastAppointments().length }}</strong>
       </div>
     </article>
   </section>
 
   @if (loading()) {
-    <p class="info-message">Cargando citas médicas...</p>
+    <p class="info-message">{{ 'appointments.loading' | i18n }}</p>
   }
 
   @if (error()) {
@@ -56,8 +56,8 @@
       <section class="panel">
         <div class="panel-header">
           <div>
-            <h2>Próximas citas</h2>
-            <p>Citas programadas desde hoy en adelante.</p>
+            <h2>{{ 'appointments.upcomingTitle' | i18n }}</h2>
+            <p>{{ 'appointments.upcomingDesc' | i18n }}</p>
           </div>
         </div>
 
@@ -69,8 +69,8 @@
                   {{ formatStatus(appointment.status) }}
                 </span>
 
-                <h3>Cita médica #{{ shortId(appointment) }}</h3>
-                <p>{{ appointment.notes || 'Sin motivo registrado' }}</p>
+                <h3>{{ 'appointments.medicalAppointment' | i18n }}{{ shortId(appointment) }}</h3>
+                <p>{{ appointment.notes || ('appointments.noReason' | i18n) }}</p>
 
                 <div class="appointment-date">
                   <span class="material-symbols-outlined">schedule</span>
@@ -81,20 +81,20 @@
               <div class="appointment-actions">
                 <button class="edit-button" type="button" (click)="editAppointment(appointment)">
                   <span class="material-symbols-outlined">edit</span>
-                  Modificar
+                  {{ 'appointments.modify' | i18n }}
                 </button>
 
                 <button class="delete-button" type="button" (click)="requestDeleteAppointment(appointment)">
                   <span class="material-symbols-outlined">delete</span>
-                  Eliminar
+                  {{ 'appointments.delete' | i18n }}
                 </button>
               </div>
             </article>
           } @empty {
             <div class="empty-state">
               <span class="material-symbols-outlined">event_available</span>
-              <h3>No tienes próximas citas</h3>
-              <p>Solicita una cita desde el formulario.</p>
+              <h3>{{ 'appointments.noUpcoming' | i18n }}</h3>
+              <p>{{ 'appointments.requestFromForm' | i18n }}</p>
             </div>
           }
         </div>
@@ -103,8 +103,8 @@
       <section class="panel">
         <div class="panel-header">
           <div>
-            <h2>Citas pasadas</h2>
-            <p>Historial de citas anteriores.</p>
+            <h2>{{ 'appointments.pastTitle' | i18n }}</h2>
+            <p>{{ 'appointments.pastDesc' | i18n }}</p>
           </div>
         </div>
 
@@ -116,8 +116,8 @@
                   {{ formatStatus(appointment.status) }}
                 </span>
 
-                <h3>Cita médica #{{ shortId(appointment) }}</h3>
-                <p>{{ appointment.notes || 'Sin motivo registrado' }}</p>
+                <h3>{{ 'appointments.medicalAppointment' | i18n }}{{ shortId(appointment) }}</h3>
+                <p>{{ appointment.notes || ('appointments.noReason' | i18n) }}</p>
 
                 <div class="appointment-date">
                   <span class="material-symbols-outlined">history</span>
@@ -128,20 +128,20 @@
               <div class="appointment-actions">
                 <button class="edit-button" type="button" (click)="editAppointment(appointment)">
                   <span class="material-symbols-outlined">edit</span>
-                  Modificar
+                  {{ 'appointments.modify' | i18n }}
                 </button>
 
                 <button class="delete-button" type="button" (click)="requestDeleteAppointment(appointment)">
                   <span class="material-symbols-outlined">delete</span>
-                  Eliminar
+                  {{ 'appointments.delete' | i18n }}
                 </button>
               </div>
             </article>
           } @empty {
             <div class="empty-state">
               <span class="material-symbols-outlined">history</span>
-              <h3>Aún no hay citas pasadas</h3>
-              <p>Cuando una cita termine, aparecerá aquí.</p>
+              <h3>{{ 'appointments.noPastYet' | i18n }}</h3>
+              <p>{{ 'appointments.willAppearHere' | i18n }}</p>
             </div>
           }
         </div>
@@ -152,13 +152,13 @@
       <section class="panel form-panel">
         <h2>{{ formTitle() }}</h2>
         <p class="panel-description">
-          Completa los campos para solicitar o modificar una cita.
+          {{ 'appointments.formDescription' | i18n }}
         </p>
 
         <form class="appointment-form" (ngSubmit)="saveAppointment()">
           <div class="date-row">
             <label>
-              <span>Fecha</span>
+              <span>{{ 'appointments.date' | i18n }}</span>
               <input
                 type="date"
                 [ngModel]="selectedDate()"
@@ -169,7 +169,7 @@
             </label>
 
             <label>
-              <span>Hora</span>
+              <span>{{ 'appointments.time' | i18n }}</span>
               <input
                 type="time"
                 [ngModel]="selectedTime()"
@@ -183,19 +183,19 @@
           <div class="date-preview">
             <span class="material-symbols-outlined">event_note</span>
             <div>
-              <strong>Fecha seleccionada</strong>
+              <strong>{{ 'appointments.selectedDate' | i18n }}</strong>
               <p>{{ selectedDatePreview() }}</p>
             </div>
           </div>
 
           <label>
-            <span>Motivo de la cita</span>
+            <span>{{ 'appointments.reasonLabel' | i18n }}</span>
             <textarea
               rows="5"
               [ngModel]="reason()"
               (ngModelChange)="reason.set($event)"
               name="reason"
-              placeholder="Ejemplo: Revisión médica de control"
+              [placeholder]="'appointments.reasonPlaceholder' | i18n"
               required
             ></textarea>
           </label>
@@ -207,11 +207,11 @@
 
           @if (isEditing()) {
             <button class="cancel-button full-width" type="button" (click)="cancelEdit()">
-              Cancelar edición
+              {{ 'appointments.cancelEditing' | i18n }}
             </button>
           } @else {
             <button class="cancel-button full-width" type="button" (click)="resetForm()">
-              Limpiar formulario
+              {{ 'appointments.clearForm' | i18n }}
             </button>
           }
         </form>
@@ -220,19 +220,19 @@
       @if (appointmentToDelete(); as appointmentToDeleteItem) {
         <section class="panel delete-confirmation">
           <span class="material-symbols-outlined warning-icon">warning</span>
-          <h2>Eliminar cita</h2>
+          <h2>{{ 'appointments.deleteAppointment' | i18n }}</h2>
           <p>
-            ¿Seguro que deseas eliminar la cita
+            {{ 'appointments.confirmDelete' | i18n }}
             <strong>#{{ shortId(appointmentToDeleteItem) }}</strong>?
           </p>
           <p>{{ formatDateTime(appointmentToDeleteItem.scheduledAt) }}</p>
 
           <button class="delete-confirm-button" type="button" (click)="confirmDeleteAppointment()">
-            Sí, eliminar
+            {{ 'appointments.yesDelete' | i18n }}
           </button>
 
           <button class="cancel-button full-width" type="button" (click)="cancelDelete()">
-            Cancelar
+            {{ 'appointments.cancel' | i18n }}
           </button>
         </section>
       }

@@ -1,8 +1,8 @@
 <section class="health-history">
   <header class="page-header">
     <div>
-      <h1>Historial clinico</h1>
-      <p>Tus lecturas de glucosa registradas.</p>
+      <h1>{{ 'healthHistory.title' | i18n }}</h1>
+      <p>{{ 'healthHistory.subtitle' | i18n }}</p>
     </div>
   </header>
 
@@ -11,7 +11,7 @@
   <section class="filters-card">
     <div class="filters">
       <label>
-        <span>Desde</span>
+        <span>{{ 'healthHistory.from' | i18n }}</span>
         <input
           type="date"
           [ngModel]="fromDate()"
@@ -20,7 +20,7 @@
       </label>
 
       <label>
-        <span>Hasta</span>
+        <span>{{ 'healthHistory.to' | i18n }}</span>
         <input
           type="date"
           [ngModel]="toDate()"
@@ -31,33 +31,33 @@
 
     <div class="buttons">
       <button type="button" (click)="filterByDateRange()">
-        Filtrar
+        {{ 'healthHistory.filter' | i18n }}
       </button>
 
       <button type="button" (click)="filterToday()">
-        Hoy
+        {{ 'healthHistory.today' | i18n }}
       </button>
 
       <button type="button" (click)="filterLast7Days()">
-        7 dias
+        {{ 'healthHistory.last7Days' | i18n }}
       </button>
 
       <button type="button" (click)="filterLastMonth()">
-        1 Mes
+        {{ 'healthHistory.lastMonth' | i18n }}
       </button>
 
       <button type="button" (click)="filterLast3Months()">
-        3 Meses
+        {{ 'healthHistory.last3Months' | i18n }}
       </button>
 
       <button type="button" (click)="filterLast6Months()">
-        6 Meses
+        {{ 'healthHistory.last6Months' | i18n }}
       </button>
     </div>
   </section>
 
   @if (glucoseService.loading()) {
-    <p class="info">Cargando registros...</p>
+    <p class="info">{{ 'healthHistory.loading' | i18n }}</p>
   }
 
   @if (glucoseService.error()) {
@@ -67,8 +67,8 @@
   <section class="table-card">
     <div class="table-header">
       <div>
-        <h2>Lecturas de glucosa</h2>
-        <p>{{ records().length }} lectura(s) encontradas</p>
+        <h2>{{ 'healthHistory.readings' | i18n }}</h2>
+        <p>{{ records().length }} {{ 'healthHistory.found' | i18n }}</p>
       </div>
     </div>
 
@@ -77,11 +77,11 @@
       <table>
         <thead>
         <tr>
-          <th>Fecha</th>
-          <th>Glucosa</th>
-          <th>Estado</th>
-          <th>Notas</th>
-          <th>Acciones</th>
+          <th>{{ 'healthHistory.date' | i18n }}</th>
+          <th>{{ 'healthHistory.glucose' | i18n }}</th>
+          <th>{{ 'healthHistory.status' | i18n }}</th>
+          <th>{{ 'healthHistory.notes' | i18n }}</th>
+          <th>{{ 'healthHistory.actions' | i18n }}</th>
         </tr>
         </thead>
 
@@ -115,7 +115,7 @@
                     class="edit"
                     (click)="startEdit(record)"
                   >
-                    Editar
+                    {{ 'healthHistory.edit' | i18n }}
                   </button>
 
                   <button
@@ -123,7 +123,7 @@
                     class="delete"
                     (click)="deleteRecord(record)"
                   >
-                    Eliminar
+                    {{ 'healthHistory.delete' | i18n }}
                   </button>
                 </div>
               </td>
@@ -131,7 +131,7 @@
           } @empty {
             <tr>
               <td colspan="5" class="empty">
-                No hay lecturas de glucosa para mostrar.
+                {{ 'healthHistory.noRecords' | i18n }}
               </td>
             </tr>
           }
@@ -142,29 +142,38 @@
     <!-- Mobile cards -->
     <div class="mobile-cards">
       @for (record of records(); track record.id) {
-        <div class="mobile-record-card">
+        <div class="mobile-record-card" (click)="closeMenu()">
           <div class="record-top">
             <strong>{{ record.glucoseLevel }} <span class="unit">mg/dL</span></strong>
-            <span
-              class="badge"
-              [class.low]="getStatus(record) === 'Bajo'"
-              [class.normal]="getStatus(record) === 'Normal'"
-              [class.high]="getStatus(record) === 'Alto'"
-            >
-              {{ getStatus(record) }}
-            </span>
+            <div class="record-top-right">
+              <span
+                class="badge"
+                [class.low]="getStatus(record) === 'Bajo'"
+                [class.normal]="getStatus(record) === 'Normal'"
+                [class.high]="getStatus(record) === 'Alto'"
+              >
+                {{ getStatus(record) }}
+              </span>
+              <div class="menu-wrapper">
+                <button type="button" class="menu-dots" (click)="toggleMenu(record.id, $event)">
+                  <span class="material-symbols-outlined">more_vert</span>
+                </button>
+                @if (openMenuId() === record.id) {
+                  <div class="dropdown-menu">
+                    <button type="button" class="dropdown-item" (click)="startEdit(record); closeMenu()">{{ 'healthHistory.edit' | i18n }}</button>
+                    <button type="button" class="dropdown-item dropdown-danger" (click)="deleteRecord(record); closeMenu()">{{ 'healthHistory.delete' | i18n }}</button>
+                  </div>
+                }
+              </div>
+            </div>
           </div>
           <p class="record-date">{{ record.recordedAt }}</p>
           @if (record.notes) {
             <p class="record-notes">{{ record.notes }}</p>
           }
-          <div class="row-actions">
-            <button type="button" class="edit" (click)="startEdit(record)">Editar</button>
-            <button type="button" class="delete" (click)="deleteRecord(record)">Eliminar</button>
-          </div>
         </div>
       } @empty {
-        <p class="empty-mobile">No hay lecturas de glucosa para mostrar.</p>
+        <p class="empty-mobile">{{ 'healthHistory.noRecords' | i18n }}</p>
       }
     </div>
   </section>
@@ -172,10 +181,10 @@
   @if (editingRecord()) {
     <div class="modal-backdrop">
       <div class="modal">
-        <h2>Editar lectura</h2>
+        <h2>{{ 'healthHistory.editReading' | i18n }}</h2>
 
         <label>
-          <span>Glucosa mg/dL</span>
+          <span>{{ 'healthHistory.glucose' | i18n }} mg/dL</span>
           <input
             type="number"
             [ngModel]="editGlucoseLevel()"
@@ -184,7 +193,7 @@
         </label>
 
         <label>
-          <span>Fecha y hora</span>
+          <span>{{ 'healthHistory.dateTime' | i18n }}</span>
           <input
             type="datetime-local"
             [ngModel]="editRecordedAt()"
@@ -193,7 +202,7 @@
         </label>
 
         <label>
-          <span>Notas</span>
+          <span>{{ 'healthHistory.notes' | i18n }}</span>
           <textarea
             [ngModel]="editNotes()"
             (ngModelChange)="editNotes.set($event)"
@@ -202,11 +211,11 @@
 
         <div class="buttons">
           <button type="button" class="primary" (click)="saveEdit()">
-            Guardar cambios
+            {{ 'healthHistory.saveChanges' | i18n }}
           </button>
 
           <button type="button" (click)="cancelEdit()">
-            Cancelar
+            {{ 'healthHistory.cancel' | i18n }}
           </button>
         </div>
       </div>
@@ -218,24 +227,24 @@
   <a class="module-card" routerLink="/alerts">
     <span class="module-icon">🚨</span>
     <div>
-      <h3>Alertas clinicas</h3>
-      <p>Revisa las alertas generadas por lecturas fuera de rango.</p>
+      <h3>{{ 'healthHistory.clinicalAlerts' | i18n }}</h3>
+      <p>{{ 'healthHistory.clinicalAlertsDesc' | i18n }}</p>
     </div>
   </a>
 
   <a class="module-card" routerLink="/adverse-effects">
     <span class="module-icon">💊</span>
     <div>
-      <h3>Medicacion</h3>
-      <p>Registro de tomas y seguimiento de medicamentos.</p>
+      <h3>{{ 'healthHistory.medication' | i18n }}</h3>
+      <p>{{ 'healthHistory.medicationDesc' | i18n }}</p>
     </div>
   </a>
 
   <a class="module-card" routerLink="/appointments">
     <span class="module-icon">📅</span>
     <div>
-      <h3>Citas medicas</h3>
-      <p>Historial y proximas consultas del paciente.</p>
+      <h3>{{ 'healthHistory.appointments' | i18n }}</h3>
+      <p>{{ 'healthHistory.appointmentsDesc' | i18n }}</p>
     </div>
   </a>
 </section>

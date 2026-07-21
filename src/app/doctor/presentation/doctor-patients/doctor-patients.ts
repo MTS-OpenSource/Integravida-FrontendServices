@@ -2,17 +2,18 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { DoctorStore } from '../../application/doctor.store';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-doctor-patients',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, I18nPipe],
   template: `
     <div class="page">
-      <h1>My Patients</h1>
-      <p class="subtitle">Patients assigned to you</p>
+      <h1>{{ 'doctorPatients.title' | i18n }}</h1>
+      <p class="subtitle">{{ 'doctorPatients.subtitle' | i18n }}</p>
 
       @if (store.loading() && store.patients().length === 0) {
-        <p class="loading">Loading patients...</p>
+        <p class="loading">{{ 'doctorPatients.loading' | i18n }}</p>
       }
 
       @if (store.error()) {
@@ -25,14 +26,14 @@ import { DoctorStore } from '../../application/doctor.store';
             <a class="card" [routerLink]="['/doctor/patients', p.patientId]">
               <div class="card-body">
                 <div class="patient-id mono">{{ p.patientId }}</div>
-                <div class="assigned">Assigned {{ p.assignedAt | date:'medium' }}</div>
+                <div class="assigned">{{ 'doctorPatients.assigned' | i18n }} {{ p.assignedAt | date:'medium' }}</div>
               </div>
               <span class="arrow">&rsaquo;</span>
             </a>
           }
         </div>
       } @else if (!store.loading()) {
-        <p class="empty">No patients assigned yet</p>
+        <p class="empty">{{ 'doctorPatients.noPatients' | i18n }}</p>
       }
     </div>
   `,

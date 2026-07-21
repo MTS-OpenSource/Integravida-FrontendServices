@@ -1,18 +1,18 @@
 <section class="profile-page">
   <header class="page-heading">
     <div>
-      <span class="eyebrow">Patient Profile</span>
-      <h1>Mi Perfil</h1>
-      <p>Gestiona tu informacion personal.</p>
+      <span class="eyebrow">{{ 'profile.pageTitle' | i18n }}</span>
+      <h1>{{ 'profile.title' | i18n }}</h1>
+      <p>{{ 'profile.subtitle' | i18n }}</p>
     </div>
 
     @if (profileService.profile() && !editing()) {
-      <button type="button" class="primary-btn" (click)="startEditing()">Editar perfil</button>
+      <button type="button" class="primary-btn" (click)="startEditing()">{{ 'profile.editProfile' | i18n }}</button>
     }
   </header>
 
   @if (profileService.loading()) {
-    <div class="loading-state">Cargando perfil...</div>
+    <div class="loading-state">{{ 'profile.loading' | i18n }}</div>
   } @else if (profileService.error()) {
     <div class="card">
       <p class="error">{{ profileService.error() }}</p>
@@ -29,9 +29,9 @@
           </div>
 
           <h2>{{ profile.fullName }}</h2>
-          <span class="status-pill">Paciente activo</span>
+          <span class="status-pill">{{ 'profile.activePatient' | i18n }}</span>
 
-          <button type="button" class="dark-btn" (click)="startEditing()">Editar Perfil</button>
+          <button type="button" class="dark-btn" (click)="startEditing()">{{ 'profile.editProfile' | i18n }}</button>
         </article>
       </aside>
 
@@ -40,47 +40,47 @@
         @if (!editing()) {
           <article class="card section-card">
             <div class="section-header">
-              <h3>Informacion Personal</h3>
-              <button type="button" class="small-edit-btn" (click)="startEditing()">Editar</button>
+              <h3>{{ 'profile.personalInfo' | i18n }}</h3>
+              <button type="button" class="small-edit-btn" (click)="startEditing()">{{ 'profile.edit' | i18n }}</button>
             </div>
 
             <div class="info-grid">
               <div class="info-item">
-                <span class="info-label">Nombre</span>
+                <span class="info-label">{{ 'profile.firstName' | i18n }}</span>
                 <strong>{{ profile.firstName }}</strong>
               </div>
 
               <div class="info-item">
-                <span class="info-label">Apellido</span>
+                <span class="info-label">{{ 'profile.lastName' | i18n }}</span>
                 <strong>{{ profile.lastName }}</strong>
               </div>
 
               <div class="info-item">
-                <span class="info-label">Email</span>
-                <strong>{{ profile.email || "No registrado" }}</strong>
+                <span class="info-label">{{ 'profile.email' | i18n }}</span>
+                <strong>{{ profile.email || ('profile.notRegistered' | i18n) }}</strong>
               </div>
 
               <div class="info-item">
-                <span class="info-label">Telefono</span>
-                <strong>{{ profile.phoneNumber || "No registrado" }}</strong>
+                <span class="info-label">{{ 'profile.phone' | i18n }}</span>
+                <strong>{{ profile.phoneNumber || ('profile.notRegistered' | i18n) }}</strong>
               </div>
 
               <div class="info-item">
-                <span class="info-label">Fecha de nacimiento</span>
-                <strong>{{ profile.dateOfBirth || "No registrada" }}</strong>
+                <span class="info-label">{{ 'profile.dateOfBirth' | i18n }}</span>
+                <strong>{{ profile.dateOfBirth || ('profile.notRegisteredFem' | i18n) }}</strong>
               </div>
             </div>
           </article>
         } @else {
           <article class="card section-card">
             <div class="section-header">
-              <h3>Editar perfil</h3>
+              <h3>{{ 'profile.editProfile' | i18n }}</h3>
             </div>
 
             <form class="profile-form" (ngSubmit)="saveProfile()">
               <div class="form-grid">
                 <label>
-                  <span>Nombre</span>
+                  <span>{{ 'profile.firstName' | i18n }}</span>
                   <input
                     name="firstName"
                     required
@@ -90,7 +90,7 @@
                 </label>
 
                 <label>
-                  <span>Apellido</span>
+                  <span>{{ 'profile.lastName' | i18n }}</span>
                   <input
                     name="lastName"
                     required
@@ -100,7 +100,7 @@
                 </label>
 
                 <label>
-                  <span>Telefono</span>
+                  <span>{{ 'profile.phone' | i18n }}</span>
                   <input
                     name="phoneNumber"
                     [ngModel]="phoneNumber()"
@@ -109,7 +109,7 @@
                 </label>
 
                 <label>
-                  <span>Fecha de nacimiento</span>
+                  <span>{{ 'profile.dateOfBirth' | i18n }}</span>
                   <input
                     name="dateOfBirth"
                     type="date"
@@ -120,9 +120,9 @@
               </div>
 
               <div class="form-actions">
-                <button type="button" class="secondary-btn" (click)="cancelEditing()">Cancelar</button>
+                <button type="button" class="secondary-btn" (click)="cancelEditing()">{{ 'profile.cancel' | i18n }}</button>
                 <button type="submit" class="dark-btn" [disabled]="profileService.loading()">
-                  Guardar cambios
+                  {{ 'profile.saveChanges' | i18n }}
                 </button>
               </div>
             </form>
@@ -139,7 +139,7 @@
     </section>
   } @else {
     <div class="card">
-      <p class="empty-state">No se encontro informacion de perfil.</p>
+      <p class="empty-state">{{ 'profile.noProfile' | i18n }}</p>
     </div>
   }
 </section>

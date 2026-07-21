@@ -4,10 +4,11 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthStore } from '../../application/auth.store';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, I18nPipe],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })

@@ -1,21 +1,22 @@
 import { Component, input, inject, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DoctorStore } from '../../application/doctor.store';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-create-treatment-form',
-  imports: [FormsModule],
+  imports: [FormsModule, I18nPipe],
   template: `
     <div class="card">
-      <h3>New Treatment</h3>
+      <h3>{{ 'createTreatment.title' | i18n }}</h3>
       <div class="form-grid">
-        <div class="field"><label>Name</label><input type="text" [(ngModel)]="name" placeholder="e.g. Metformin plan" /></div>
-        <div class="field"><label>Start Date</label><input type="date" [(ngModel)]="startDate" /></div>
-        <div class="field full"><label>Description</label><input type="text" [(ngModel)]="description" placeholder="Daily glucose control plan" /></div>
-        <div class="field"><label>End Date (optional)</label><input type="date" [(ngModel)]="endDate" /></div>
+        <div class="field"><label>{{ 'createTreatment.name' | i18n }}</label><input type="text" [(ngModel)]="name" placeholder="e.g. Metformin plan" /></div>
+        <div class="field"><label>{{ 'createTreatment.startDate' | i18n }}</label><input type="date" [(ngModel)]="startDate" /></div>
+        <div class="field full"><label>{{ 'createTreatment.description' | i18n }}</label><input type="text" [(ngModel)]="description" placeholder="Daily glucose control plan" /></div>
+        <div class="field"><label>{{ 'createTreatment.endDateOptional' | i18n }}</label><input type="date" [(ngModel)]="endDate" /></div>
       </div>
       <div class="form-actions">
-        <button class="btn-primary" (click)="submit()" [disabled]="store.loading()">Save</button>
+        <button class="btn-primary" (click)="submit()" [disabled]="store.loading()">{{ 'createTreatment.save' | i18n }}</button>
       </div>
     </div>
   `,

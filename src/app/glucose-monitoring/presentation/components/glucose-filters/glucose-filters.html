@@ -1,22 +1,22 @@
 <div class="filters-container">
   <div class="date-filters">
     <div class="filter-group">
-      <label>Desde</label>
+      <label>{{ 'glucoseFilters.from' | i18n }}</label>
       <input type="date" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
     </div>
     <div class="filter-group">
-      <label>Hasta</label>
+      <label>{{ 'glucoseFilters.to' | i18n }}</label>
       <input type="date" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
     </div>
-    <button class="btn-apply" (click)="applyFilters()">Filtrar</button>
+    <button class="btn-apply" (click)="applyFilters()">{{ 'glucoseFilters.filter' | i18n }}</button>
   </div>
 
   <div class="quick-access">
     <div class="pills">
-      <button [class.active]="activePeriod() === 'ultima-semana'" (click)="setPeriod('ultima-semana')">Semana</button>
-      <button [class.active]="activePeriod() === 'ultimo-mes'" (click)="setPeriod('ultimo-mes')">Mes</button>
-      <button [class.active]="activePeriod() === '3-meses'" (click)="setPeriod('3-meses')">3 meses</button>
-      <button [class.active]="activePeriod() === 'este-año'" (click)="setPeriod('este-año')">Año</button>
+      <button [class.active]="activePeriod() === 'ultima-semana'" (click)="setPeriod('ultima-semana')">{{ 'glucoseFilters.week' | i18n }}</button>
+      <button [class.active]="activePeriod() === 'ultimo-mes'" (click)="setPeriod('ultimo-mes')">{{ 'glucoseFilters.month' | i18n }}</button>
+      <button [class.active]="activePeriod() === '3-meses'" (click)="setPeriod('3-meses')">{{ 'glucoseFilters.threeMonths' | i18n }}</button>
+      <button [class.active]="activePeriod() === 'este-año'" (click)="setPeriod('este-año')">{{ 'glucoseFilters.year' | i18n }}</button>
     </div>
   </div>
 </div>

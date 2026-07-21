@@ -6,10 +6,11 @@ import { GlucoseService } from '../../application/glucose.service';
 import { AuthStore } from '../../../account-management/application/auth.store';
 import { GlucoseRecordEntity } from '../../domain/model/glucose-record.entity';
 import { HistoryChartComponent } from '../../../medical-followup/presentation/components/history-chart/history-chart.component';
+import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
 
 @Component({
   selector: 'app-health-history',
-  imports: [FormsModule, RouterLink, HistoryChartComponent, DatePipe],
+  imports: [FormsModule, RouterLink, HistoryChartComponent, DatePipe, I18nPipe],
   templateUrl: './health-history.html',
   styleUrl: './health-history.css',
 })
@@ -24,6 +25,7 @@ export class HealthHistory {
   protected readonly editGlucoseLevel = signal<number | null>(null);
   protected readonly editRecordedAt = signal('');
   protected readonly editNotes = signal('');
+  protected readonly openMenuId = signal<string | number | null>(null);
 
   protected readonly records = computed(() => this.glucoseService.records());
 
@@ -133,6 +135,15 @@ export class HealthHistory {
     if (!confirmed) return;
 
     this.glucoseService.deleteReading(record.id);
+  }
+
+  protected toggleMenu(id: string | number, event: Event): void {
+    event.stopPropagation();
+    this.openMenuId.set(this.openMenuId() === id ? null : id);
+  }
+
+  protected closeMenu(): void {
+    this.openMenuId.set(null);
   }
 
   protected getStatus(record: GlucoseRecordEntity): string {
