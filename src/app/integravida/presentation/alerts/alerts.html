@@ -5,11 +5,6 @@
       <h2 class="header-title">Alertas y Notificaciones</h2>
       <p class="header-subtitle">Supervise y gestione sus notificaciones de salud críticas, recordatorios de medicación y actualizaciones del sistema en tiempo real.</p>
     </div>
-    <div class="header-actions">
-      <button class="btn-icon" aria-label="Search">
-        <span class="material-symbols-outlined">search</span>
-      </button>
-    </div>
   </header>
 
   <!-- Loading overlay -->
@@ -52,9 +47,6 @@
         (click)="setTab('Resueltas')"
       >
         Resueltas
-      </button>
-      <button class="filter-btn filter-dropdown">
-        <span class="material-symbols-outlined">filter_list</span> Filtrar
       </button>
     </div>
     <div class="mark-all-row">
@@ -143,9 +135,6 @@
                   </div>
                   <div class="card-actions">
                     <button class="btn-detail" (click)="alertService.markAsRead(alert)">Marcar como visto</button>
-                    <button class="btn-more">
-                      <span class="material-symbols-outlined">more_vert</span>
-                    </button>
                   </div>
                 </div>
               </article>
@@ -191,9 +180,6 @@
               </div>
             }
           </div>
-          <button class="btn-load-history" (click)="loadAlerts()">
-            Cargar historial completo
-          </button>
         </section>
       }
     </div>

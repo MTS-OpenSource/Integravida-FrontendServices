@@ -249,6 +249,75 @@ button.delete {
   align-items: center;
 }
 
+.record-top-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.menu-wrapper {
+  position: relative;
+}
+
+.menu-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #667085;
+  padding: 0;
+}
+
+.menu-dots:hover {
+  background: #eef2f6;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.25rem;
+  background: white;
+  border: 1px solid #dfe5ef;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(23, 32, 51, 0.15);
+  z-index: 10;
+  min-width: 120px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #344054;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.dropdown-item:hover {
+  background: #f2f4f7;
+}
+
+.dropdown-danger {
+  color: #b42318;
+}
+
+.dropdown-danger:hover {
+  background: #fef3f2;
+}
+
 .record-date {
   margin: 0.35rem 0 0;
   color: #667085;

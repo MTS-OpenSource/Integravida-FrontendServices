@@ -24,6 +24,7 @@ export class HealthHistory {
   protected readonly editGlucoseLevel = signal<number | null>(null);
   protected readonly editRecordedAt = signal('');
   protected readonly editNotes = signal('');
+  protected readonly openMenuId = signal<string | number | null>(null);
 
   protected readonly records = computed(() => this.glucoseService.records());
 
@@ -133,6 +134,15 @@ export class HealthHistory {
     if (!confirmed) return;
 
     this.glucoseService.deleteReading(record.id);
+  }
+
+  protected toggleMenu(id: string | number, event: Event): void {
+    event.stopPropagation();
+    this.openMenuId.set(this.openMenuId() === id ? null : id);
+  }
+
+  protected closeMenu(): void {
+    this.openMenuId.set(null);
   }
 
   protected getStatus(record: GlucoseRecordEntity): string {

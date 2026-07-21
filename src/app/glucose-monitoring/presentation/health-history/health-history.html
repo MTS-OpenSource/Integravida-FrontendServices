@@ -142,26 +142,35 @@
     <!-- Mobile cards -->
     <div class="mobile-cards">
       @for (record of records(); track record.id) {
-        <div class="mobile-record-card">
+        <div class="mobile-record-card" (click)="closeMenu()">
           <div class="record-top">
             <strong>{{ record.glucoseLevel }} <span class="unit">mg/dL</span></strong>
-            <span
-              class="badge"
-              [class.low]="getStatus(record) === 'Bajo'"
-              [class.normal]="getStatus(record) === 'Normal'"
-              [class.high]="getStatus(record) === 'Alto'"
-            >
-              {{ getStatus(record) }}
-            </span>
+            <div class="record-top-right">
+              <span
+                class="badge"
+                [class.low]="getStatus(record) === 'Bajo'"
+                [class.normal]="getStatus(record) === 'Normal'"
+                [class.high]="getStatus(record) === 'Alto'"
+              >
+                {{ getStatus(record) }}
+              </span>
+              <div class="menu-wrapper">
+                <button type="button" class="menu-dots" (click)="toggleMenu(record.id, $event)">
+                  <span class="material-symbols-outlined">more_vert</span>
+                </button>
+                @if (openMenuId() === record.id) {
+                  <div class="dropdown-menu">
+                    <button type="button" class="dropdown-item" (click)="startEdit(record); closeMenu()">Editar</button>
+                    <button type="button" class="dropdown-item dropdown-danger" (click)="deleteRecord(record); closeMenu()">Eliminar</button>
+                  </div>
+                }
+              </div>
+            </div>
           </div>
           <p class="record-date">{{ record.recordedAt }}</p>
           @if (record.notes) {
             <p class="record-notes">{{ record.notes }}</p>
           }
-          <div class="row-actions">
-            <button type="button" class="edit" (click)="startEdit(record)">Editar</button>
-            <button type="button" class="delete" (click)="deleteRecord(record)">Eliminar</button>
-          </div>
         </div>
       } @empty {
         <p class="empty-mobile">No hay lecturas de glucosa para mostrar.</p>
