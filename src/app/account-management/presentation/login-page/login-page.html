@@ -1,169 +1,157 @@
-<div class="page">
-  <div class="brand">
-    <span class="brand-name">IntegraVida</span>
-  </div>
+<main class="auth-page">
+  <section class="auth-hero">
+    <a class="auth-brand" aria-label="IntegraVida">
+      <span class="auth-brand-mark">
+        <span class="material-symbols-outlined">ecg_heart</span>
+      </span>
+      <span>Integra<span>Vida</span></span>
+    </a>
 
-  <div class="card">
-    <div class="tabs">
-      <button class="tab" [class.active]="activeTab() === 'login'" (click)="activeTab.set('login')">
-        {{ 'login.logIn' | i18n }}
-      </button>
-      <button
-        class="tab"
-        [class.active]="activeTab() === 'signup'"
-        (click)="activeTab.set('signup')"
-      >
-        {{ 'login.signUp' | i18n }}
-      </button>
+    <div class="hero-copy">
+      <h1>Salud conectada, cuidado sin friccion.</h1>
+      <p>
+        IntegraVida reune pacientes, medicos y equipos administrativos en una plataforma
+        clara para seguimiento clinico continuo.
+      </p>
+      <div class="hero-list">
+        <span><span class="material-symbols-outlined">water_drop</span> Monitoreo de glucosa</span>
+        <span><span class="material-symbols-outlined">calendar_month</span> Gestion de citas</span>
+        <span><span class="material-symbols-outlined">shield_lock</span> Historial protegido</span>
+      </div>
     </div>
+  </section>
 
-    @if (activeTab() === 'login') {
-    <div class="form">
-      <div class="field">
-        <label>{{ 'login.username' | i18n }}</label>
-        <input
-          type="email"
-          [placeholder]="'login.usernamePlaceholder' | i18n"
-          [ngModel]="email()"
-          (ngModelChange)="email.set($event)"
-        />
+  <section class="auth-panel-wrap">
+    <div class="auth-card iv-glass">
+      <div class="mobile-brand">
+        <span class="auth-brand-mark">
+          <span class="material-symbols-outlined">ecg_heart</span>
+        </span>
+        <span>Integra<span>Vida</span></span>
       </div>
 
-      <div class="field">
-        <div class="field-header">
-          <label>{{ 'login.password' | i18n }}</label>
-          <a class="forgot" (click)="navigateToForgetPassword()" style="cursor: pointer"
-            >{{ 'login.forgotPassword' | i18n }}</a
-          >
-        </div>
-        <div class="input-wrapper">
-          <input
-            [type]="showPassword() ? 'text' : 'password'"
-            [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
-          />
-          <button class="eye" type="button" (click)="showPassword.set(!showPassword())">👁</button>
-        </div>
+      <div class="tabs">
+        <button class="tab" [class.active]="activeTab() === 'login'" (click)="activeTab.set('login')">
+          {{ 'login.logIn' | i18n }}
+        </button>
+        <button class="tab" [class.active]="activeTab() === 'signup'" (click)="activeTab.set('signup')">
+          {{ 'login.signUp' | i18n }}
+        </button>
       </div>
 
-      @if (authStore.error()) {
-      <span class="error-message">{{ authStore.error() }}</span>
+      @if (activeTab() === 'login') {
+        <div class="form">
+          <div class="iv-field">
+            <label>{{ 'login.username' | i18n }}</label>
+            <input
+              type="email"
+              [placeholder]="'login.usernamePlaceholder' | i18n"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+            />
+          </div>
+
+          <div class="iv-field">
+            <div class="field-header">
+              <label>{{ 'login.password' | i18n }}</label>
+              <button class="forgot" type="button" (click)="navigateToForgetPassword()">
+                {{ 'login.forgotPassword' | i18n }}
+              </button>
+            </div>
+            <div class="input-wrapper">
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                [ngModel]="password()"
+                (ngModelChange)="password.set($event)"
+              />
+              <button class="eye" type="button" (click)="showPassword.set(!showPassword())">
+                <span class="material-symbols-outlined">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+
+          @if (authStore.error()) {
+            <span class="iv-alert iv-alert-error">{{ authStore.error() }}</span>
+          }
+
+          <button class="iv-btn iv-btn-primary auth-submit" type="button" (click)="signIn()" [disabled]="authStore.loading()">
+            {{ authStore.loading() ? ('login.loggingIn' | i18n) : ('login.logInBtn' | i18n) }}
+          </button>
+
+          <div class="divider">
+            <span>{{ 'login.orContinueWith' | i18n }}</span>
+          </div>
+
+          <div class="social-grid">
+            <button class="social-btn" type="button">
+              <img src="https://www.google.com/favicon.ico" alt="" width="18" /> Google
+            </button>
+            <button class="social-btn" type="button">
+              <span class="linkedin-icon">in</span> LinkedIn
+            </button>
+          </div>
+        </div>
       }
 
-      <button class="btn-primary" type="button" (click)="signIn()" [disabled]="authStore.loading()">
-        {{ authStore.loading() ? ('login.loggingIn' | i18n) : ('login.logInBtn' | i18n) }}
-      </button>
+      @if (activeTab() === 'signup') {
+        <div class="form">
+          <div class="form-grid">
+            <div class="iv-field">
+              <label>{{ 'login.email' | i18n }}</label>
+              <input type="email" [placeholder]="'login.emailPlaceholder' | i18n" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+            </div>
+            <div class="iv-field">
+              <label>{{ 'login.username' | i18n }}</label>
+              <input type="text" [placeholder]="'login.usernamePlaceholder' | i18n" [ngModel]="username()" (ngModelChange)="username.set($event)" />
+            </div>
+            <div class="iv-field">
+              <label>{{ 'login.firstName' | i18n }}</label>
+              <input type="text" [placeholder]="'login.firstNamePlaceholder' | i18n" [ngModel]="firstName()" (ngModelChange)="firstName.set($event)" />
+            </div>
+            <div class="iv-field">
+              <label>{{ 'login.lastName' | i18n }}</label>
+              <input type="text" [placeholder]="'login.lastNamePlaceholder' | i18n" [ngModel]="lastName()" (ngModelChange)="lastName.set($event)" />
+            </div>
+            <div class="iv-field">
+              <label>{{ 'login.phoneNumber' | i18n }}</label>
+              <input type="tel" [placeholder]="'login.phonePlaceholder' | i18n" [ngModel]="phoneNumber()" (ngModelChange)="phoneNumber.set($event)" />
+            </div>
+            <div class="iv-field">
+              <label>{{ 'login.dateOfBirth' | i18n }}</label>
+              <input type="date" [ngModel]="dateOfBirth()" (ngModelChange)="dateOfBirth.set($event)" />
+            </div>
+            <div class="iv-field">
+              <label>{{ 'login.password' | i18n }}</label>
+              <div class="input-wrapper">
+                <input [type]="showPassword() ? 'text' : 'password'" [ngModel]="password()" (ngModelChange)="password.set($event)" />
+                <button class="eye" type="button" (click)="showPassword.set(!showPassword())">
+                  <span class="material-symbols-outlined">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+            </div>
+            <div class="iv-field">
+              <label>{{ 'login.confirmPassword' | i18n }}</label>
+              <input [type]="showPassword() ? 'text' : 'password'" [ngModel]="confirmPassword()" (ngModelChange)="confirmPassword.set($event)" />
+            </div>
+          </div>
 
-      <div class="divider">
-        <span>{{ 'login.orContinueWith' | i18n }}</span>
-      </div>
+          @if (formError() || authStore.error()) {
+            <span class="iv-alert iv-alert-error">{{ formError() ?? authStore.error() }}</span>
+          }
 
-      <button class="btn-social" type="button">
-        <img src="https://www.google.com/favicon.ico" width="18" /> Google
-      </button>
-
-      <button class="btn-social" type="button">
-        <span class="linkedin-icon">in</span> LinkedIn
-      </button>
-    </div>
-    } @if (activeTab() === 'signup') {
-    <div class="form">
-      <div class="field">
-        <label>{{ 'login.email' | i18n }}</label>
-        <input
-          type="email"
-          [placeholder]="'login.emailPlaceholder' | i18n"
-          [ngModel]="email()"
-          (ngModelChange)="email.set($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label>{{ 'login.username' | i18n }}</label>
-        <input
-          type="text"
-          [placeholder]="'login.usernamePlaceholder' | i18n"
-          [ngModel]="username()"
-          (ngModelChange)="username.set($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label>{{ 'login.firstName' | i18n }}</label>
-        <input
-          type="text"
-          [placeholder]="'login.firstNamePlaceholder' | i18n"
-          [ngModel]="firstName()"
-          (ngModelChange)="firstName.set($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label>{{ 'login.lastName' | i18n }}</label>
-        <input
-          type="text"
-          [placeholder]="'login.lastNamePlaceholder' | i18n"
-          [ngModel]="lastName()"
-          (ngModelChange)="lastName.set($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label>{{ 'login.phoneNumber' | i18n }}</label>
-        <input
-          type="tel"
-          [placeholder]="'login.phonePlaceholder' | i18n"
-          [ngModel]="phoneNumber()"
-          (ngModelChange)="phoneNumber.set($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label>{{ 'login.dateOfBirth' | i18n }}</label>
-        <input
-          type="date"
-          [ngModel]="dateOfBirth()"
-          (ngModelChange)="dateOfBirth.set($event)"
-        />
-      </div>
-
-      <div class="field">
-        <label>{{ 'login.password' | i18n }}</label>
-        <div class="input-wrapper">
-          <input
-            [type]="showPassword() ? 'text' : 'password'"
-            [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
-          />
-          <button class="eye" type="button" (click)="showPassword.set(!showPassword())">👁</button>
+          <button class="iv-btn iv-btn-primary auth-submit" type="button" (click)="register()" [disabled]="authStore.loading()">
+            {{ authStore.loading() ? ('login.registering' | i18n) : ('login.signUpBtn' | i18n) }}
+          </button>
         </div>
-      </div>
-
-      <div class="field">
-        <label>{{ 'login.confirmPassword' | i18n }}</label>
-        <input
-          [type]="showPassword() ? 'text' : 'password'"
-          [ngModel]="confirmPassword()"
-          (ngModelChange)="confirmPassword.set($event)"
-        />
-      </div>
-
-      @if (formError() || authStore.error()) {
-        <span class="error-message">{{ formError() ?? authStore.error() }}</span>
       }
-
-      <button class="btn-primary" type="button" (click)="register()" [disabled]="authStore.loading()">
-        {{ authStore.loading() ? ('login.registering' | i18n) : ('login.signUpBtn' | i18n) }}
-      </button>
     </div>
-    }
-  </div>
 
-  <div class="footer">
-    <a href="#">{{ 'login.helpCenter' | i18n }}</a>
-    <span>·</span>
-    <a href="#">{{ 'login.privacy' | i18n }}</a>
-    <span>·</span>
-    <a href="#">{{ 'login.terms' | i18n }}</a>
-  </div>
-</div>
+    <div class="footer">
+      <a href="#">{{ 'login.helpCenter' | i18n }}</a>
+      <span>·</span>
+      <a href="#">{{ 'login.privacy' | i18n }}</a>
+      <span>·</span>
+      <a href="#">{{ 'login.terms' | i18n }}</a>
+    </div>
+  </section>
+</main>
