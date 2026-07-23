@@ -1,68 +1,147 @@
-<div class="mobile-header">
-  <button type="button" class="hamburger" (click)="toggleSidebar()">
-    <span class="material-symbols-outlined">{{ sidebarOpen() ? 'close' : 'menu' }}</span>
-  </button>
-  <a routerLink="/dashboard" class="mobile-brand" (click)="closeSidebar()">
-    <img src="Integravida.svg" alt="IntegraVida" class="mobile-logo" />
-  </a>
-</div>
+@if (authStore.isAuthenticated()) {
+  @if (sidebarOpen()) {
+    <button
+      type="button"
+      class="shell-overlay"
+      aria-label="Cerrar menu"
+      (click)="closeSidebar()"
+    ></button>
+  }
 
-@if (sidebarOpen()) {
-  <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+  <main class="app-shell">
+    <aside class="app-sidebar" [class.open]="sidebarOpen()">
+      <section class="sidebar-panel iv-glass">
+        <div class="sidebar-brand-row">
+          <a routerLink="/dashboard" class="brand" (click)="closeSidebar()">
+            <span class="brand-mark">
+              <span class="material-symbols-outlined">ecg_heart</span>
+            </span>
+            <span class="brand-text">Integra<span>Vida</span></span>
+          </a>
+          <button type="button" class="icon-btn close-menu" (click)="closeSidebar()" aria-label="Cerrar menu">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Primary navigation">
+          <div class="nav-group">
+            <p class="nav-label">{{ 'nav.general' | i18n }}</p>
+            <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()">
+              <span class="material-symbols-outlined">dashboard</span>
+              {{ 'nav.dashboard' | i18n }}
+            </a>
+          </div>
+
+          @if (authStore.currentUser()?.isPatient) {
+            <div class="nav-group">
+              <p class="nav-label">{{ 'nav.glucoseMonitoring' | i18n }}</p>
+              <a routerLink="/glucose-log" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">water_drop</span>
+                {{ 'nav.logGlucose' | i18n }}
+              </a>
+              <a routerLink="/health-history" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">monitoring</span>
+                {{ 'nav.healthHistory' | i18n }}
+              </a>
+              <a routerLink="/alerts" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">notifications</span>
+                {{ 'nav.alerts' | i18n }}
+              </a>
+              <a routerLink="/adverse-effects" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">medication</span>
+                {{ 'nav.medicationManagement' | i18n }}
+              </a>
+            </div>
+
+            <div class="nav-group">
+              <p class="nav-label">{{ 'nav.patient' | i18n }}</p>
+              <a routerLink="/patient-profile" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">account_circle</span>
+                {{ 'nav.patientProfile' | i18n }}
+              </a>
+            </div>
+          }
+
+          @if (authStore.currentUser()?.isDoctor) {
+            <div class="nav-group">
+              <p class="nav-label">{{ 'nav.doctor' | i18n }}</p>
+              <a routerLink="/doctor/patients" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">groups</span>
+                {{ 'nav.myPatients' | i18n }}
+              </a>
+            </div>
+          }
+
+          @if (authStore.currentUser()?.isAdmin) {
+            <div class="nav-group">
+              <p class="nav-label">{{ 'nav.administration' | i18n }}</p>
+              <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">admin_panel_settings</span>
+                {{ 'nav.adminDashboard' | i18n }}
+              </a>
+              <a routerLink="/admin/users" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">manage_accounts</span>
+                {{ 'nav.userManagement' | i18n }}
+              </a>
+              <a routerLink="/admin/assignments" routerLinkActive="active" (click)="closeSidebar()">
+                <span class="material-symbols-outlined">assignment_ind</span>
+                {{ 'nav.assignments' | i18n }}
+              </a>
+            </div>
+          }
+
+          <div class="nav-group">
+            <p class="nav-label">{{ 'nav.scheduling' | i18n }}</p>
+            <a routerLink="/appointments" routerLinkActive="active" (click)="closeSidebar()">
+              <span class="material-symbols-outlined">calendar_month</span>
+              {{ 'nav.appointments' | i18n }}
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-user">
+          <span class="avatar">{{ userInitials() }}</span>
+          <div class="sidebar-user-copy">
+            <p>{{ userDisplayName() }}</p>
+            <span>{{ roleLabel() }}</span>
+          </div>
+          <button type="button" class="icon-btn sign-out" (click)="signOut()" aria-label="Cerrar sesion">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+        </div>
+      </section>
+    </aside>
+
+    <section class="main-column">
+      <header class="topbar iv-glass">
+        <button type="button" class="icon-btn menu-btn" (click)="toggleSidebar()" aria-label="Abrir menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+
+        <div class="search-box">
+          <span class="material-symbols-outlined">search</span>
+          <input type="search" [placeholder]="'nav.searchPlaceholder' | i18n" />
+        </div>
+
+        <div class="topbar-actions">
+          <button type="button" class="lang-toggle" (click)="i18n.toggleLang()">
+            {{ i18n.currentLang() === 'es' ? 'EN' : 'ES' }}
+          </button>
+          <a routerLink="/alerts" class="icon-btn notification-btn" aria-label="Alertas">
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+          <a routerLink="/patient-profile" class="topbar-profile">
+            <span class="avatar small">{{ userInitials() }}</span>
+            <span>{{ userDisplayName() }}</span>
+          </a>
+        </div>
+      </header>
+
+      <section class="app-content">
+        <router-outlet />
+      </section>
+    </section>
+  </main>
+} @else {
+  <router-outlet />
 }
-
-<main class="app-shell">
-  <aside class="sidebar" [class.open]="sidebarOpen()">
-    <a routerLink="/dashboard" class="brand" (click)="closeSidebar()">
-      <img src="IntegravidaComplete.svg" alt="IntegraVida" class="brand-logo" />
-    </a>
-
-    <nav aria-label="Primary navigation">
-      @if (authStore.isAuthenticated()) {
-
-      <p class="nav-label">{{ 'nav.general' | i18n }}</p>
-      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.dashboard' | i18n }}</a>
-
-      @if (authStore.currentUser()?.isPatient) {
-      <p class="nav-label">{{ 'nav.glucoseMonitoring' | i18n }}</p>
-      <a routerLink="/glucose-log" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.logGlucose' | i18n }}</a>
-      <a routerLink="/health-history" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.healthHistory' | i18n }}</a>
-      <a routerLink="/alerts" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.alerts' | i18n }}</a>
-      <a routerLink="/adverse-effects" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.medicationManagement' | i18n }}</a>
-      <p class="nav-label">{{ 'nav.patient' | i18n }}</p>
-      <a routerLink="/patient-profile" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.patientProfile' | i18n }}</a>
-      }
-
-      @if (authStore.currentUser()?.isDoctor) {
-      <p class="nav-label">{{ 'nav.doctor' | i18n }}</p>
-      <a routerLink="/doctor/patients" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.myPatients' | i18n }}</a>
-      }
-
-      @if (authStore.currentUser()?.isAdmin) {
-      <p class="nav-label">{{ 'nav.administration' | i18n }}</p>
-      <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.adminDashboard' | i18n }}</a>
-      <a routerLink="/admin/users" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.userManagement' | i18n }}</a>
-      <a routerLink="/admin/assignments" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.assignments' | i18n }}</a>
-      }
-
-      <p class="nav-label">{{ 'nav.scheduling' | i18n }}</p>
-      <a routerLink="/appointments" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.appointments' | i18n }}</a>
-      }
-    </nav>
-
-    <div class="sidebar-actions">
-      <button type="button" class="lang-toggle" (click)="i18n.toggleLang()">
-        {{ i18n.currentLang() === 'es' ? 'EN' : 'ES' }}
-      </button>
-      @if (authStore.isAuthenticated()) {
-      <button type="button" (click)="signOut()">{{ 'nav.signOut' | i18n }}</button>
-      } @else {
-      <a routerLink="/login" routerLinkActive="active" (click)="closeSidebar()">{{ 'nav.login' | i18n }}</a>
-      }
-    </div>
-  </aside>
-
-  <section class="app-content">
-    <router-outlet />
-  </section>
-</main>

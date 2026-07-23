@@ -18,6 +18,7 @@
   "nav.appointments": "Citas",
   "nav.signOut": "Cerrar sesion",
   "nav.login": "Iniciar sesion",
+  "nav.searchPlaceholder": "Buscar pacientes, citas, alertas...",
 
   "login.logIn": "Iniciar sesion",
   "login.signUp": "Registrarse",

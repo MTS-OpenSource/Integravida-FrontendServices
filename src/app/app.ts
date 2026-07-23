@@ -16,6 +16,26 @@ export class App {
   protected readonly i18n = inject(I18nService);
   protected readonly sidebarOpen = signal(false);
 
+  protected roleLabel(): string {
+    const role = this.authStore.currentUser()?.role;
+    if (role === 'Admin') return 'Administrador';
+    if (role === 'Doctor') return 'Medico';
+    return 'Paciente';
+  }
+
+  protected userDisplayName(): string {
+    return this.authStore.currentUser()?.username || 'IntegraVida';
+  }
+
+  protected userInitials(): string {
+    return this.userDisplayName()
+      .split(/[\s._-]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('') || 'IV';
+  }
+
   protected toggleSidebar(): void {
     this.sidebarOpen.update(v => !v);
   }
@@ -26,5 +46,6 @@ export class App {
 
   protected signOut(): void {
     this.authStore.signOut();
+    this.closeSidebar();
   }
 }

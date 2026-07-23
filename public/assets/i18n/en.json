@@ -18,6 +18,7 @@
   "nav.appointments": "Appointments",
   "nav.signOut": "Sign out",
   "nav.login": "Login",
+  "nav.searchPlaceholder": "Search patients, appointments, alerts...",
 
   "login.logIn": "Log in",
   "login.signUp": "Sign up",
