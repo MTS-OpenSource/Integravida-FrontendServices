@@ -90,32 +90,34 @@ import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
     </div>
   `,
   styles: `
-    .page { padding: 2rem; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
-    h1 { margin: 0; font-size: 1.5rem; }
-    .subtitle { color: #667085; margin: 0.25rem 0 0; }
-    .actions { display: flex; gap: 0.5rem; }
-    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .card h3 { margin: 0 0 1rem; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .page { display: grid; gap: 1rem; }
+    .header { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; }
+    h1 { margin: 0; color: var(--foreground); font-size: clamp(1.5rem, 1.1rem + 1vw, 2.05rem); font-weight: 760; }
+    .subtitle, .loading { color: var(--muted-foreground); margin: .35rem 0 0; }
+    .actions, .form-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .card, .table-card { border: 1px solid rgba(255,255,255,.72); border-radius: 1.35rem; background: rgba(255,255,255,.68); box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,.78); backdrop-filter: blur(20px) saturate(160%); }
+    .card { padding: 1.15rem; }
+    .card h3 { margin: 0 0 1rem; color: var(--foreground); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
     .full { grid-column: 1 / -1; }
-    .field { display: flex; flex-direction: column; gap: 0.25rem; }
-    .field label { font-size: 0.8rem; font-weight: 600; color: #344054; }
-    .field input { border: 1px solid #d0d5dd; border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.875rem; }
-    .form-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
-    .btn-primary { background: #0f766e; color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-weight: 600; }
-    .btn-primary:disabled { opacity: 0.6; }
-    .btn-secondary { background: #f2f4f7; color: #344054; border: 1px solid #d0d5dd; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; }
-    .error { background: #fef3f2; color: #b42318; border: 1px solid #fecdca; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
-    .loading { color: #667085; }
-    .table-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+    .field { display: grid; gap: .4rem; }
+    .field label { color: var(--muted-foreground); font-size: .78rem; font-weight: 800; }
+    .field input { border: 1px solid var(--input); border-radius: .9rem; background: rgba(255,255,255,.68); color: var(--foreground); outline: none; padding: .76rem .9rem; }
+    .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--ring); }
+    .btn-primary, .btn-secondary { min-height: 2.55rem; border-radius: .9rem; padding: .62rem .9rem; font-weight: 780; }
+    .btn-primary { border: 0; color: var(--primary-foreground); background: var(--primary); }
+    .btn-primary:disabled { opacity: .6; }
+    .btn-secondary { border: 1px solid var(--border); color: var(--secondary-foreground); background: rgba(255,255,255,.68); }
+    .error { color: var(--destructive); background: rgba(210,70,61,.1); border: 1px solid rgba(210,70,61,.18); border-radius: 1rem; padding: .85rem 1rem; }
+    .table-card { overflow: auto; }
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 0.75rem 1rem; background: #f9fafb; font-size: 0.75rem; text-transform: uppercase; color: #667085; letter-spacing: 0.05em; }
-    td { padding: 0.75rem 1rem; border-top: 1px solid #f2f4f7; font-size: 0.875rem; }
-    .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
-    .badge[data-role="ADMIN"] { background: #fef3f2; color: #b42318; }
-    .badge[data-role="DOCTOR"] { background: #ecfdf3; color: #067647; }
-    .badge[data-role="PATIENT"] { background: #eff4ff; color: #3e5fc0; }
+    th { text-align: left; padding: .85rem 1rem; background: rgba(238,243,248,.72); color: var(--muted-foreground); font-size: .72rem; text-transform: uppercase; }
+    td { padding: .85rem 1rem; border-top: 1px solid var(--border); color: var(--foreground); }
+    .badge { display: inline-flex; border-radius: 999px; padding: .22rem .6rem; font-size: .75rem; font-weight: 800; }
+    .badge[data-role="ADMIN"] { background: rgba(210,70,61,.12); color: var(--destructive); }
+    .badge[data-role="DOCTOR"] { background: rgba(40,169,122,.14); color: var(--success); }
+    .badge[data-role="PATIENT"] { background: rgba(52,118,212,.12); color: var(--primary); }
+    @media (max-width: 760px) { .header { align-items: stretch; flex-direction: column; } .form-grid { grid-template-columns: 1fr; } }
   `,
 })
 export class AdminUsers implements OnInit {

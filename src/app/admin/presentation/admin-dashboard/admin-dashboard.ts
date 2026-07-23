@@ -33,26 +33,14 @@ import { I18nPipe } from '../../../shared/infrastructure/i18n/i18n.pipe';
     </div>
   `,
   styles: `
-    .page { padding: 2rem; }
-    h1 { margin: 0; font-size: 1.5rem; }
-    .subtitle { color: #667085; margin: 0.25rem 0 1.5rem; }
-    .loading { color: #667085; }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .stat-card {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .stat-value { font-size: 2rem; font-weight: 700; color: #0f766e; }
-    .stat-label { color: #667085; font-size: 0.875rem; }
+    .page { display: grid; gap: 1.25rem; }
+    h1 { margin: 0; color: var(--foreground); font-size: clamp(1.5rem, 1.1rem + 1vw, 2.05rem); font-weight: 760; }
+    .subtitle, .loading, .stat-label { color: var(--muted-foreground); }
+    .subtitle { margin: 0.35rem 0 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .stat-card { min-height: 8rem; border: 1px solid rgba(255,255,255,.72); border-radius: 1.35rem; background: rgba(255,255,255,.68); box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,.78); padding: 1.15rem; backdrop-filter: blur(20px) saturate(160%); }
+    .stat-value { color: var(--primary); font-size: 2.2rem; font-weight: 820; line-height: 1; }
+    .stat-label { display: block; margin-top: .55rem; font-size: .86rem; font-weight: 720; }
   `,
 })
 export class AdminDashboard implements OnInit {
